@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { Bot, CalendarDays, Check, CheckCircle2, ChevronDown, CircleHelp, Download, FileText, Headphones, Pause, Play, Send, Sparkles, Volume2, X } from 'lucide-react'
 
 const homework = [
@@ -54,7 +55,7 @@ export function ParentPortal() {
   const [reportOpen, setReportOpen] = useState(false)
   const completedCount = useMemo(() => completed.length, [completed])
   return <main className="parent-page">
-    <header className="parent-topbar"><div className="parent-brand"><div className="parent-brand-mark">EF</div><div><b>EduFlow OS</b><span>Parent Portal</span></div></div><div className="parent-nav"><span className="parent-live"><i /> Campus online</span><button className="parent-profile"><span>SK</span> Sana Khan <ChevronDown /></button></div></header>
+    <header className="parent-topbar"><div className="parent-brand"><div className="parent-brand-mark">EF</div><div><b>EduFlow OS</b><span>Parent Portal</span></div></div><div className="parent-nav"><OfflineStatusBar compact /><span className="parent-live"><i /> Campus online</span><button className="parent-profile"><span>SK</span> Sana Khan <ChevronDown /></button></div></header>
     <div className="parent-container">
       <section className="parent-student-head"><div><span className="parent-eyebrow">Good morning, Sana</span><h1>Sara&apos;s learning space</h1><p>Wednesday, 29 August 2026 · Here&apos;s what&apos;s happening today.</p></div><div className="student-identity"><div className="student-avatar">SK</div><div><b>Sara Khan</b><span>Class 5-A <em>•</em> Roll No: 2026-001</span></div></div></section>
       <section className="parent-status-grid"><div className="status-card attendance"><div className="status-icon"><CheckCircle2 /></div><div><span>Today&apos;s attendance</span><strong>Present</strong><small>94% term attendance</small></div><div className="status-pulse">Live</div></div><div className="status-card fee"><div className="status-icon"><Check /></div><div><span>August fee</span><strong>Paid <small>Rs. 2,500</small></strong><a href="#receipt" onClick={(e) => { e.preventDefault(); alert('Receipt download started for Sara Khan.') }}><Download /> Download receipt</a></div></div><div className="status-card class"><div className="status-icon"><CalendarDays /></div><div><span>Next class event</span><strong>Parent-teacher meeting</strong><small>Friday, 06 September · 3:30 PM</small></div></div></section>

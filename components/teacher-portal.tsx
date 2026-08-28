@@ -5,6 +5,7 @@ import { Check, ChevronDown, CircleCheck, Mic, Pause, Save, Send, Volume2, X } f
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { OfflineStatusBar, useEduFlow } from '@/components/eduflow-provider'
 
 type Status = 'Present' | 'Absent' | 'Leave'
 type Student = { id: number; name: string; father: string; status: Status; note: string }
@@ -36,12 +37,16 @@ export function TeacherPortal() {
   const [recording, setRecording] = useState(false)
   const [published, setPublished] = useState(false)
   const [finalized, setFinalized] = useState(false)
+  const { isOnline, queueAction, pendingActions } = useEduFlow()
   const counts = useMemo(() => ({ Present: students.filter((s) => s.status === 'Present').length, Absent: students.filter((s) => s.status === 'Absent').length, Leave: students.filter((s) => s.status === 'Leave').length }), [students])
-  const setStatus = (id: number, status: Status) => setStudents((current) => current.map((student) => student.id === id ? { ...student, status } : student))
-  const markAll = () => setStudents((current) => current.map((student) => ({ ...student, status: 'Present' })))
+  const setStatus = (id: number, status: Status) => { setStudents((current) => current.map((student) => student.id === id ? { ...student, status } : student)); if (!isOnline) queueAction(`Attendance updated for roll 2026-${String(id).padStart(3, '0')}`) }
+  const markAll = () => { setStudents((current) => current.map((student) => ({ ...student, status: 'Present' }))); if (!isOnline) queueAction('Mark all students present') }
 
   return (
     <section className="mx-auto flex max-w-[1500px] flex-col gap-6 pb-28">
+      <OfflineStatusBar />
+      {!isOnline && <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status"><strong>35 attendance records queued.</strong> Changes are safe on this device and will sync automatically when the connection returns.</div>}
+      {isOnline && pendingActions.length > 0 && <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"><span><strong>{pendingActions.length} offline change{pendingActions.length === 1 ? '' : 's'}</strong> ready to sync.</span><button type="button" className="font-semibold underline" onClick={() => window.location.reload()}>Sync Now</button></div>}
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2"><Badge className="bg-primary/10 text-primary hover:bg-primary/10">Teacher workspace</Badge><span className="text-sm text-muted-foreground">Tuesday, 18 August 2026</span></div>

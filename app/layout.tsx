@@ -1,11 +1,14 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { EduFlowProvider } from '@/components/eduflow-provider'
+import { OfflineClient } from '@/components/offline-client'
 
 export const metadata: Metadata = {
   title: 'Sign in | EduFlow OS',
   description: 'Securely sign in to your EduFlow OS school workspace.',
   generator: 'EduFlow OS',
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: [
       {
@@ -41,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <EduFlowProvider><OfflineClient />{children}</EduFlowProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
