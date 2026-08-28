@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'EduFlow OS | Super Admin Control Portal',
-  description: 'Provision, monitor, and manage every EduFlow school campus from one control portal.',
+  title: 'EduFlow OS | Parent Portal',
+  description: 'Stay connected with Sara Khan’s attendance, homework, AI companion, and academic progress.',
   generator: 'EduFlow OS',
   icons: {
     icon: [
