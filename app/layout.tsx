@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'EduFlow OS | Campus Node',
-  description: 'A focused operating system for modern campus administration.',
+  title: 'EduFlow OS | Teacher Classroom Console',
+  description: 'Take attendance, share daily homework, and keep parents connected with EduFlow OS.',
   generator: 'EduFlow OS',
   icons: {
     icon: [
