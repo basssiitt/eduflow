@@ -1,9 +1,5 @@
-import { DashboardPlaceholder, EduFlowShell } from '@/components/eduflow-shell'
+import { PublicLanding } from '@/components/public-landing'
 
 export default function Page() {
-  return (
-    <EduFlowShell>
-      <DashboardPlaceholder />
-    </EduFlowShell>
-  )
+  return <PublicLanding />
 }
