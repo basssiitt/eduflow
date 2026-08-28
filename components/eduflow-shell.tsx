@@ -138,11 +138,7 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-background/95 px-4 backdrop-blur md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigation">
-                  <Menu aria-hidden="true" />
-                </Button>
-              </SheetTrigger>
+              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
               <SheetContent side="left" className="w-72 p-0">
                 <SheetTitle className="sr-only">EduFlow navigation</SheetTitle>
                 <div className="flex h-20 items-center px-4"><Brand /></div>
@@ -163,12 +159,7 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
               <span className="absolute right-2 top-2 size-1.5 rounded-full bg-amber-500" />
             </Button>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2 px-2" aria-label="Open profile menu">
-                  <Avatar className="size-8"><AvatarFallback className="bg-primary/10 text-primary">AK</AvatarFallback></Avatar>
-                  <ChevronDown aria-hidden="true" className="hidden size-4 text-muted-foreground sm:block" />
-                </Button>
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger render={<Button variant="ghost" className="gap-2 px-2" aria-label="Open profile menu"><Avatar className="size-8"><AvatarFallback className="bg-primary/10 text-primary">AK</AvatarFallback></Avatar><ChevronDown aria-hidden="true" className="hidden size-4 text-muted-foreground sm:block" /></Button>} />
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Admin account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
