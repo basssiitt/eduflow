@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'EduFlow OS | Pakistan Ka Pehla 1-Click AI School OS',
-  description: 'Replace paper registers, eliminate fee arrears, and automate parent communication for your Pakistani school.',
+  title: 'Sign in | EduFlow OS',
+  description: 'Securely sign in to your EduFlow OS school workspace.',
   generator: 'EduFlow OS',
   icons: {
     icon: [
