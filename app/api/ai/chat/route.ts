@@ -1,0 +1,16 @@
+import { GoogleGenAI } from '@google/genai'
+import { NextResponse } from 'next/server'
+
+export async function POST(request: Request) {
+  const body = await request.json().catch(() => ({}))
+  const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : ''
+  if (!prompt) return NextResponse.json({ error: 'A message is required.' }, { status: 400 })
+  if (!process.env.GEMINI_API_KEY) return NextResponse.json({ text: 'Main aap ke school records check karke update karunga. Gemini connection abhi preview mode mein available nahi hai.' })
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+    const result = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: `You are EduFlow OS school assistant. Reply clearly in the user's language. Roman Urdu is allowed. Keep answers concise and helpful.\n\nUser: ${prompt}` })
+    return NextResponse.json({ text: result.text ?? 'Main is waqt jawab nahi de saka.' })
+  } catch {
+    return NextResponse.json({ text: 'Service temporarily unavailable. Please try again shortly.' }, { status: 200 })
+  }
+}
