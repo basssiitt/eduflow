@@ -33,6 +33,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { OfflineStatusBar } from '@/components/eduflow-provider'
 
 type NavItem = {
   label: string
@@ -152,6 +153,7 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <OfflineStatusBar compact />
             <Badge variant="outline" className="hidden border-amber-500/40 bg-amber-500/10 text-amber-700 sm:inline-flex">2026-2027</Badge>
             <Badge variant="secondary" className="hidden sm:inline-flex">Starter Plan</Badge>
             <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
