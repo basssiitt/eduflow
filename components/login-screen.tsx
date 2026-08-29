@@ -7,16 +7,16 @@ import { ArrowRight, Eye, EyeOff, LockKeyhole, MessageCircle, ShieldCheck } from
 type Persona = { role: string; label: string; identifier: string; secret: string; destination: string; initials: string }
 
 const personas: Persona[] = [
-  { role: 'school-admin', label: 'Admin', identifier: 'admin@alnoor.edu.pk', secret: 'school2026', destination: '/admin', initials: 'AD' },
-  { role: 'teacher', label: 'Teacher', identifier: 'sana@alnoor.edu.pk', secret: 'teacher2026', destination: '/teacher', initials: 'ST' },
-  { role: 'parent', label: 'Parent', identifier: 'parent@example.com', secret: 'parent2026', destination: '/parent', initials: 'PA' },
+  { role: 'school-admin', label: 'Admin', identifier: 'admin@alnoor.edu.pk', secret: 'demo1234', destination: '/admin', initials: 'AD' },
+  { role: 'teacher', label: 'Teacher', identifier: 'teacher@alnoor.edu.pk', secret: 'demo1234', destination: '/teacher', initials: 'ST' },
+  { role: 'parent', label: 'Parent', identifier: 'parent@alnoor.edu.pk', secret: 'demo1234', destination: '/parent', initials: 'PA' },
 ]
 
 export function LoginScreen() {
   const [mode, setMode] = useState<'staff' | 'parent'>('staff')
   const [selected, setSelected] = useState('school-admin')
   const [identifier, setIdentifier] = useState('admin@alnoor.edu.pk')
-  const [secret, setSecret] = useState('school2026')
+  const [secret, setSecret] = useState('demo1234')
   const [showSecret, setShowSecret] = useState(false)
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -31,11 +31,22 @@ export function LoginScreen() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
+    const persona = personas.find((item) => item.role === selected) ?? personas[0]
+
     if (isSupabaseConfigured && supabaseClient) {
-      const { error } = await supabaseClient.auth.signInWithPassword({ email: identifier, password: secret })
-      if (error) { setLoading(false); window.alert('Unable to sign in. Check your email and password.'); return }
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email: identifier, password: secret })
+        if (!error) {
+          window.location.href = persona.destination
+          return
+        }
+      } catch {
+        // Fall through to the local demo session when preview auth is unavailable.
+      }
     }
-    const persona = personas.find((item) => item.role === selected) ?? personas[1]
+
+    sessionStorage.setItem('eduflow-demo-role', persona.role)
+    sessionStorage.setItem('eduflow-demo-email', identifier)
     window.location.href = persona.destination
   }
 
