@@ -17,7 +17,7 @@ import {
   UserRound,
   WalletCards,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -34,6 +34,7 @@ import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
+import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 
 type NavItem = {
   label: string
@@ -69,9 +70,12 @@ function Brand({ collapsed = false }: { collapsed?: boolean }) {
 
 function Navigation({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
+  const [role, setRole] = useState<string | null>(null)
+  useEffect(() => { if (!isSupabaseConfigured || !supabaseClient) return; supabaseClient.auth.getUser().then(({ data }) => setRole(data.user?.app_metadata?.role ?? data.user?.user_metadata?.role ?? null)) }, [])
+  const visibleItems = role === 'teacher' ? navItems.filter((item) => ['/teacher', '/parent'].includes(item.href)) : role === 'parent' ? navItems.filter((item) => item.href === '/parent') : role === 'super-admin' ? navItems.filter((item) => item.href === '/super-admin' || item.href === '/admin') : navItems
   return (
     <nav aria-label="Primary navigation" className="flex flex-col gap-1">
-      {navItems.map((item) => {
+      {visibleItems.map((item) => {
         const active = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
         const Icon = item.icon
         return (
@@ -167,8 +171,9 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem><UserRound aria-hidden="true" />Profile settings</DropdownMenuItem>
-                  <DropdownMenuItem><WalletCards aria-hidden="true" />Billing & plan</DropdownMenuItem>
-                </DropdownMenuGroup>
+  <DropdownMenuItem><WalletCards aria-hidden="true" />Billing & plan</DropdownMenuItem>
+  <DropdownMenuItem onClick={() => { if (isSupabaseConfigured) void supabaseClient?.auth.signOut(); window.location.href = '/login' }}>Sign out</DropdownMenuItem>
+  </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

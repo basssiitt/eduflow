@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { createExpense } from '@/lib/live-data'
 import { ArrowDownLeft, ArrowUpRight, Banknote, Calculator, Check, ChevronDown, FileText, Image as ImageIcon, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, Wallet, X } from "lucide-react"
 
 const initialTransactions = [
@@ -28,10 +29,12 @@ export function FinanceWorkspace() {
   const totalExpense = Math.abs(transactions.filter((x) => x.amount < 0).reduce((a, x) => a + x.amount, 0))
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2800) }
 
-  const addExpense = () => {
+  const addExpense = async () => {
     if (!expense.description || !expense.vendor || !expense.amount) return
-    setTransactions((rows) => [{ id: `EXP-${2402 + rows.length}`, date: "Today", category: expense.category, description: expense.description, vendor: expense.vendor, amount: -Number(expense.amount), status: "Pending", receipt: true }, ...rows])
-    setModal(null); setExpense({ description: "", vendor: "", amount: "", category: "Utilities" }); notify("Expense voucher saved to the ledger")
+    const amount = Number(expense.amount)
+    const result = await createExpense({ description: expense.description, vendor: expense.vendor, category: expense.category, amount })
+    setTransactions((rows) => [{ id: `EXP-${2402 + rows.length}`, date: "Today", category: expense.category, description: expense.description, vendor: expense.vendor, amount: -amount, status: result.error ? "Pending" : "Cleared", receipt: true }, ...rows])
+    setModal(null); setExpense({ description: "", vendor: "", amount: "", category: "Utilities" }); notify(result.error ? "Expense saved locally; sync will retry when available" : "Expense voucher saved to the ledger")
   }
 
   return <main className="finance-page">

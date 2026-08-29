@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { fetchParentData } from '@/lib/live-data'
+import { fetchCurrentParentData } from '@/lib/live-data'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { Bot, CalendarDays, Check, CheckCircle2, ChevronDown, CircleHelp, Download, FileText, Headphones, Pause, Play, Send, Sparkles, Volume2, X } from 'lucide-react'
 
@@ -53,7 +53,7 @@ function ReportModal({ onClose }: { onClose: () => void }) {
 
 export function ParentPortal() {
   const [live, setLive] = useState<{ attendance: any[]; fees: any[]; diary: any } | null>(null)
-  useEffect(() => { fetchParentData(1).then(({ data }) => { if (data) setLive(data) }) }, [])
+  useEffect(() => { fetchCurrentParentData().then(({ data }) => { if (data) setLive(data) }) }, [])
   const [completed, setCompleted] = useState<string[]>([])
   const [reportOpen, setReportOpen] = useState(false)
   const completedCount = useMemo(() => completed.length, [completed])
