@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { ArrowRight, Eye, EyeOff, LockKeyhole, MessageCircle, ShieldCheck } from 'lucide-react'
 
 type Persona = { role: string; label: string; identifier: string; secret: string; destination: string; initials: string }
@@ -28,11 +29,15 @@ export function LoginScreen() {
     setMode(persona.role === 'parent' ? 'parent' : 'staff')
   }
 
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
+    if (isSupabaseConfigured && supabaseClient) {
+      const { error } = await supabaseClient.auth.signInWithPassword({ email: identifier, password: secret })
+      if (error) { setLoading(false); window.alert('Unable to sign in. Check your email and password.'); return }
+    }
     const persona = personas.find((item) => item.role === selected) ?? personas[1]
-    window.setTimeout(() => { window.location.href = persona.destination }, 450)
+    window.location.href = persona.destination
   }
 
   return (
