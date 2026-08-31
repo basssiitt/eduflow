@@ -3,10 +3,26 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL
 const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export const isSupabaseConfigured = Boolean(url && key)
+const isValidHttpUrl = (val?: string): boolean => {
+  if (!val) return false
+  try {
+    const parsed = new URL(val)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+export const isSupabaseConfigured = Boolean(url && key && isValidHttpUrl(url))
 
 export const supabaseClient: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(url!, key!, { auth: { persistSession: true, autoRefreshToken: true } })
+  ? createClient(url!, key!, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
   : null
 
 export function isBackendError(error: unknown) {
