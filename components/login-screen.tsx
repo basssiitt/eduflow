@@ -21,6 +21,7 @@ export function LoginScreen() {
     const nextPath = searchParams?.get('next')
 
     const demoRoles: Record<string, { role: string; destination: string }> = {
+      'basithadi@gmail.com': { role: 'super-admin', destination: '/super-admin' },
       'superadmin@eduflow.pk': { role: 'super-admin', destination: '/super-admin' },
       'admin@alnoor.edu.pk': { role: 'school-admin', destination: '/admin' },
       'teacher@alnoor.edu.pk': { role: 'teacher', destination: '/teacher' },
@@ -30,7 +31,7 @@ export function LoginScreen() {
     const demo = demoRoles[identifier.trim().toLowerCase()]
     const useDemoFallback = () => {
       if (!demo) {
-        setError('Invalid email or password. For demo mode, try admin@alnoor.edu.pk, teacher@alnoor.edu.pk, parent@alnoor.edu.pk, or superadmin@eduflow.pk')
+        setError('Invalid email or password. For demo mode, try basithadi@gmail.com, admin@alnoor.edu.pk, teacher@alnoor.edu.pk, parent@alnoor.edu.pk, or superadmin@eduflow.pk')
         setLoading(false)
         return
       }
@@ -62,13 +63,20 @@ export function LoginScreen() {
       sessionStorage.removeItem('eduflow-demo-role')
       sessionStorage.removeItem('eduflow-demo-email')
 
+      const userEmail = (user.email || identifier).toLowerCase().trim()
+      const isSuperAdminEmail = userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
+
       let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
       const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single()
       if (profile?.role) {
         role = profile.role
       }
 
-      const normalizedRole = (role || '').toLowerCase().replace(/-/g, '_')
+      let normalizedRole = (role || '').toLowerCase().replace(/-/g, '_')
+      if (isSuperAdminEmail || normalizedRole === 'super_admin') {
+        normalizedRole = 'super_admin'
+      }
+
       const destinations: Record<string, string> = {
         super_admin: '/super-admin',
         school_admin: '/admin',
@@ -77,7 +85,7 @@ export function LoginScreen() {
         parent: '/parent',
       }
 
-      const defaultHome = destinations[normalizedRole] ?? '/admin'
+      const defaultHome = isSuperAdminEmail ? '/super-admin' : (destinations[normalizedRole] ?? '/admin')
 
       if (nextPath && nextPath.startsWith('/')) {
         // Validate if user has permission for nextPath

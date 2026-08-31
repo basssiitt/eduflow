@@ -284,7 +284,10 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
 
     client.auth.getUser().then(async ({ data }) => {
       if (data.user) {
-        setUserEmail(data.user.email ?? '')
+        const email = data.user.email ?? ''
+        setUserEmail(email)
+        const isSuperAdminEmail = email.toLowerCase() === 'basithadi@gmail.com' || email.toLowerCase() === 'superadmin@eduflow.pk'
+
         let role = data.user.app_metadata?.role ?? data.user.user_metadata?.role
         if (!role) {
           const { data: profile } = await client
@@ -293,6 +296,9 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
             .eq('id', data.user.id)
             .single()
           role = profile?.role
+        }
+        if (isSuperAdminEmail) {
+          role = 'super-admin'
         }
         setUserRole(role ?? 'school-admin')
       }

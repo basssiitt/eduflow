@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin']
+const superAdminEmails = ['basithadi@gmail.com', 'superadmin@eduflow.pk']
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -36,12 +37,18 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
+    const userEmail = (user.email || '').toLowerCase().trim()
     let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
     if (!role) {
       const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
       role = (profile?.role || '') as string
     }
-    const normalizedRole = role.toLowerCase().replace(/-/g, '_')
+    let normalizedRole = role.toLowerCase().replace(/-/g, '_')
+
+    const isSuperAdmin = superAdminEmails.includes(userEmail) || normalizedRole === 'super_admin'
+    if (isSuperAdmin) {
+      normalizedRole = 'super_admin'
+    }
 
     const roleHomes: Record<string, string> = {
       super_admin: '/super-admin',
@@ -50,7 +57,7 @@ export async function updateSession(request: NextRequest) {
       teacher: '/teacher',
       parent: '/parent',
     }
-    const homeUrl = roleHomes[normalizedRole] || '/admin'
+    const homeUrl = isSuperAdmin ? '/super-admin' : (roleHomes[normalizedRole] || '/admin')
 
     if (pathname === '/login') {
       const nextParam = request.nextUrl.searchParams.get('next')
@@ -61,25 +68,25 @@ export async function updateSession(request: NextRequest) {
     }
 
     if (pathname === '/super-admin' || pathname.startsWith('/super-admin/')) {
-      if (normalizedRole !== 'super_admin') {
+      if (!isSuperAdmin) {
         return NextResponse.redirect(new URL(homeUrl, request.url))
       }
     }
 
     if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-      if (!['school_admin', 'admin', 'super_admin'].includes(normalizedRole)) {
+      if (!isSuperAdmin && !['school_admin', 'admin'].includes(normalizedRole)) {
         return NextResponse.redirect(new URL(homeUrl, request.url))
       }
     }
 
     if (pathname === '/teacher' || pathname.startsWith('/teacher/')) {
-      if (!['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedRole)) {
+      if (!isSuperAdmin && !['teacher', 'school_admin', 'admin'].includes(normalizedRole)) {
         return NextResponse.redirect(new URL(homeUrl, request.url))
       }
     }
 
     if (pathname === '/parent' || pathname.startsWith('/parent/')) {
-      if (!['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedRole)) {
+      if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
         return NextResponse.redirect(new URL(homeUrl, request.url))
       }
     }

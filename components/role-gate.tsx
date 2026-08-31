@@ -71,6 +71,9 @@ export function RoleGate({
           return
         }
 
+        const userEmail = (user.email || '').toLowerCase().trim()
+        const isSuperAdminEmail = userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
+
         // Query user's role from the `profiles` table
         let userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
         const { data: profile } = await supabaseClient
@@ -83,20 +86,24 @@ export function RoleGate({
           userRole = profile.role
         }
 
-        const normalizedUserRole = (userRole || '').toLowerCase().replace(/-/g, '_')
+        let normalizedUserRole = (userRole || '').toLowerCase().replace(/-/g, '_')
+        if (isSuperAdminEmail || normalizedUserRole === 'super_admin') {
+          normalizedUserRole = 'super_admin'
+        }
+
         const normalizedTargetRole = role.toLowerCase().replace(/-/g, '_')
 
         let isAuthorized = false
 
-        // Super Admin route is strictly guarded: only super_admin
+        // Super Admin route is strictly guarded: only super_admin or super admin email
         if (normalizedTargetRole === 'super_admin') {
-          isAuthorized = normalizedUserRole === 'super_admin'
+          isAuthorized = normalizedUserRole === 'super_admin' || isSuperAdminEmail
         } else if (normalizedTargetRole === 'school_admin') {
-          isAuthorized = ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuperAdminEmail || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'teacher') {
-          isAuthorized = ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuperAdminEmail || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'parent') {
-          isAuthorized = ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuperAdminEmail || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         }
 
         if (!isAuthorized) {
