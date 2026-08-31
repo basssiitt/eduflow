@@ -286,7 +286,10 @@ export function EduFlowShell({ children }: { children: React.ReactNode }) {
       if (data.user) {
         const email = data.user.email ?? ''
         setUserEmail(email)
-        const isSuperAdminEmail = email.toLowerCase() === 'basithadi@gmail.com' || email.toLowerCase() === 'superadmin@eduflow.pk'
+        const isSuperAdminEmail =
+          email.toLowerCase() === 'basithunyawrr@gmail.com' ||
+          email.toLowerCase() === 'basithadi@gmail.com' ||
+          email.toLowerCase() === 'superadmin@eduflow.pk'
 
         let role = data.user.app_metadata?.role ?? data.user.user_metadata?.role
         if (!role) {

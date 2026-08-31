@@ -21,6 +21,7 @@ export function LoginScreen() {
     const nextPath = searchParams?.get('next')
 
     const demoRoles: Record<string, { role: string; destination: string }> = {
+      'basithunyawrr@gmail.com': { role: 'super-admin', destination: '/super-admin' },
       'basithadi@gmail.com': { role: 'super-admin', destination: '/super-admin' },
       'superadmin@eduflow.pk': { role: 'super-admin', destination: '/super-admin' },
       'admin@alnoor.edu.pk': { role: 'school-admin', destination: '/admin' },
@@ -31,7 +32,7 @@ export function LoginScreen() {
     const demo = demoRoles[identifier.trim().toLowerCase()]
     const useDemoFallback = () => {
       if (!demo) {
-        setError('Invalid email or password. For demo mode, try basithadi@gmail.com, admin@alnoor.edu.pk, teacher@alnoor.edu.pk, parent@alnoor.edu.pk, or superadmin@eduflow.pk')
+        setError('Invalid email or password. For demo mode, try basithunyawrr@gmail.com, admin@alnoor.edu.pk, teacher@alnoor.edu.pk, parent@alnoor.edu.pk, or superadmin@eduflow.pk')
         setLoading(false)
         return
       }
@@ -64,7 +65,7 @@ export function LoginScreen() {
       sessionStorage.removeItem('eduflow-demo-email')
 
       const userEmail = (user.email || identifier).toLowerCase().trim()
-      const isSuperAdminEmail = userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
+      const isSuperAdminEmail = userEmail === 'basithunyawrr@gmail.com' || userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
 
       let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
       const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single()

@@ -2,7 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin']
-const superAdminEmails = ['basithadi@gmail.com', 'superadmin@eduflow.pk']
+const superAdminEmails = [
+  'basithunyawrr@gmail.com',
+  'basithadi@gmail.com',
+  'superadmin@eduflow.pk',
+]
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })

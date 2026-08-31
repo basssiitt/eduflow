@@ -72,7 +72,10 @@ export function RoleGate({
         }
 
         const userEmail = (user.email || '').toLowerCase().trim()
-        const isSuperAdminEmail = userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
+        const isSuperAdminEmail =
+          userEmail === 'basithunyawrr@gmail.com' ||
+          userEmail === 'basithadi@gmail.com' ||
+          userEmail === 'superadmin@eduflow.pk'
 
         // Query user's role from the `profiles` table
         let userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
