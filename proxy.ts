@@ -11,6 +11,7 @@ export const config = {
     '/teacher/:path*',
     '/parent/:path*',
     '/super-admin/:path*',
+    '/login/:path*',
     '/login',
   ],
 }

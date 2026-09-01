@@ -61,17 +61,29 @@ export function LoginScreen() {
         return
       }
 
+      // Execute getSession to ensure session cookies are set
+      await supabaseClient.auth.getSession()
+
       sessionStorage.removeItem('eduflow-demo-role')
       sessionStorage.removeItem('eduflow-demo-email')
 
       const userEmail = (user.email || identifier).toLowerCase().trim()
-      const isSuperAdminEmail = userEmail === 'basithunyawrr@gmail.com' || userEmail === 'basithadi@gmail.com' || userEmail === 'superadmin@eduflow.pk'
+      const isSuperAdminEmail =
+        userEmail === 'basithunyawrr@gmail.com' ||
+        userEmail === 'basithadi@gmail.com' ||
+        userEmail === 'superadmin@eduflow.pk'
 
       let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
-      const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single()
-      if (profile?.role) {
-        role = profile.role
-      }
+      try {
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        if (profile?.role) {
+          role = profile.role
+        }
+      } catch {}
 
       let normalizedRole = (role || '').toLowerCase().replace(/-/g, '_')
       if (isSuperAdminEmail || normalizedRole === 'super_admin') {
@@ -86,16 +98,19 @@ export function LoginScreen() {
         parent: '/parent',
       }
 
-      const defaultHome = isSuperAdminEmail ? '/super-admin' : (destinations[normalizedRole] ?? '/admin')
+      const defaultHome = (isSuperAdminEmail || normalizedRole === 'super_admin')
+        ? '/super-admin'
+        : (destinations[normalizedRole] ?? '/admin')
 
       if (nextPath && nextPath.startsWith('/')) {
         // Validate if user has permission for nextPath
-        if (nextPath.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
+        if (nextPath.startsWith('/super-admin') && normalizedRole !== 'super_admin' && !isSuperAdminEmail) {
           window.location.href = defaultHome
         } else {
           window.location.href = nextPath
         }
       } else {
+        // Force full document navigation with fresh auth cookies
         window.location.href = defaultHome
       }
     } catch {

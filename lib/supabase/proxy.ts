@@ -9,7 +9,11 @@ const superAdminEmails = [
 ]
 
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request })
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -19,12 +23,17 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient(url, key, {
     cookies: {
-      getAll: () => request.cookies.getAll(),
-      setAll: (items) => {
-        items.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value)
-          response.cookies.set(name, value, options)
+      getAll() {
+        return request.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        response = NextResponse.next({
+          request,
         })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        )
       },
     },
   })
@@ -39,10 +48,13 @@ export async function updateSession(request: NextRequest) {
     if (targetUrl.pathname === pathname) {
       return response
     }
-    return NextResponse.redirect(targetUrl, {
+    const redirectResponse = NextResponse.redirect(targetUrl, {
       status: 303,
-      headers: response.headers,
     })
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value)
+    })
+    return redirectResponse
   }
 
   const isProtected = protectedRoutes.some(
@@ -73,7 +85,9 @@ export async function updateSession(request: NextRequest) {
         .select('role')
         .eq('id', user.id)
         .single()
-      role = (profile?.role || '') as string
+      if (profile?.role) {
+        role = profile.role
+      }
     } catch {}
   }
   let normalizedRole = role.toLowerCase().replace(/-/g, '_')
@@ -105,12 +119,12 @@ export async function updateSession(request: NextRequest) {
     return safeRedirect(homeUrl)
   }
 
-  // Strictly guard /super-admin
+  // For /super-admin route, check if user exists and verify role === 'super_admin'
   if (pathname === '/super-admin' || pathname.startsWith('/super-admin/')) {
-    if (!isSuperAdmin) {
-      return safeRedirect(homeUrl)
+    if (user && (normalizedRole === 'super_admin' || isSuperAdmin)) {
+      return response
     }
-    return response
+    return safeRedirect(homeUrl)
   }
 
   // Guard /admin
