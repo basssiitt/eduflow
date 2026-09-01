@@ -6,13 +6,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/admin/:path*',
-    '/teacher/:path*',
-    '/parent/:path*',
-    '/super-admin/:path*',
-    '/login/:path*',
-    '/login',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }
 
