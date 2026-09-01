@@ -1,25 +1,16 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
-import { Check, Download, FileText, MessageCircle, Plus, Printer, Search, Upload, X } from "lucide-react"
+import { Check, Download, FileText, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
-import { ArrearsLedger } from '@/components/arrears-ledger'
-import { TimetableScheduler } from '@/components/timetable-scheduler'
 import { fetchAdminStats, fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
+import { Button } from '@/components/ui/button'
 
 type Status = "Paid" | "Pending" | "Overdue"
 type FeeRecord = { id?: string | number; challan: string; name: string; cls: string; tuition: number; arrears: number; due: string; status: Status }
 
-const initialRows: FeeRecord[] = [
-  { id: 1, challan: "CH-2026-089", name: "Ayesha Khan", cls: "Grade 8 · A", tuition: 18000, arrears: 0, due: "10-Aug-2026", status: "Paid" },
-  { id: 2, challan: "CH-2026-090", name: "Hamza Siddiqui", cls: "Grade 8 · A", tuition: 18000, arrears: 3500, due: "10-Aug-2026", status: "Pending" },
-  { id: 3, challan: "CH-2026-091", name: "Maham Ali", cls: "Grade 7 · B", tuition: 16500, arrears: 0, due: "05-Aug-2026", status: "Overdue" },
-  { id: 4, challan: "CH-2026-092", name: "Usman Tariq", cls: "Grade 9 · A", tuition: 19500, arrears: 0, due: "10-Aug-2026", status: "Pending" },
-  { id: 5, challan: "CH-2026-093", name: "Sara Ahmed", cls: "Grade 6 · C", tuition: 15000, arrears: 0, due: "10-Aug-2026", status: "Paid" },
-]
-
 const money = (n: number) => `Rs. ${n.toLocaleString("en-PK")}`
-const total = (r: FeeRecord) => r.tuition + r.arrears + 2000
+const total = (r: FeeRecord) => r.tuition + r.arrears
 
 function StatusBadge({ status }: { status: Status }) {
   return <span className={`admin-status admin-status-${status.toLowerCase()}`}><span />{status}</span>
@@ -30,10 +21,10 @@ function Challan({ r, label }: { r: FeeRecord; label: string }) {
     <article className="challan-copy">
       <b className="challan-copy-label">{label}</b>
       <div className="challan-heading">
-        <div className="school-mark">SS</div>
+        <div className="school-mark">EF</div>
         <div>
-          <strong>The Smart Scholars Campus</strong>
-          <span>Knowledge Avenue, Lahore · Branch 01</span>
+          <strong>EduFlow OS Campus</strong>
+          <span>Academic Node · Fee Challan</span>
         </div>
         <div className="challan-session">
           <small>SESSION</small>
@@ -42,17 +33,15 @@ function Challan({ r, label }: { r: FeeRecord; label: string }) {
       </div>
       <div className="challan-meta">
         <div><small>Student Name</small><b>{r.name}</b></div>
-        <div><small>Roll No.</small><b>SS-1042</b></div>
+        <div><small>Challan No.</small><b>{r.challan}</b></div>
         <div><small>Class</small><b>{r.cls}</b></div>
-        <div><small>Month</small><b>August 2026</b></div>
+        <div><small>Billing Month</small><b>Current Session</b></div>
         <div><small>Due Date</small><b>{r.due}</b></div>
       </div>
       <table className="challan-table">
         <tbody>
           <tr><td>Tuition Fee</td><td>{money(r.tuition)}</td></tr>
-          <tr><td>Exam Fee</td><td>{money(1500)}</td></tr>
-          <tr><td>Generator / Lab Fund</td><td>{money(500)}</td></tr>
-          <tr><td>Late Surcharge / Arrears</td><td>{money(r.arrears)}</td></tr>
+          {r.arrears > 0 && <tr><td>Arrears / Surcharge</td><td>{money(r.arrears)}</td></tr>}
         </tbody>
         <tfoot>
           <tr><th>Total Amount Payable</th><th>{money(total(r))}</th></tr>
@@ -61,7 +50,7 @@ function Challan({ r, label }: { r: FeeRecord; label: string }) {
       <div className="challan-footer">
         <div>
           <b>Bank Account &amp; 1Link</b>
-          <span>HBL DHA Branch · A/C: 0102-0100-123456-01<br />1Link ID: 123456</span>
+          <span>Designated Campus Account<br />1Link Bill Payment</span>
         </div>
         <div className="signature">
           <span>Cashier Signature</span>
@@ -94,39 +83,42 @@ function Modal({ r, close }: { r: FeeRecord; close: () => void }) {
 }
 
 export function AdminPortal() {
-  const [data, setData] = useState<FeeRecord[]>(initialRows)
+  const [data, setData] = useState<FeeRecord[]>([])
   const [filter, setFilter] = useState("All")
-  const [liveStats, setLiveStats] = useState<{ students: number; attendance: any[]; invoices: any[]; expenses: any[] } | null>(null)
   const [selected, setSelected] = useState<FeeRecord | null>(null)
   const [query, setQuery] = useState("")
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  const loadInvoices = async () => {
+    setLoading(true)
+    const { data: invoices } = await fetchFeeInvoices()
+    if (invoices && invoices.length > 0) {
+      setData(
+        invoices.map((inv: any, idx: number) => {
+          const student = inv.students || {}
+          return {
+            id: inv.id,
+            challan: `CH-2026-${String(idx + 100).padStart(3, '0')}`,
+            name: student.name || `Student #${inv.student_id}`,
+            cls: student.class ? `${student.class} · ${student.section || 'A'}` : 'Enrolled',
+            tuition: Number(inv.amount) || 0,
+            arrears: 0,
+            due: inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-GB') : "10-Aug-2026",
+            status: (inv.status || "Pending") as Status,
+          }
+        })
+      )
+    } else {
+      setData([])
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchAdminStats().then(({ data }) => {
-      if (data) setLiveStats(data)
-    })
-
-    fetchFeeInvoices().then(({ data }) => {
-      if (data && data.length > 0) {
-        setData(
-          data.map((inv: any, idx: number) => {
-            const student = inv.students || {}
-            return {
-              id: inv.id,
-              challan: `CH-2026-${String(idx + 100).padStart(3, '0')}`,
-              name: student.name || `Student #${inv.student_id}`,
-              cls: `${student.class || 'Class 5'} · ${student.section || 'A'}`,
-              tuition: Number(inv.amount) || 15000,
-              arrears: 0,
-              due: inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-GB') : "10-Aug-2026",
-              status: (inv.status || "Pending") as Status,
-            }
-          })
-        )
-      }
-    })
+    loadInvoices()
   }, [])
 
   const shown = useMemo(() => {
@@ -166,10 +158,9 @@ export function AdminPortal() {
       })
     }
 
-    setTimeout(() => {
-      setGenerating(false)
-      setGenerated(true)
-    }, 900)
+    await loadInvoices()
+    setGenerating(false)
+    setGenerated(true)
   }
 
   const toggleStatus = async (r: FeeRecord) => {
@@ -190,25 +181,26 @@ export function AdminPortal() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `eduflow-fee-register-august-2026.csv`
+    link.download = `eduflow-fee-register.csv`
     link.click()
     URL.revokeObjectURL(url)
   }
 
   return (
-    <main className="admin-page">
-      <TimetableScheduler />
-      <ArrearsLedger />
-      <header className="admin-header no-print">
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end no-print">
         <div>
-          <span className="eyebrow">FINANCE · AUGUST 2026</span>
-          <h1>Fee Management</h1>
-          <p>Track collections, issue 3-copy challans, and keep families informed.</p>
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">Fee Challans &amp; Accounts</span>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight">Fee Management &amp; Invoices</h1>
+          <p className="text-muted-foreground">Track collections, issue 3-copy challans, and record payments.</p>
         </div>
-        <div className="admin-header-actions">
-          <button className="admin-btn admin-btn-primary" onClick={generate}>
-            <Plus /> Generate August 2026 Invoices
-          </button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)}>
+            <Upload className="mr-2 size-4" /> Bulk Import CSV
+          </Button>
+          <Button onClick={generate} disabled={generating}>
+            <Plus className="mr-2 size-4" /> Generate Invoices
+          </Button>
         </div>
       </header>
 
@@ -221,7 +213,7 @@ export function AdminPortal() {
 
       {generated && (
         <div className="success-banner">
-          <Check /> August invoices generated successfully for {data.length} students.
+          <Check /> Invoices generated successfully.
         </div>
       )}
 
@@ -235,18 +227,20 @@ export function AdminPortal() {
         <article className="summary-card">
           <div className="summary-top">
             <span>Collected This Month</span>
-            <em className="trend-positive">+{Math.round((totalCollected / Math.max(totalRecoverable, 1)) * 100)}%</em>
+            <em className="trend-positive">
+              {totalRecoverable > 0 ? `${Math.round((totalCollected / totalRecoverable) * 100)}%` : '0%'}
+            </em>
           </div>
           <strong>{money(totalCollected)}</strong>
-          <small className="positive-copy">↑ Live collection status</small>
+          <small className="positive-copy">Live collection status</small>
         </article>
         <article className="summary-card">
           <div className="summary-top">
-            <span>Pending / Overdue Fee</span>
+            <span>Pending Invoices</span>
             <em className="trend-warning">{pendingCount} invoices</em>
           </div>
-          <strong>{Math.round((pendingCount / Math.max(data.length, 1)) * 100)}%</strong>
-          <small>{pendingCount} invoices require attention</small>
+          <strong>{data.length > 0 ? `${Math.round((pendingCount / data.length) * 100)}%` : '0%'}</strong>
+          <small>{pendingCount} invoices outstanding</small>
         </article>
       </section>
 
@@ -254,10 +248,7 @@ export function AdminPortal() {
         <div className="fee-section-header">
           <div><span className="eyebrow">INVOICE REGISTER</span><h2>Student Fee Records</h2></div>
           <div className="admin-header-actions">
-            <button data-testid="btn-bulk-import" className="admin-btn admin-btn-outline" onClick={() => setImportOpen(true)}>
-              <Upload /> Bulk Import via Excel/CSV
-            </button>
-            <button className="admin-btn admin-btn-outline" onClick={exportCsv}>
+            <button className="admin-btn admin-btn-outline" onClick={exportCsv} disabled={data.length === 0}>
               <Download /> Export CSV
             </button>
           </div>
@@ -277,61 +268,87 @@ export function AdminPortal() {
           </label>
         </div>
 
-        <div className="table-wrap" data-testid="fee-table">
-          <table className="fee-table">
-            <thead>
-              <tr>
-                <th>Challan No.</th>
-                <th>Student Name</th>
-                <th>Class &amp; Section</th>
-                <th>Monthly Tuition</th>
-                <th>Arrears</th>
-                <th>Total Payable</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((r) => (
-                <tr key={r.challan}>
-                  <td><b className="challan-number">{r.challan}</b></td>
-                  <td>
-                    <div className="student-cell">
-                      <span>{r.name.split(" ").map((x) => x[0]).join("")}</span>
-                      <b>{r.name}</b>
-                    </div>
-                  </td>
-                  <td>{r.cls}</td>
-                  <td>{money(r.tuition)}</td>
-                  <td className={r.arrears ? "arrears" : "muted-cell"}>{r.arrears ? money(r.arrears) : "—"}</td>
-                  <td><b>{money(total(r))}</b></td>
-                  <td>{r.due}</td>
-                  <td><StatusBadge status={r.status} /></td>
-                  <td>
-                    <div className="row-actions">
-                      <button className="row-action" data-testid="btn-print-challan" onClick={() => setSelected(r)} title="Print challan">
-                        <Printer />
-                      </button>
-                      <a className="row-action whatsapp" href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`} target="_blank" rel="noreferrer" title="WhatsApp reminder">
-                        <MessageCircle />
-                      </a>
-                      <button className="row-action" onClick={() => toggleStatus(r)} title="Mark as paid / pending">
-                        <Check />
-                      </button>
-                    </div>
-                  </td>
+        {data.length === 0 && !loading ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border bg-card py-16 text-center shadow-xs">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+              <ReceiptText className="size-7" />
+            </div>
+            <h3 className="mt-4 text-base font-semibold">No fee invoices issued yet</h3>
+            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+              Generate monthly fee challans for enrolled students or import existing fee records.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              <Button onClick={generate} disabled={generating}>
+                <Plus className="mr-2 size-4" /> Generate Invoices
+              </Button>
+              <Button variant="outline" onClick={() => setImportOpen(true)}>
+                <Upload className="mr-2 size-4" /> Bulk Import
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="table-wrap" data-testid="fee-table">
+            <table className="fee-table">
+              <thead>
+                <tr>
+                  <th>Challan No.</th>
+                  <th>Student Name</th>
+                  <th>Class &amp; Section</th>
+                  <th>Monthly Tuition</th>
+                  <th>Arrears</th>
+                  <th>Total Payable</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {shown.map((r) => (
+                  <tr key={r.challan}>
+                    <td><b className="challan-number">{r.challan}</b></td>
+                    <td>
+                      <div className="student-cell">
+                        <span>{r.name.split(" ").map((x) => x[0]).join("")}</span>
+                        <b>{r.name}</b>
+                      </div>
+                    </td>
+                    <td>{r.cls}</td>
+                    <td>{money(r.tuition)}</td>
+                    <td className={r.arrears ? "arrears" : "muted-cell"}>{r.arrears ? money(r.arrears) : "—"}</td>
+                    <td><b>{money(total(r))}</b></td>
+                    <td>{r.due}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td>
+                      <div className="row-actions">
+                        <button className="row-action" data-testid="btn-print-challan" onClick={() => setSelected(r)} title="Print challan">
+                          <Printer />
+                        </button>
+                        <a className="row-action whatsapp" href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`} target="_blank" rel="noreferrer" title="WhatsApp reminder">
+                          <MessageCircle />
+                        </a>
+                        <button className="row-action" onClick={() => toggleStatus(r)} title="Mark as paid / pending">
+                          <Check />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <div className="table-footer"><span>Showing {shown.length} of {data.length} invoices</span></div>
       </section>
 
       {selected && <Modal r={selected} close={() => setSelected(null)} />}
-      {importOpen && <BulkImportModal onClose={() => setImportOpen(false)} />}
-    </main>
+      {importOpen && (
+        <BulkImportModal
+          onClose={() => {
+            setImportOpen(false)
+            loadInvoices()
+          }}
+        />
+      )}
+    </div>
   )
 }
-
