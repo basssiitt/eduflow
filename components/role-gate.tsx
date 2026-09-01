@@ -20,43 +20,9 @@ export function RoleGate({
     let mounted = true
 
     const checkAccess = async () => {
-      const demoRole = typeof window !== 'undefined' ? sessionStorage.getItem('eduflow-demo-role') : null
-
-      // Check demo mode authorization
-      if (demoRole) {
-        const normalizedDemo = demoRole.toLowerCase().replace(/-/g, '_')
-        const normalizedTarget = role.toLowerCase().replace(/-/g, '_')
-
-        let isDemoAuthorized = false
-        if (normalizedTarget === 'super_admin') {
-          isDemoAuthorized = normalizedDemo === 'super_admin'
-        } else if (normalizedTarget === 'school_admin') {
-          isDemoAuthorized = ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
-        } else if (normalizedTarget === 'teacher') {
-          isDemoAuthorized = ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
-        } else if (normalizedTarget === 'parent') {
-          isDemoAuthorized = ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
-        }
-
-        if (isDemoAuthorized) {
-          if (mounted) {
-            setAllowed(true)
-            setChecking(false)
-          }
-          return
-        }
-      }
-
-      // If Supabase is not configured and no valid demo session, allow or redirect to login
       if (!isSupabaseConfigured || !supabaseClient) {
         if (mounted) {
-          // If demo session exists but is wrong role, redirect to login
-          if (demoRole) {
-            router.replace('/login')
-          } else {
-            setAllowed(true)
-            setChecking(false)
-          }
+          router.replace(`/login?next=${encodeURIComponent(pathname)}`)
         }
         return
       }
@@ -77,16 +43,22 @@ export function RoleGate({
           userEmail === 'basithadi@gmail.com' ||
           userEmail === 'superadmin@eduflow.pk'
 
-        // Query user's role from the `profiles` table
-        let userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
-        const { data: profile } = await supabaseClient
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single()
+        // Query user's role strictly from the `profiles` table
+        let userRole = ''
+        try {
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
 
-        if (profile?.role) {
-          userRole = profile.role
+          if (profile?.role) {
+            userRole = profile.role
+          }
+        } catch {}
+
+        if (!userRole) {
+          userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
         }
 
         let normalizedUserRole = (userRole || '').toLowerCase().replace(/-/g, '_')
@@ -98,7 +70,7 @@ export function RoleGate({
 
         let isAuthorized = false
 
-        // Super Admin route is strictly guarded: only super_admin or super admin email
+        // Super Admin route is strictly guarded: only super_admin role or authorized superadmin email
         if (normalizedTargetRole === 'super_admin') {
           isAuthorized = normalizedUserRole === 'super_admin' || isSuperAdminEmail
         } else if (normalizedTargetRole === 'school_admin') {
@@ -144,10 +116,10 @@ export function RoleGate({
 
   if (checking || !allowed) {
     return (
-      <main className="min-h-screen grid place-items-center bg-background">
+      <main className="min-h-screen grid place-items-center bg-slate-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-3">
-          <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground font-medium">Checking workspace access…</p>
+          <div className="size-7 animate-spin rounded-full border-3 border-emerald-600 border-t-transparent" />
+          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Verifying workspace permissions…</p>
         </div>
       </main>
     )

@@ -3,10 +3,11 @@
 import { useEffect, useState, useMemo } from 'react'
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchStudents } from '@/lib/live-data'
+import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ChevronLeft, ChevronRight, Download, Search, Upload, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Plus, Search, Trash2, Upload, UserPlus, Users, X } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 type StudentRecord = {
@@ -16,6 +17,167 @@ type StudentRecord = {
   roll_no: string
   class: string
   section: string
+  guardian_phone?: string
+  tuition_fee?: number
+}
+
+function AddStudentModal({
+  onClose,
+  onAdded,
+}: {
+  onClose: () => void
+  onAdded: () => void
+}) {
+  const [name, setName] = useState('')
+  const [fatherName, setFatherName] = useState('')
+  const [className, setClassName] = useState('Class 5')
+  const [section, setSection] = useState('A')
+  const [phone, setPhone] = useState('')
+  const [fee, setFee] = useState('15000')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim() || !fatherName.trim()) {
+      setError('Please fill in all required fields.')
+      return
+    }
+
+    setSaving(true)
+    setError('')
+
+    const rollNo = `2026-${String(Math.floor(100 + Math.random() * 900))}`
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        const { error: insertError } = await supabaseClient.from('students').insert([
+          {
+            name: name.trim(),
+            father_name: fatherName.trim(),
+            class: className,
+            section: section,
+            guardian_phone: phone.trim(),
+            tuition_fee: Number(fee) || 15000,
+            roll_no: rollNo,
+          },
+        ])
+
+        if (insertError) {
+          setError(insertError.message)
+          setSaving(false)
+          return
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to save student')
+        setSaving(false)
+        return
+      }
+    }
+
+    setSaving(false)
+    onAdded()
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true" aria-labelledby="add-student-title">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <UserPlus className="size-5 text-emerald-600" />
+              <h2 id="add-student-title" className="text-xl font-bold text-slate-900 dark:text-slate-100">Admit New Student</h2>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">Enter student details to add them to the active academic register.</p>
+          </div>
+          <button onClick={onClose} aria-label="Close modal" className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {error && <p className="mt-4 text-xs font-semibold text-rose-600">{error}</p>}
+
+        <form onSubmit={handleSave} className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            Student Full Name *
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Muhammad Ali"
+              required
+              className="text-sm rounded-xl"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            Father / Guardian Name *
+            <Input
+              value={fatherName}
+              onChange={(e) => setFatherName(e.target.value)}
+              placeholder="e.g. Tariq Mehmood"
+              required
+              className="text-sm rounded-xl"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Class
+            <select
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm"
+            >
+              {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Section
+            <select
+              value={section}
+              onChange={(e) => setSection(e.target.value)}
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm"
+            >
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            WhatsApp Phone No.
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+92 3XX XXXXXXX"
+              className="text-sm rounded-xl"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Monthly Tuition Fee (PKR)
+            <Input
+              type="number"
+              value={fee}
+              onChange={(e) => setFee(e.target.value)}
+              placeholder="15000"
+              className="text-sm rounded-xl"
+            />
+          </label>
+
+          <div className="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
+            <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+              {saving ? 'Admitting…' : 'Admit Student'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 }
 
 export default function StudentsPage() {
@@ -23,6 +185,7 @@ export default function StudentsPage() {
   const [query, setQuery] = useState('')
   const [classFilter, setClassFilter] = useState('All')
   const [importOpen, setImportOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -39,6 +202,8 @@ export default function StudentsPage() {
           roll_no: s.roll_no ?? `2026-${String(idx + 1).padStart(3, '0')}`,
           class: s.class ?? 'Class 5',
           section: s.section ?? 'A',
+          guardian_phone: s.guardian_phone ?? '',
+          tuition_fee: Number(s.tuition_fee) || 15000,
         }))
       )
     } else {
@@ -50,6 +215,16 @@ export default function StudentsPage() {
   useEffect(() => {
     loadStudents()
   }, [])
+
+  const handleDelete = async (id: string | number) => {
+    if (!confirm('Are you sure you want to remove this student from the active register?')) return
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        await supabaseClient.from('students').delete().eq('id', id)
+      } catch {}
+    }
+    setStudents((curr) => curr.filter((s) => s.id !== id))
+  }
 
   const filtered = useMemo(() => {
     return students.filter((s) => {
@@ -93,11 +268,19 @@ export default function StudentsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button
+            variant="outline"
             onClick={() => setImportOpen(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-medium"
+            className="border-slate-300 dark:border-slate-700"
           >
             <Upload className="mr-2 size-4" />
             Bulk CSV Import
+          </Button>
+          <Button
+            onClick={() => setAddOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-medium"
+          >
+            <Plus className="mr-2 size-4" />
+            Admit Student
           </Button>
         </div>
       </div>
@@ -105,11 +288,11 @@ export default function StudentsPage() {
       <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
-            {['All', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
+            {['All', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
               <button
                 key={cls}
                 onClick={() => handleClassFilter(cls)}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
                   classFilter === cls
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 dark:bg-slate-800 dark:text-slate-300'
@@ -135,9 +318,11 @@ export default function StudentsPage() {
             <ZeroDataEmptyState
               icon={Users}
               title="No students registered yet"
-              description="Your campus roster is currently empty. Use Bulk CSV Import to enroll students into classes."
-              actionLabel="Bulk Import Students"
-              onAction={() => setImportOpen(true)}
+              description="Your campus roster is currently empty. Admit your first student or use Bulk CSV Import."
+              actionLabel="Admit Student"
+              onAction={() => setAddOpen(true)}
+              secondaryActionLabel="Bulk CSV Import"
+              onSecondaryAction={() => setImportOpen(true)}
             />
           </div>
         ) : (
@@ -151,7 +336,9 @@ export default function StudentsPage() {
                       <th className="px-4 py-3.5">Student Name</th>
                       <th className="px-4 py-3.5">Father / Guardian</th>
                       <th className="px-4 py-3.5">Class &amp; Section</th>
+                      <th className="px-4 py-3.5">Contact Phone</th>
                       <th className="px-4 py-3.5">Status</th>
+                      <th className="px-4 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -165,10 +352,22 @@ export default function StudentsPage() {
                             {s.class} · Section {s.section}
                           </span>
                         </td>
+                        <td className="px-4 py-3.5 font-mono text-xs text-slate-500">{s.guardian_phone || '—'}</td>
                         <td className="px-4 py-3.5">
                           <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
                             Enrolled
                           </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(s.id)}
+                            className="size-8 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                            title="Delete student"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -207,6 +406,13 @@ export default function StudentsPage() {
           </>
         )}
       </div>
+
+      {addOpen && (
+        <AddStudentModal
+          onClose={() => setAddOpen(false)}
+          onAdded={() => loadStudents()}
+        />
+      )}
 
       {importOpen && (
         <BulkImportModal

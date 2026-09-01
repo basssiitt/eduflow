@@ -12,7 +12,7 @@ export async function fetchStudents() {
   if (auth.error) return { data: null, error: auth.error }
   return supabaseClient
     .from('students')
-    .select('id, name, father_name, roll_no, class, section')
+    .select('id, name, father_name, roll_no, class, section, guardian_phone, tuition_fee')
     .order('roll_no', { ascending: true, nullsFirst: false })
 }
 
