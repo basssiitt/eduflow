@@ -1,4 +1,5 @@
 import { RoleGate } from '@/components/role-gate'
+import { ParentShell } from '@/components/parent-shell'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -13,7 +14,9 @@ export default function ParentLayout({
 }) {
   return (
     <RoleGate role="parent">
-      {children}
+      <ParentShell>
+        {children}
+      </ParentShell>
     </RoleGate>
   )
 }

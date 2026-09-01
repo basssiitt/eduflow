@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { createExpense, fetchAdminStats } from '@/lib/live-data'
-import { ArrowDownLeft, ArrowUpRight, Banknote, Calculator, Check, ChevronDown, FileText, Image as ImageIcon, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, Wallet, X } from "lucide-react"
+import { ArrowDownLeft, ArrowUpRight, Banknote, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, FileText, Image as ImageIcon, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, Wallet, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ZeroDataEmptyState } from "@/components/zero-data-empty-state"
 
 type Transaction = {
   id: string
@@ -27,6 +28,8 @@ export function FinanceWorkspace() {
   const [toast, setToast] = useState("")
   const [expense, setExpense] = useState({ description: "", vendor: "", amount: "", category: "Utilities" })
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   useEffect(() => {
     fetchAdminStats().then(({ data }) => {
@@ -51,6 +54,12 @@ export function FinanceWorkspace() {
   }, [])
 
   const filtered = useMemo(() => transactions.filter((row) => `${row.description} ${row.vendor} ${row.category}`.toLowerCase().includes(query.toLowerCase()) && (category === "All categories" || row.category === category)), [transactions, query, category])
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize
+    return filtered.slice(start, start + pageSize)
+  }, [filtered, page])
+
   const totalIncome = transactions.filter((x) => x.amount > 0).reduce((a, x) => a + x.amount, 0)
   const totalExpense = Math.abs(transactions.filter((x) => x.amount < 0).reduce((a, x) => a + x.amount, 0))
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2800) }
@@ -75,7 +84,7 @@ export function FinanceWorkspace() {
         </div>
         <div className="finance-header-actions">
           <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 size-4" /> Print report</Button>
-          <Button onClick={() => setModal("expense")}><Plus className="mr-2 size-4" /> Add expense voucher</Button>
+          <Button onClick={() => setModal("expense")} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="mr-2 size-4" /> Add expense voucher</Button>
         </div>
       </header>
 
@@ -121,9 +130,9 @@ export function FinanceWorkspace() {
           <div className="finance-filters">
             <label>
               <Search />
-              <input placeholder="Search transactions..." value={query} onChange={(e) => setQuery(e.target.value)} />
+              <input placeholder="Search transactions..." value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} />
             </label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}>
               <option>All categories</option>
               <option>Utilities</option>
               <option>Stationery</option>
@@ -135,54 +144,74 @@ export function FinanceWorkspace() {
           </div>
 
           {transactions.length === 0 && !loading ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-                <Wallet className="size-7" />
-              </div>
-              <h3 className="mt-4 text-base font-semibold">No financial transactions recorded</h3>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Record vouchers and track school expenses to keep your campus audit-ready.
-              </p>
-              <Button className="mt-5" onClick={() => setModal("expense")}>
-                <Plus className="mr-2 size-4" /> Add Expense Voucher
-              </Button>
+            <div className="p-6">
+              <ZeroDataEmptyState
+                icon={Wallet}
+                title="No financial transactions recorded"
+                description="Record vouchers and track school expenses to keep your campus audit-ready."
+                actionLabel="Add Expense Voucher"
+                onAction={() => setModal("expense")}
+              />
             </div>
           ) : (
-            <div className="finance-table-wrap">
-              <table className="finance-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Transaction</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.date}<small>{row.id}</small></td>
-                      <td><b>{row.description}</b><small>{row.vendor} {row.receipt && "· Receipt attached"}</small></td>
-                      <td><span className="category-pill">{row.category}</span></td>
-                      <td className={row.amount < 0 ? "amount-expense" : "amount-income"}>{money(row.amount)}</td>
-                      <td><span className={`finance-status ${row.status.toLowerCase()}`}>{row.status}</span></td>
-                      <td>
-                        <button className="table-action" onClick={() => notify(`Details opened for ${row.id}`)}>
-                          {row.receipt ? <ImageIcon /> : <FileText />}
-                        </button>
-                      </td>
+            <>
+              <div className="finance-table-wrap">
+                <table className="finance-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Transaction</th>
+                      <th>Category</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginated.map((row) => (
+                      <tr key={row.id}>
+                        <td>{row.date}<small>{row.id}</small></td>
+                        <td><b>{row.description}</b><small>{row.vendor} {row.receipt && "· Receipt attached"}</small></td>
+                        <td><span className="category-pill">{row.category}</span></td>
+                        <td className={row.amount < 0 ? "amount-expense" : "amount-income"}>{money(row.amount)}</td>
+                        <td><span className={`finance-status ${row.status.toLowerCase()}`}>{row.status}</span></td>
+                        <td>
+                          <button className="table-action" onClick={() => notify(`Details opened for ${row.id}`)}>
+                            {row.receipt ? <ImageIcon /> : <FileText />}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="finance-card-footer flex items-center justify-between">
+                <span>Showing {paginated.length} of {filtered.length} transactions</span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="size-8 p-0"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  <span className="px-2 font-medium">Page {page} of {totalPages}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="size-8 p-0"
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
-          <footer className="finance-card-footer">
-            <span>Showing {filtered.length} of {transactions.length} transactions</span>
-            <span><Calculator /> Verified</span>
-          </footer>
         </section>
       )}
 
@@ -195,14 +224,12 @@ export function FinanceWorkspace() {
               <p>Manage employee salary disbursements and pay-slips.</p>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-              <Banknote className="size-7" />
-            </div>
-            <h3 className="mt-4 text-base font-semibold">No payroll batch created</h3>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              Staff salary sheets and automated attendance-adjusted pay-slips will appear here.
-            </p>
+          <div className="p-6">
+            <ZeroDataEmptyState
+              icon={Banknote}
+              title="No payroll batch created"
+              description="Staff salary sheets and automated attendance-adjusted pay-slips will appear here."
+            />
           </div>
         </section>
       )}
@@ -216,14 +243,12 @@ export function FinanceWorkspace() {
               <p>Count, reconcile, and sign off petty cash for today.</p>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-              <Wallet className="size-7" />
-            </div>
-            <h3 className="mt-4 text-base font-semibold">No petty cash closing entries</h3>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              Daily petty cash reconciliation entries will appear here upon submission.
-            </p>
+          <div className="p-6">
+            <ZeroDataEmptyState
+              icon={Wallet}
+              title="No petty cash closing entries"
+              description="Daily petty cash reconciliation entries will appear here upon submission."
+            />
           </div>
         </section>
       )}

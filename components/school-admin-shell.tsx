@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Bell,
+  CalendarCheck,
   Check,
   ChevronDown,
   Globe,
@@ -49,20 +50,21 @@ type NavItem = {
 const adminNavItems: NavItem[] = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, testId: 'nav-overview' },
   { label: 'Students', href: '/admin/students', icon: Users, testId: 'nav-students' },
+  { label: 'Attendance', href: '/admin/attendance', icon: CalendarCheck, testId: 'nav-attendance' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
-  { label: 'Finance & Ledger', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
+  { label: 'Finance Ledger', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
 ]
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/admin" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-        <GraduationCap aria-hidden="true" />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
+        <GraduationCap className="size-5 text-emerald-400" aria-hidden="true" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-semibold tracking-tight text-foreground">EduFlow OS</p>
-          <p className="truncate text-xs text-muted-foreground">Campus Admin</p>
+          <p className="truncate font-semibold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate text-xs font-medium text-emerald-600 dark:text-emerald-400">Campus Admin</p>
         </div>
       )}
     </Link>
@@ -79,7 +81,7 @@ function AdminNavigation({
   const pathname = usePathname()
 
   return (
-    <nav aria-label="Campus admin navigation" className="flex flex-col gap-1">
+    <nav aria-label="Campus admin navigation" className="flex flex-col gap-1.5">
       {adminNavItems.map((item) => {
         const active =
           pathname === item.href ||
@@ -94,13 +96,13 @@ function AdminNavigation({
             aria-current={active ? 'page' : undefined}
             title={collapsed ? item.label : undefined}
             className={cn(
-              'flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors',
-              'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-              active && 'bg-primary/10 text-primary shadow-sm font-semibold',
+              'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+              'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+              active && 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-emerald-950/60 dark:text-emerald-300',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className="size-4 shrink-0" />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0", active ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -117,20 +119,20 @@ function AdminSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r bg-sidebar md:flex md:flex-col', collapsed ? 'w-20' : 'w-64')}>
-      <div className="flex h-20 items-center px-4">
+    <aside className={cn('hidden shrink-0 border-r border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+      <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator />
-      <div className="flex flex-1 flex-col gap-6 p-3">
+      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <div className="flex flex-1 flex-col gap-6 p-4">
         <AdminNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-xl border bg-card p-3 shadow-xs', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <p className="text-xs font-semibold text-foreground">Campus Support</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">Need assistance with fee challans or enrollment?</p>
+              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Campus Support</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Need help with challans or enrollment?</p>
               <a href="mailto:support@eduflow.pk" className="inline-block mt-3 w-full">
-                <Button variant="outline" size="sm" className="w-full text-xs">
+                <Button variant="outline" size="sm" className="w-full text-xs font-medium border-slate-300 dark:border-slate-700">
                   support@eduflow.pk
                 </Button>
               </a>
@@ -138,11 +140,11 @@ function AdminSidebar({
           )}
         </div>
       </div>
-      <Separator />
-      <div className="flex items-center justify-between p-3">
-        {!collapsed && <span className="text-xs text-muted-foreground">v2.4.0 · School Node</span>}
-        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-          {collapsed ? <PanelLeftOpen aria-hidden="true" /> : <PanelLeftClose aria-hidden="true" />}
+      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <div className="flex items-center justify-between p-4">
+        {!collapsed && <span className="text-[11px] font-medium text-slate-400">Academic Node 2026–27</span>}
+        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
+          {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-4" /> : <PanelLeftClose aria-hidden="true" className="size-4" />}
         </Button>
       </div>
     </aside>
@@ -169,35 +171,35 @@ function SettingsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4 backdrop-blur-xs">
-      <div className="w-full max-w-lg rounded-2xl border bg-card p-6 shadow-xl" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900" role="dialog" aria-modal="true" aria-labelledby="settings-title">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Settings className="size-5 text-primary" />
+              <Settings className="size-5 text-emerald-600" />
               <h2 id="settings-title" className="text-xl font-semibold">Campus Settings</h2>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">Manage your school profile, language, and preferences.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Manage school profile, language, and notifications.</p>
           </div>
-          <button onClick={onClose} aria-label="Close settings" className="rounded-md p-1 text-muted-foreground hover:bg-muted">
+          <button onClick={onClose} aria-label="Close settings" className="rounded-md p-1 text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800">
             <X className="size-4" />
           </button>
         </div>
 
         <div className="mt-6 flex flex-col gap-4">
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Account Information</p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Account Information</p>
             <div className="mt-3 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Email / Username</span>
               <span className="font-mono font-medium">{userEmail || 'admin@school.edu.pk'}</span>
             </div>
             <div className="mt-2 flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Assigned Role</span>
+              <span className="text-muted-foreground">Role</span>
               <Badge variant="secondary">School Admin</Badge>
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border p-4">
+          <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
             <div>
               <p className="text-sm font-semibold">Language / زبان</p>
               <p className="text-xs text-muted-foreground">Switch between English and Urdu.</p>
@@ -208,15 +210,16 @@ function SettingsModal({
             </Button>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border p-4">
+          <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
             <div>
-              <p className="text-sm font-semibold">WhatsApp & Bell Notifications</p>
-              <p className="text-xs text-muted-foreground">Receive real-time alerts for daily attendance and fees.</p>
+              <p className="text-sm font-semibold">WhatsApp &amp; Bell Notifications</p>
+              <p className="text-xs text-muted-foreground">Alerts for daily attendance and fee collections.</p>
             </div>
             <Button
               variant={notifications ? 'default' : 'outline'}
               size="sm"
               onClick={() => setNotifications(!notifications)}
+              className={notifications ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
             >
               {notifications ? 'Enabled' : 'Disabled'}
             </Button>
@@ -225,8 +228,8 @@ function SettingsModal({
 
         <div className="mt-6 flex items-center justify-end gap-2">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} disabled={saved}>
-            {saved ? <Check className="mr-1.5 size-4 text-emerald-500" /> : null}
+          <Button onClick={handleSave} disabled={saved} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            {saved ? <Check className="mr-1.5 size-4" /> : null}
             {saved ? 'Saved' : 'Save Changes'}
           </Button>
         </div>
@@ -267,39 +270,41 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
   const userInitials = (userEmail ? userEmail.slice(0, 2) : 'AD').toUpperCase()
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-background/95 px-4 backdrop-blur md:px-8">
+        <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/90 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
-              <SheetContent side="left" className="w-72 p-0">
+              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
+              <SheetContent side="left" className="w-72 p-0 bg-white dark:bg-slate-950">
                 <SheetTitle className="sr-only">Campus navigation</SheetTitle>
-                <div className="flex h-20 items-center px-4"><Brand /></div>
+                <div className="flex h-20 items-center px-5"><Brand /></div>
                 <Separator />
-                <div className="p-3"><AdminNavigation onNavigate={() => setMobileOpen(false)} /></div>
+                <div className="p-4"><AdminNavigation onNavigate={() => setMobileOpen(false)} /></div>
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Campus Administration</p>
-              <h1 className="text-lg font-semibold tracking-tight">School Operations</h1>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Campus Administration</p>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">School Operations</h1>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <OfflineStatusBar compact />
-            <Badge variant="outline" className="hidden border-amber-500/40 bg-amber-500/10 text-amber-700 sm:inline-flex">2026-2027</Badge>
-            <Button variant="ghost" size="icon" className="relative" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
-              <Bell aria-hidden="true" />
-              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-amber-500" />
+            <Badge variant="outline" className="hidden border-emerald-500/30 bg-emerald-50 text-emerald-700 sm:inline-flex dark:bg-emerald-950/40 dark:text-emerald-400 font-medium">
+              Academic Session 2026–2027
+            </Badge>
+            <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
+              <Bell aria-hidden="true" className="size-4" />
+              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-emerald-500" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2" aria-label="Open profile menu">
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-slate-900 text-white font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
-                  <ChevronDown aria-hidden="true" className="hidden size-4 text-muted-foreground sm:block" />
+                  <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-60">
@@ -311,7 +316,7 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                     <Settings className="mr-2 size-4" />
-                    <span>Settings</span>
+                    <span>Campus Settings</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -324,7 +329,7 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>

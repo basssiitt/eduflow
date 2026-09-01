@@ -51,7 +51,7 @@ export async function updateSession(request: NextRequest) {
     const redirectResponse = NextResponse.redirect(targetUrl, {
       status: 303,
     })
-    response.cookies.getAll().forEach((cookie) => {
+    response.cookies.getAll().forEach((cookie: { name: string; value: string }) => {
       redirectResponse.cookies.set(cookie.name, cookie.value)
     })
     return redirectResponse

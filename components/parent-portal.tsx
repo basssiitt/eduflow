@@ -34,13 +34,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 function AudioDiary({ audioUrl, note }: { audioUrl?: string; note?: string }) {
   const [playing, setPlaying] = useState(false)
   if (!audioUrl && !note) {
     return (
-      <div className="rounded-xl border bg-muted/20 p-6 text-center text-sm text-muted-foreground">
-        No voice diary published for today.
+      <div className="p-4">
+        <ZeroDataEmptyState
+          icon={Volume2}
+          title="No voice diary for today"
+          description="When the classroom teacher records a voice note or instructions, it will appear here."
+        />
       </div>
     )
   }
@@ -52,7 +57,7 @@ function AudioDiary({ audioUrl, note }: { audioUrl?: string; note?: string }) {
           {playing ? <Pause /> : <Play />}
         </button>
       ) : (
-        <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <div className="flex size-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
           <Volume2 className="size-5" />
         </div>
       )}
@@ -105,7 +110,7 @@ function AiAssistant() {
   ]
 
   return (
-    <section className="parent-ai card-surface">
+    <section id="ai" className="parent-ai card-surface">
       <div className="parent-ai-header">
         <div className="ai-avatar"><Bot /></div>
         <div>
@@ -134,7 +139,7 @@ function AiAssistant() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing && e.keyCode !== 229) send() }}
-          placeholder="Type your question..."
+          placeholder="Type your question in English or Urdu..."
           aria-label="Ask EduFlow AI"
         />
         <button onClick={() => send()} aria-label="Send message"><Send /></button>
@@ -194,16 +199,6 @@ export function ParentPortal() {
     })
   }, [])
 
-  const handleSignOut = async () => {
-    if (isSupabaseConfigured && supabaseClient) {
-      try {
-        await supabaseClient.auth.signOut()
-      } catch {}
-    }
-    sessionStorage.clear()
-    window.location.href = '/login'
-  }
-
   const attendanceRate = useMemo(() => {
     if (!live?.attendance || live.attendance.length === 0) return null
     const present = live.attendance.filter((row) => row.status === 'Present').length
@@ -211,117 +206,88 @@ export function ParentPortal() {
   }, [live])
 
   const latestFee = live?.fees?.[0] ?? null
-  const userInitials = (parentEmail ? parentEmail.slice(0, 2) : 'PT').toUpperCase()
 
   return (
-    <main className="parent-page">
-      <header className="parent-topbar no-print">
-        <div className="parent-brand">
-          <div className="parent-brand-mark">EF</div>
-          <div><b>EduFlow OS</b><span>Parent Portal</span></div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Academic Session 2026–2027</span>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Student Learning Space</h1>
+          <p className="text-slate-500 dark:text-slate-400">Monitor your child&apos;s daily classroom attendance, homework diaries, and fee challans.</p>
         </div>
-        <div className="parent-nav">
-          <OfflineStatusBar compact />
-          <span className="parent-live"><i /> Campus online</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <button className="parent-profile" aria-label="Open parent user menu">
-                <span>{userInitials}</span> {parentEmail || 'Parent Account'} <ChevronDown />
-              </button>
-            } />
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>
-                <div className="flex flex-col">
-                  <span>Parent Account</span>
-                  <span className="text-xs text-muted-foreground">{parentEmail || 'parent@school.edu.pk'}</span>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                <LogOut className="mr-2 size-4 text-rose-600" /> Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-
-      <div className="parent-container">
-        <section className="parent-student-head">
-          <div>
-            <span className="parent-eyebrow">Academic Session 2026–2027</span>
-            <h1>Student Learning Space</h1>
-            <p>Monitor your child&apos;s daily classroom attendance, homework diaries, and fee challans.</p>
-          </div>
-        </section>
-
-        <section className="parent-status-grid">
-          <div className="status-card attendance">
-            <div className="status-icon"><CheckCircle2 /></div>
-            <div>
-              <span>Today&apos;s attendance</span>
-              <strong>{live?.attendance?.[0]?.status ?? (loading ? 'Loading…' : 'Not recorded')}</strong>
-              <small>{attendanceRate !== null ? `${attendanceRate}% term attendance` : 'No attendance history yet'}</small>
-            </div>
-            <div className="status-pulse">Live</div>
-          </div>
-          <div className="status-card fee">
-            <div className="status-icon"><ReceiptText /></div>
-            <div>
-              <span>Fee status</span>
-              {latestFee ? (
-                <>
-                  <strong>{latestFee.status} <small>Rs. {(Number(latestFee.amount) || 0).toLocaleString()}</small></strong>
-                  <button
-                    className="text-xs text-primary font-medium underline mt-1"
-                    onClick={() => { setSelectedFee(latestFee); setReceiptOpen(true) }}
-                  >
-                    View receipt
-                  </button>
-                </>
-              ) : (
-                <>
-                  <strong>{loading ? 'Checking…' : 'No Invoices'}</strong>
-                  <small>No pending invoices</small>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="status-card class">
-            <div className="status-icon"><CalendarDays /></div>
-            <div>
-              <span>Academic Year</span>
-              <strong>Session 2026–2027</strong>
-              <small>Campus Node Active</small>
-            </div>
-          </div>
-        </section>
-
-        <div className="parent-main-grid">
-          <section className="parent-diary card-surface">
-            <div className="section-heading">
-              <div><span className="parent-eyebrow">Class diary</span><h2>Today&apos;s Class Diary</h2></div>
-            </div>
-            <AudioDiary audioUrl={live?.diary?.audio_url} note={live?.diary?.note} />
-          </section>
-          <AiAssistant />
-        </div>
-
-        <section className="parent-report card-surface">
-          <div className="section-heading">
-            <div><span className="parent-eyebrow">Academic Record</span><h2>Examination &amp; Performance Status</h2></div>
-          </div>
-          <div className="p-8 text-center text-sm text-muted-foreground">
-            Official term evaluation results will be published here by the class teacher.
-          </div>
-        </section>
-
-        <footer className="parent-footer">
-          <span><CircleHelp /> Need help? Contact the school office at support@eduflow.pk</span>
-          <span>EduFlow OS · Campus Parent Portal</span>
-        </footer>
       </div>
 
+      <section id="attendance" className="parent-status-grid">
+        <div className="status-card attendance">
+          <div className="status-icon"><CheckCircle2 /></div>
+          <div>
+            <span>Today&apos;s attendance</span>
+            <strong>{live?.attendance?.[0]?.status ?? (loading ? 'Loading…' : 'Not recorded')}</strong>
+            <small>{attendanceRate !== null ? `${attendanceRate}% term attendance` : 'No attendance history yet'}</small>
+          </div>
+          <div className="status-pulse">Live</div>
+        </div>
+        <div id="fees" className="status-card fee">
+          <div className="status-icon"><ReceiptText /></div>
+          <div>
+            <span>Fee status</span>
+            {latestFee ? (
+              <>
+                <strong>{latestFee.status} <small>Rs. {(Number(latestFee.amount) || 0).toLocaleString()}</small></strong>
+                <button
+                  className="text-xs text-primary font-medium underline mt-1"
+                  onClick={() => { setSelectedFee(latestFee); setReceiptOpen(true) }}
+                >
+                  View receipt
+                </button>
+              </>
+            ) : (
+              <>
+                <strong>{loading ? 'Checking…' : 'No Invoices'}</strong>
+                <small>No pending invoices</small>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="status-card class">
+          <div className="status-icon"><CalendarDays /></div>
+          <div>
+            <span>Academic Year</span>
+            <strong>Session 2026–2027</strong>
+            <small>Campus Node Active</small>
+          </div>
+        </div>
+      </section>
+
+      <div className="parent-main-grid">
+        <section className="parent-diary card-surface">
+          <div className="section-heading">
+            <div><span className="parent-eyebrow">Class diary</span><h2>Today&apos;s Class Diary</h2></div>
+          </div>
+          <AudioDiary audioUrl={live?.diary?.audio_url} note={live?.diary?.note} />
+        </section>
+        <AiAssistant />
+      </div>
+
+      <section className="parent-report card-surface">
+        <div className="section-heading">
+          <div><span className="parent-eyebrow">Academic Record</span><h2>Examination &amp; Performance Status</h2></div>
+        </div>
+        <div className="p-6">
+          <ZeroDataEmptyState
+            icon={FileText}
+            title="No term examination marks published"
+            description="Official term evaluation results will be published here by the class teacher upon exam completion."
+          />
+        </div>
+      </section>
+
+      <footer className="parent-footer">
+        <span><CircleHelp /> Need help? Contact the school office at support@eduflow.pk</span>
+        <span>EduFlow OS · Campus Parent Portal</span>
+      </footer>
+
       {receiptOpen && <ReceiptModal fee={selectedFee} onClose={() => setReceiptOpen(false)} />}
-    </main>
+    </div>
   )
 }

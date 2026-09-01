@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { fetchStudents, saveAttendance, uploadVoiceDiary } from '@/lib/live-data'
 import { isSupabaseConfigured } from '@/lib/supabaseClient'
-import { Check, CircleCheck, Mic, Pause, Save, Send, UserRound, Volume2, X } from 'lucide-react'
+import { Award, BookOpen, Check, CircleCheck, Mic, Pause, Save, Send, UserRound, Volume2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { OfflineStatusBar, useEduFlow } from '@/components/eduflow-provider'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 type Status = 'Present' | 'Absent' | 'Leave'
 type Student = { id: number | string; name: string; father: string; status: Status; note: string }
@@ -111,18 +112,20 @@ export function TeacherPortal() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-primary/10 text-primary hover:bg-primary/10">Teacher Workspace</Badge>
-            <span className="text-sm text-muted-foreground">Academic Session · 2026–2027</span>
+            <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">
+              Teacher Workspace
+            </Badge>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Academic Session · 2026–2027</span>
           </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">Classroom Console</h2>
-          <p className="text-muted-foreground">Take daily attendance, publish voice diaries, and record classroom notes.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">Classroom Console</h2>
+          <p className="text-slate-500 dark:text-slate-400">Take daily attendance, publish voice diaries, and record classroom notes.</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-xs md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm font-medium">Class
-            <select className="h-10 rounded-lg border bg-background px-3 text-sm">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">Class
+            <select className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm">
               <option>All Enrolled</option>
               <option>Class 5</option>
               <option>Class 6</option>
@@ -137,7 +140,7 @@ export function TeacherPortal() {
           data-testid="btn-mark-all-present"
           onClick={markAll}
           disabled={students.length === 0}
-          className="bg-emerald-600 text-white hover:bg-emerald-700"
+          className="bg-emerald-600 text-white hover:bg-emerald-700 font-medium"
         >
           <Check data-icon="inline-start" className="mr-1 size-4" />Mark All Present
         </Button>
@@ -145,52 +148,50 @@ export function TeacherPortal() {
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(330px,0.75fr)]">
         <div className="flex min-w-0 flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border bg-card px-4 py-3 text-sm shadow-sm">
-            <span className="font-semibold">Total: {students.length}</span>
-            <span className="text-emerald-700">Present: {counts.Present}</span>
-            <span className="text-rose-700">Absent: {counts.Absent}</span>
-            <span className="text-amber-700">Leave: {counts.Leave}</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 px-5 py-3.5 text-sm shadow-xs">
+            <span className="font-bold text-slate-900 dark:text-slate-100">Total: {students.length}</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium">Present: {counts.Present}</span>
+            <span className="text-rose-700 dark:text-rose-400 font-medium">Absent: {counts.Absent}</span>
+            <span className="text-amber-700 dark:text-amber-400 font-medium">Leave: {counts.Leave}</span>
           </div>
 
           {students.length === 0 && !loading ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border bg-card py-16 text-center shadow-xs">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-                <UserRound className="size-7" />
-              </div>
-              <h3 className="mt-4 text-base font-semibold">No students in this class roster</h3>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                No enrolled students found. Contact your school administrator to register students.
-              </p>
+            <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-xs">
+              <ZeroDataEmptyState
+                icon={UserRound}
+                title="No students in this class roster"
+                description="No enrolled students found. Contact your school administrator to register students."
+              />
             </div>
           ) : (
-            <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] text-left text-sm">
-                  <thead className="border-b bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                  <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950 text-xs font-semibold uppercase tracking-wider text-slate-500">
                     <tr>
-                      <th className="px-4 py-3 font-medium">Roll No</th>
-                      <th className="px-4 py-3 font-medium">Student Name</th>
-                      <th className="px-4 py-3 font-medium">Father / Guardian</th>
-                      <th className="px-4 py-3 font-medium">Attendance</th>
-                      <th className="px-4 py-3 font-medium">Quick Note</th>
+                      <th className="px-4 py-3.5">Roll No</th>
+                      <th className="px-4 py-3.5">Student Name</th>
+                      <th className="px-4 py-3.5">Father / Guardian</th>
+                      <th className="px-4 py-3.5">Attendance</th>
+                      <th className="px-4 py-3.5">Quick Note</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {students.map((student, idx) => (
-                      <tr key={student.id} data-testid="student-row" className="transition-colors hover:bg-muted/20">
-                        <td className="px-4 py-3 font-mono text-xs text-muted-foreground">2026-{String(idx + 1).padStart(3, '0')}</td>
-                        <td className="px-4 py-3 font-medium">{student.name}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{student.father || '—'}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex w-fit rounded-lg border bg-muted/40 p-1" role="group" aria-label={`Attendance for ${student.name}`}>
+                      <tr key={student.id} data-testid="student-row" className="transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                        <td className="px-4 py-3.5 font-mono text-xs text-slate-500">2026-{String(idx + 1).padStart(3, '0')}</td>
+                        <td className="px-4 py-3.5 font-semibold text-slate-900 dark:text-slate-100">{student.name}</td>
+                        <td className="px-4 py-3.5 text-slate-500">{student.father || '—'}</td>
+                        <td className="px-4 py-3.5">
+                          <div className="flex w-fit rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-1" role="group" aria-label={`Attendance for ${student.name}`}>
                             {(['Present', 'Absent', 'Leave'] as Status[]).map((status) => (
                               <button
                                 key={status}
                                 type="button"
                                 aria-pressed={student.status === status}
                                 onClick={() => setStatus(student.id, status)}
-                                className={`min-w-8 rounded-md px-2 py-1 text-xs font-bold transition-colors ${
-                                  student.status === status ? statusStyles[status] : 'text-muted-foreground hover:bg-background'
+                                className={`min-w-8 rounded-lg px-2 py-1 text-xs font-bold transition-colors ${
+                                  student.status === status ? statusStyles[status] : 'text-slate-500 hover:bg-white dark:hover:bg-slate-800'
                                 }`}
                               >
                                 {status[0]}
@@ -198,7 +199,7 @@ export function TeacherPortal() {
                             ))}
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3.5">
                           <Input
                             aria-label={`Quick note for ${student.name}`}
                             value={student.note}
@@ -208,7 +209,7 @@ export function TeacherPortal() {
                               )
                             }
                             placeholder="Add note..."
-                            className="h-8 min-w-32 text-xs"
+                            className="h-8 min-w-32 text-xs rounded-lg"
                           />
                         </td>
                       </tr>
@@ -220,22 +221,22 @@ export function TeacherPortal() {
           )}
         </div>
 
-        <aside className="rounded-xl border bg-card p-5 shadow-sm">
+        <aside id="diary" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary">Class diary</p>
-              <h3 className="mt-1 text-lg font-semibold">Daily Diary &amp; Voice Homework</h3>
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Class Diary</p>
+              <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Daily Diary &amp; Voice Homework</h3>
             </div>
-            <Volume2 className="size-5 text-primary" aria-hidden="true" />
+            <Volume2 className="size-5 text-emerald-600" aria-hidden="true" />
           </div>
-          <div className="mt-5 flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1">
+          <div className="mt-5 flex flex-wrap gap-1 rounded-xl bg-slate-50 dark:bg-slate-950 p-1.5 border border-slate-100 dark:border-slate-800">
             {subjects.map((item) => (
               <button
                 type="button"
                 key={item}
                 onClick={() => setSubject(item)}
-                className={`rounded-md px-2.5 py-2 text-xs font-medium transition-colors ${
-                  subject === item ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  subject === item ? 'bg-white text-slate-900 shadow-xs font-semibold dark:bg-slate-800 dark:text-slate-100' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 {item}
@@ -245,29 +246,29 @@ export function TeacherPortal() {
           <button
             type="button"
             onClick={() => setRecording((value) => !value)}
-            className={`mt-5 flex min-h-32 w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed transition-colors ${
-              recording ? 'border-rose-300 bg-rose-50' : 'border-amber-300 bg-amber-50/60 hover:bg-amber-50'
+            className={`mt-5 flex min-h-32 w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed transition-colors ${
+              recording ? 'border-rose-300 bg-rose-50 dark:bg-rose-950/20' : 'border-emerald-300 bg-emerald-50/50 hover:bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/20'
             }`}
             aria-label="Hold or click to record voice note"
           >
-            <span className={`flex size-12 items-center justify-center rounded-full ${recording ? 'bg-rose-600 text-white' : 'bg-primary text-primary-foreground'}`}>
+            <span className={`flex size-12 items-center justify-center rounded-full ${recording ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}>
               {recording ? <Pause aria-hidden="true" /> : <Mic aria-hidden="true" />}
             </span>
-            <span className="text-center text-sm font-semibold">{recording ? 'Recording voice note...' : 'Click to Record Voice Note'}</span>
-            <span className="text-xs text-muted-foreground">{recording ? 'Recording in progress' : 'Audio note for parents'}</span>
+            <span className="text-center text-sm font-semibold text-slate-900 dark:text-slate-100">{recording ? 'Recording voice note...' : 'Click to Record Voice Note'}</span>
+            <span className="text-xs text-slate-500">{recording ? 'Recording in progress' : 'Audio note for parents'}</span>
           </button>
-          <label className="mt-5 flex flex-col gap-2 text-sm font-medium">
+          <label className="mt-5 flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
             Written instructions
             <textarea
               value={diary}
               onChange={(event) => setDiary(event.target.value)}
               placeholder="Type homework instructions for today..."
               rows={4}
-              className="resize-none rounded-lg border bg-background px-3 py-2 text-sm font-normal outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 py-2 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
             />
           </label>
           <Button
-            className="mt-4 w-full"
+            className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
             disabled={!diary.trim() && !recording}
             onClick={async () => {
               const studentId = students[0]?.id ?? 1
@@ -276,56 +277,74 @@ export function TeacherPortal() {
               setPublished(true)
             }}
           >
-            <Send data-icon="inline-start" className="mr-1 size-4" />Publish Diary Entry
+            <Send data-icon="inline-start" className="mr-1.5 size-4" />Publish Diary Entry
           </Button>
           {published && (
-            <p role="status" className="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-700">
+            <p role="status" className="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-700 dark:text-emerald-400">
               <CircleCheck className="size-4" />Diary entry published successfully!
             </p>
           )}
         </aside>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-10 border-t bg-background/95 px-4 py-3 backdrop-blur md:px-8">
+      <section id="gradebook" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-xs">
+        <div className="flex items-start justify-between">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Term Evaluation</span>
+            <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Gradebook &amp; Marks Entry</h3>
+            <p className="text-xs text-slate-500">Record midterm and final term examination scores.</p>
+          </div>
+          <Award className="size-5 text-emerald-600" />
+        </div>
+        <div className="mt-4">
+          <ZeroDataEmptyState
+            icon={BookOpen}
+            title="No examination schedule active"
+            description="Gradebook entries open during the scheduled examination terms."
+          />
+        </div>
+      </section>
+
+      <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-slate-200/80 bg-white/95 px-5 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 md:px-8">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
-          <p className="hidden text-sm text-muted-foreground sm:block">Review all student entries before saving today&apos;s register.</p>
-          <Button onClick={handleSaveAttendance} disabled={saving || students.length === 0} className="ml-auto">
-            <Save data-icon="inline-start" className="mr-1 size-4" />
+          <p className="hidden text-sm text-slate-500 sm:block">Review all student entries before saving today&apos;s register.</p>
+          <Button onClick={handleSaveAttendance} disabled={saving || students.length === 0} className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+            <Save data-icon="inline-start" className="mr-1.5 size-4" />
             {saving ? 'Saving...' : "Save & Finalize Today's Attendance"}
           </Button>
         </div>
       </div>
 
       {finalized && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4" role="presentation">
-          <div role="dialog" aria-modal="true" aria-labelledby="summary-title" className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="presentation">
+          <div role="dialog" aria-modal="true" aria-labelledby="summary-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex size-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                   <CircleCheck />
                 </div>
-                <h3 id="summary-title" className="mt-4 text-xl font-semibold">Attendance Saved</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Academic Register · Session 2026–27</p>
+                <h3 id="summary-title" className="mt-4 text-xl font-bold text-slate-900 dark:text-slate-100">Attendance Saved</h3>
+                <p className="mt-1 text-sm text-slate-500">Academic Register · Session 2026–27</p>
               </div>
-              <button type="button" onClick={() => setFinalized(false)} aria-label="Close summary" className="rounded-md p-1 text-muted-foreground hover:bg-muted">
+              <button type="button" onClick={() => setFinalized(false)} aria-label="Close summary" className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                 <X />
               </button>
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3">
-              <div className="rounded-lg bg-emerald-50 p-3 text-center">
-                <p className="text-xl font-semibold text-emerald-700">{counts.Present}</p>
-                <p className="text-xs text-muted-foreground">Present</p>
+              <div className="rounded-xl bg-emerald-50 p-3 text-center">
+                <p className="text-xl font-bold text-emerald-700">{counts.Present}</p>
+                <p className="text-xs text-slate-500">Present</p>
               </div>
               <div className="rounded-lg bg-rose-50 p-3 text-center">
-                <p className="text-xl font-semibold text-rose-700">{counts.Absent}</p>
-                <p className="text-xs text-muted-foreground">Absent</p>
+                <p className="text-xl font-bold text-rose-700">{counts.Absent}</p>
+                <p className="text-xs text-slate-500">Absent</p>
               </div>
               <div className="rounded-lg bg-amber-50 p-3 text-center">
-                <p className="text-xl font-semibold text-amber-700">{counts.Leave}</p>
-                <p className="text-xs text-muted-foreground">Leave</p>
+                <p className="text-xl font-bold text-amber-700">{counts.Leave}</p>
+                <p className="text-xs text-slate-500">Leave</p>
               </div>
             </div>
-            <Button className="mt-5 w-full" onClick={() => setFinalized(false)}>Done</Button>
+            <Button className="mt-5 w-full bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => setFinalized(false)}>Done</Button>
           </div>
         </div>
       )}

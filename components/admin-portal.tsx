@@ -1,10 +1,12 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
-import { Check, Download, FileText, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, X } from "lucide-react"
+import { Check, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
-import { fetchAdminStats, fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
+import { fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 type Status = "Paid" | "Pending" | "Overdue"
 type FeeRecord = { id?: string | number; challan: string; name: string; cls: string; tuition: number; arrears: number; due: string; status: Status }
@@ -91,6 +93,8 @@ export function AdminPortal() {
   const [generated, setGenerated] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
   const loadInvoices = async () => {
     setLoading(true)
@@ -126,6 +130,12 @@ export function AdminPortal() {
       (r) => (filter === "All" || r.status === filter) && `${r.name}${r.challan}`.toLowerCase().includes(query.toLowerCase())
     )
   }, [data, filter, query])
+
+  const totalPages = Math.max(1, Math.ceil(shown.length / pageSize))
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize
+    return shown.slice(start, start + pageSize)
+  }, [shown, page])
 
   const totalRecoverable = useMemo(() => data.reduce((acc, r) => acc + total(r), 0), [data])
   const totalCollected = useMemo(() => data.filter((r) => r.status === 'Paid').reduce((acc, r) => acc + total(r), 0), [data])
@@ -190,15 +200,19 @@ export function AdminPortal() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end no-print">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-primary">Fee Challans &amp; Accounts</span>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">Fee Management &amp; Invoices</h1>
-          <p className="text-muted-foreground">Track collections, issue 3-copy challans, and record payments.</p>
+          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Fee Challans &amp; Accounts</span>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Fee Management &amp; Invoices</h1>
+          <p className="text-slate-500 dark:text-slate-400">Track collections, issue 3-copy challans, and record payments.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)}>
             <Upload className="mr-2 size-4" /> Bulk Import CSV
           </Button>
-          <Button onClick={generate} disabled={generating}>
+          <Button
+            onClick={generate}
+            disabled={generating}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-medium"
+          >
             <Plus className="mr-2 size-4" /> Generate Invoices
           </Button>
         </div>
@@ -248,96 +262,117 @@ export function AdminPortal() {
         <div className="fee-section-header">
           <div><span className="eyebrow">INVOICE REGISTER</span><h2>Student Fee Records</h2></div>
           <div className="admin-header-actions">
-            <button className="admin-btn admin-btn-outline" onClick={exportCsv} disabled={data.length === 0}>
-              <Download /> Export CSV
-            </button>
+            <Button variant="outline" size="sm" onClick={exportCsv} disabled={data.length === 0}>
+              <Download className="mr-1.5 size-3.5" /> Export CSV
+            </Button>
           </div>
         </div>
 
         <div className="fee-controls">
           <div className="filter-tabs">
             {["All", "Paid", "Pending", "Overdue"].map((f) => (
-              <button key={f} className={filter === f ? "active" : ""} onClick={() => setFilter(f)}>
+              <button key={f} className={filter === f ? "active" : ""} onClick={() => { setFilter(f); setPage(1); }}>
                 {f}
               </button>
             ))}
           </div>
           <label className="search-box">
             <Search />
-            <input placeholder="Search student or challan…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input placeholder="Search student or challan…" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} />
           </label>
         </div>
 
         {data.length === 0 && !loading ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card py-16 text-center shadow-xs">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-              <ReceiptText className="size-7" />
-            </div>
-            <h3 className="mt-4 text-base font-semibold">No fee invoices issued yet</h3>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              Generate monthly fee challans for enrolled students or import existing fee records.
-            </p>
-            <div className="mt-5 flex items-center gap-3">
-              <Button onClick={generate} disabled={generating}>
-                <Plus className="mr-2 size-4" /> Generate Invoices
-              </Button>
-              <Button variant="outline" onClick={() => setImportOpen(true)}>
-                <Upload className="mr-2 size-4" /> Bulk Import
-              </Button>
-            </div>
+          <div className="mt-4">
+            <ZeroDataEmptyState
+              icon={ReceiptText}
+              title="No fee invoices issued yet"
+              description="Generate monthly fee challans for enrolled students or import existing fee records."
+              actionLabel="Generate Invoices"
+              onAction={generate}
+              secondaryActionLabel="Bulk Import"
+              onSecondaryAction={() => setImportOpen(true)}
+              disabled={generating}
+            />
           </div>
         ) : (
-          <div className="table-wrap" data-testid="fee-table">
-            <table className="fee-table">
-              <thead>
-                <tr>
-                  <th>Challan No.</th>
-                  <th>Student Name</th>
-                  <th>Class &amp; Section</th>
-                  <th>Monthly Tuition</th>
-                  <th>Arrears</th>
-                  <th>Total Payable</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {shown.map((r) => (
-                  <tr key={r.challan}>
-                    <td><b className="challan-number">{r.challan}</b></td>
-                    <td>
-                      <div className="student-cell">
-                        <span>{r.name.split(" ").map((x) => x[0]).join("")}</span>
-                        <b>{r.name}</b>
-                      </div>
-                    </td>
-                    <td>{r.cls}</td>
-                    <td>{money(r.tuition)}</td>
-                    <td className={r.arrears ? "arrears" : "muted-cell"}>{r.arrears ? money(r.arrears) : "—"}</td>
-                    <td><b>{money(total(r))}</b></td>
-                    <td>{r.due}</td>
-                    <td><StatusBadge status={r.status} /></td>
-                    <td>
-                      <div className="row-actions">
-                        <button className="row-action" data-testid="btn-print-challan" onClick={() => setSelected(r)} title="Print challan">
-                          <Printer />
-                        </button>
-                        <a className="row-action whatsapp" href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`} target="_blank" rel="noreferrer" title="WhatsApp reminder">
-                          <MessageCircle />
-                        </a>
-                        <button className="row-action" onClick={() => toggleStatus(r)} title="Mark as paid / pending">
-                          <Check />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="table-wrap" data-testid="fee-table">
+              <table className="fee-table">
+                <thead>
+                  <tr>
+                    <th>Challan No.</th>
+                    <th>Student Name</th>
+                    <th>Class &amp; Section</th>
+                    <th>Monthly Tuition</th>
+                    <th>Arrears</th>
+                    <th>Total Payable</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th />
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {paginated.map((r) => (
+                    <tr key={r.challan}>
+                      <td><b className="challan-number">{r.challan}</b></td>
+                      <td>
+                        <div className="student-cell">
+                          <span>{r.name.split(" ").map((x) => x[0]).join("")}</span>
+                          <b>{r.name}</b>
+                        </div>
+                      </td>
+                      <td>{r.cls}</td>
+                      <td>{money(r.tuition)}</td>
+                      <td className={r.arrears ? "arrears" : "muted-cell"}>{r.arrears ? money(r.arrears) : "—"}</td>
+                      <td><b>{money(total(r))}</b></td>
+                      <td>{r.due}</td>
+                      <td><StatusBadge status={r.status} /></td>
+                      <td>
+                        <div className="row-actions">
+                          <button className="row-action" data-testid="btn-print-challan" onClick={() => setSelected(r)} title="Print challan">
+                            <Printer />
+                          </button>
+                          <a className="row-action whatsapp" href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`} target="_blank" rel="noreferrer" title="WhatsApp reminder">
+                            <MessageCircle />
+                          </a>
+                          <button className="row-action" onClick={() => toggleStatus(r)} title="Mark as paid / pending">
+                            <Check />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-500">
+              <span>Showing {paginated.length} of {shown.length} invoices</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="size-8 p-0"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <span className="px-2 font-medium">Page {page} of {totalPages}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="size-8 p-0"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          </>
         )}
-        <div className="table-footer"><span>Showing {shown.length} of {data.length} invoices</span></div>
       </section>
 
       {selected && <Modal r={selected} close={() => setSelected(null)} />}
