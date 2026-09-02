@@ -1,15 +1,27 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Database, Gauge, MoreHorizontal, Plus, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 
 type CampusStatus = 'Active' | 'Trial' | 'Suspended'
 type Plan = 'Starter' | 'Pro' | 'Enterprise'
-type Campus = { id: number; name: string; city: string; owner: string; phone: string; plan: Plan; students: number; status: CampusStatus }
+type Campus = {
+  id: string | number
+  name: string
+  city: string
+  owner: string
+  phone: string
+  plan: Plan
+  students: number
+  status: CampusStatus
+  slug?: string
+  admin_email?: string
+}
 
 const planPrice: Record<Plan, string> = { Starter: 'Rs. 2,500', Pro: 'Rs. 5,000', Enterprise: 'Rs. 12,000' }
 const planAmounts: Record<Plan, number> = { Starter: 2500, Pro: 5000, Enterprise: 12000 }
@@ -28,16 +40,86 @@ export function SuperAdminPortal() {
   const [tempPassword, setTempPassword] = useState('')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
   const pageSize = 10
+
+  const loadCampuses = async () => {
+    setLoading(true)
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('campuses')
+          .select('*')
+          .order('created_at', { ascending: false })
+        if (!error && data && data.length > 0) {
+          setCampuses(
+            data.map((c: any, idx: number) => ({
+              id: c.id ?? idx + 1,
+              name: c.name || 'Unnamed School',
+              city: c.city || 'Karachi',
+              owner: c.owner || 'Principal',
+              phone: c.phone || '',
+              plan: (c.plan as Plan) || 'Starter',
+              students: Number(c.students) || 0,
+              status: (c.status as CampusStatus) || 'Active',
+              slug: c.slug || '',
+              admin_email: c.admin_email || '',
+            }))
+          )
+        } else {
+          setCampuses([])
+        }
+      } catch {
+        setCampuses([])
+      }
+    } else {
+      setCampuses([])
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    loadCampuses()
+  }, [])
 
   const slug = useMemo(() => school.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 24) || 'campus-slug', [school])
   const activeCount = campuses.filter((campus) => campus.status === 'Active').length
   const totalStudents = campuses.reduce((acc, c) => acc + c.students, 0)
   const totalMrr = campuses.filter(c => c.status === 'Active').reduce((acc, c) => acc + planAmounts[c.plan], 0)
 
-  const addCampus = () => {
+  const addCampus = async () => {
     if (!school || !owner || !email) return
-    setCampuses((items) => [{ id: Date.now(), name: school, city, owner, phone, plan, students: 0, status: 'Active' }, ...items])
+    const newRecord = {
+      name: school.trim(),
+      city,
+      owner: owner.trim(),
+      phone: phone.trim(),
+      plan,
+      students: 0,
+      status: 'Active' as CampusStatus,
+      slug,
+      admin_email: email.trim(),
+    }
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('campuses')
+          .insert([newRecord])
+          .select()
+          .single()
+        if (!error && data) {
+          setCampuses((items) => [data, ...items])
+        } else {
+          setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
+        }
+      } catch {
+        setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
+      }
+    } else {
+      setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
+    }
+
     setCreated(true)
     setOpen(false)
     setSchool('')
@@ -47,8 +129,33 @@ export function SuperAdminPortal() {
     setTempPassword('')
   }
 
-  const toggleCampus = (id: number) => setCampuses((items) => items.map((campus) => campus.id === id ? { ...campus, status: campus.status === 'Suspended' ? 'Active' : 'Suspended' } : campus))
-  const changePlan = (id: number, nextPlan: Plan) => setCampuses((items) => items.map((campus) => campus.id === id ? { ...campus, plan: nextPlan } : campus))
+  const toggleCampus = async (id: string | number) => {
+    const target = campuses.find((c) => c.id === id)
+    if (!target) return
+    const nextStatus: CampusStatus = target.status === 'Suspended' ? 'Active' : 'Suspended'
+
+    setCampuses((items) =>
+      items.map((campus) => (campus.id === id ? { ...campus, status: nextStatus } : campus))
+    )
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        await supabaseClient.from('campuses').update({ status: nextStatus }).eq('id', id)
+      } catch {}
+    }
+  }
+
+  const changePlan = async (id: string | number, nextPlan: Plan) => {
+    setCampuses((items) =>
+      items.map((campus) => (campus.id === id ? { ...campus, plan: nextPlan } : campus))
+    )
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        await supabaseClient.from('campuses').update({ plan: nextPlan }).eq('id', id)
+      } catch {}
+    }
+  }
 
   const filtered = useMemo(() => {
     return campuses.filter((c) =>

@@ -243,6 +243,24 @@ export default function StudentsPage() {
     return filtered.slice(start, start + pageSize)
   }, [filtered, page])
 
+  const exportCsv = () => {
+    const headers = ['Roll No', 'Student Name', 'Father Name', 'Class', 'Section', 'Contact Phone', 'Tuition Fee']
+    const rows = students.map((s) =>
+      [s.roll_no, s.name, s.father_name, s.class, s.section, s.guardian_phone, s.tuition_fee]
+        .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
+        .join(',')
+    )
+    const headerRow = headers.map((h) => `"${h}"`).join(',')
+    const csvContent = [headerRow, ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `eduflow-students-roster.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const handleClassFilter = (cls: string) => {
     setClassFilter(cls)
     setPage(1)
@@ -398,7 +416,10 @@ export default function StudentsPage() {
                 >
                   <ChevronRight className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="ml-2">
+                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2">
+                  <Download className="mr-1.5 size-3.5" /> Export CSV
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0}>
                   <Download className="mr-1.5 size-3.5" /> Print Roster
                 </Button>
               </div>

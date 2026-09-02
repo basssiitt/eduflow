@@ -121,9 +121,14 @@ export function FinanceWorkspace() {
 
   const exportCsv = () => {
     const headers = ['Voucher ID', 'Date', 'Type', 'Category', 'Description', 'Party/Vendor', 'Amount']
-    const rows = transactions.map((r) => [r.id, r.date, r.type, r.category, r.description, r.vendor, r.amount])
-    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const rows = transactions.map((r) =>
+      [r.id, r.date, r.type, r.category, r.description, r.vendor, r.amount]
+        .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
+        .join(',')
+    )
+    const headerRow = headers.map((h) => `"${h}"`).join(',')
+    const csvContent = [headerRow, ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

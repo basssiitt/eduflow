@@ -12,6 +12,7 @@ import {
   Mic,
   PanelLeftClose,
   PanelLeftOpen,
+  ShieldCheck,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -38,11 +39,10 @@ type NavItem = {
   testId?: string
 }
 
-// Dedicated Teacher Navigation - strictly classroom and teacher console
 const teacherNavItems: NavItem[] = [
   { label: '1-Click Haziri Attendance', href: '/teacher', icon: CalendarCheck, testId: 'nav-teacher-haziri' },
-  { label: 'Audio Voice Diary', href: '/teacher#diary', icon: Mic, testId: 'nav-teacher-diary' },
-  { label: 'Gradebook & Marks', href: '/teacher#gradebook', icon: BookOpen, testId: 'nav-teacher-gradebook' },
+  { label: 'Audio Voice Diary', href: '/teacher/diary', icon: Mic, testId: 'nav-teacher-diary' },
+  { label: 'Gradebook & Marks', href: '/teacher/gradebook', icon: BookOpen, testId: 'nav-teacher-gradebook' },
 ]
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
@@ -204,6 +204,10 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
                   <p className="truncate font-semibold">{userEmail || 'teacher@school.edu.pk'}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                  <span>Switch Account</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
                   <LogOut className="mr-2 size-4 text-rose-600" />
                   <span>Sign out</span>

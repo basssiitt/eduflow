@@ -16,6 +16,7 @@ import {
   PanelLeftOpen,
   ReceiptText,
   Settings,
+  ShieldCheck,
   Users,
   WalletCards,
   X,
@@ -53,6 +54,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Attendance', href: '/admin/attendance', icon: CalendarCheck, testId: 'nav-attendance' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
   { label: 'Finance Ledger', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
+  { label: 'Campus Settings', href: '/admin/settings', icon: Settings, testId: 'nav-settings' },
 ]
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
@@ -320,6 +322,10 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                  <span>Switch Account</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
                   <LogOut className="mr-2 size-4 text-rose-600" />
                   <span>Sign out</span>

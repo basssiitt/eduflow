@@ -145,6 +145,12 @@ export function AdminPortal() {
     setGenerating(true)
     setGenerated(false)
 
+    const now = new Date()
+    const currentMonth = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    const year = now.getFullYear()
+    const monthIndex = String(now.getMonth() + 1).padStart(2, '0')
+    const dueDate = `${year}-${monthIndex}-10`
+
     // Generate real invoice entries for enrolled students
     const { data: studentList } = await fetchStudents()
     if (studentList && studentList.length > 0) {
@@ -152,10 +158,10 @@ export function AdminPortal() {
         studentList.map((s: any) =>
           createInvoice({
             student_id: s.id,
-            amount: 15000,
+            amount: Number(s.tuition_fee) || 15000,
             status: 'Pending',
-            month: 'August 2026',
-            due_date: '2026-08-10',
+            month: currentMonth,
+            due_date: dueDate,
           })
         )
       )
@@ -163,8 +169,8 @@ export function AdminPortal() {
       await createInvoice({
         amount: 15000,
         status: 'Pending',
-        month: 'August 2026',
-        due_date: '2026-08-10',
+        month: currentMonth,
+        due_date: dueDate,
       })
     }
 
@@ -185,9 +191,14 @@ export function AdminPortal() {
 
   const exportCsv = () => {
     const headers = ['Challan No', 'Student Name', 'Class', 'Monthly Tuition', 'Arrears', 'Total Payable', 'Due Date', 'Status']
-    const rows = data.map((r) => [r.challan, r.name, r.cls, r.tuition, r.arrears, total(r), r.due, r.status])
-    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const rows = data.map((r) =>
+      [r.challan, r.name, r.cls, r.tuition, r.arrears, total(r), r.due, r.status]
+        .map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`)
+        .join(',')
+    )
+    const headerRow = headers.map((h) => `"${h}"`).join(',')
+    const csvContent = [headerRow, ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

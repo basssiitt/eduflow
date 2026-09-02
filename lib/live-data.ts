@@ -134,13 +134,7 @@ export async function fetchCurrentParentData() {
   }
 
   if (!studentId) {
-    // If no specific student assigned, fetch default student for the demo / active parent
-    const { data: fallbackStudent } = await supabaseClient.from('students').select('id').limit(1).single()
-    if (fallbackStudent?.id) {
-      studentId = fallbackStudent.id
-    } else {
-      return { data: null, error: new Error('No student is assigned to this account') }
-    }
+    return { data: null, error: new Error('No student is linked to this parent account') }
   }
 
   return fetchParentData(studentId)

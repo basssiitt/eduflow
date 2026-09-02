@@ -88,6 +88,10 @@ function AiAssistant() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ prompt: text })
       })
+      if (!response.ok) {
+        setMessages((m) => [...m, { role: 'ai', text: 'Session expired. Please sign in again.', time: now }])
+        return
+      }
       const result = await response.json()
       setMessages((m) => [
         ...m,

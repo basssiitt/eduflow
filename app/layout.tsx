@@ -5,8 +5,11 @@ import { EduFlowProvider } from '@/components/eduflow-provider'
 import { OfflineClient } from '@/components/offline-client'
 
 export const metadata: Metadata = {
-  title: 'Sign in | EduFlow OS',
-  description: 'Securely sign in to your EduFlow OS school workspace.',
+  title: {
+    default: 'EduFlow OS',
+    template: '%s | EduFlow OS',
+  },
+  description: 'Pakistan Ka Pehla 1-Click AI School Operating System',
   generator: 'EduFlow OS',
   manifest: '/manifest.webmanifest',
   icons: {

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
-import { ArrowRight, Eye, EyeOff, LockKeyhole, MessageCircle, ShieldCheck } from 'lucide-react'
+import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
+import { ArrowRight, Eye, EyeOff, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -11,6 +12,63 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [currentUser, setCurrentUser] = useState<{ email: string; role: string; destination: string } | null>(null)
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabaseClient) return
+    const client = supabaseClient
+
+    const checkExistingSession = async () => {
+      try {
+        const { data: { user } } = await client.auth.getUser()
+        if (!user) return
+
+        const searchParams = new URLSearchParams(window.location.search)
+        const force = searchParams.get('force') === '1'
+
+        const userEmail = (user.email || '').toLowerCase().trim()
+        let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
+        try {
+          const { data: profile } = await client
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+          if (profile?.role) {
+            role = profile.role
+          }
+        } catch {}
+
+        let normalizedRole = normalizeRole(role)
+        if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
+          normalizedRole = 'super_admin'
+        }
+
+        const destination = getHomeRoute(normalizedRole, userEmail)
+
+        if (!force) {
+          window.location.href = destination
+        } else {
+          setCurrentUser({
+            email: user.email || 'Current User',
+            role: normalizedRole.replace(/_/g, ' '),
+            destination,
+          })
+        }
+      } catch {}
+    }
+
+    checkExistingSession()
+  }, [])
+
+  const handleSwitchAccount = async () => {
+    if (supabaseClient) {
+      await supabaseClient.auth.signOut()
+    }
+    setCurrentUser(null)
+    setEmail('')
+    setPassword('')
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -60,27 +118,12 @@ export default function LoginPage() {
         role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
       }
 
-      let normalizedRole = role.toLowerCase().replace(/-/g, '_')
-      const isSuperAdminEmail =
-        userEmail === 'basithunyawrr@gmail.com' ||
-        userEmail === 'basithadi@gmail.com' ||
-        userEmail === 'superadmin@eduflow.pk'
-
-      if (isSuperAdminEmail || normalizedRole === 'super_admin') {
+      let normalizedRole = normalizeRole(role)
+      if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
         normalizedRole = 'super_admin'
       }
 
-      // Strict role-based destination
-      let destination = '/admin'
-      if (normalizedRole === 'super_admin') {
-        destination = '/super-admin'
-      } else if (normalizedRole === 'school_admin' || normalizedRole === 'admin') {
-        destination = '/admin'
-      } else if (normalizedRole === 'teacher') {
-        destination = '/teacher'
-      } else if (normalizedRole === 'parent') {
-        destination = '/parent'
-      }
+      const destination = getHomeRoute(normalizedRole, userEmail)
 
       // Honor next query param if authorized
       const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
@@ -120,6 +163,30 @@ export default function LoginPage() {
               <p>Enter your credentials to access your portal</p>
             </div>
           </div>
+
+          {currentUser && (
+            <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-50/70 p-3 dark:bg-emerald-950/40 text-xs text-slate-700 dark:text-slate-300">
+              <div className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
+                <UserCheck className="size-4" />
+                <span>Currently active: {currentUser.email} ({currentUser.role})</span>
+              </div>
+              <div className="mt-2.5 flex items-center gap-2">
+                <Link
+                  href={currentUser.destination}
+                  className="inline-flex items-center rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                >
+                  Go to Dashboard <ArrowRight className="ml-1 size-3" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleSwitchAccount}
+                  className="inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50"
+                >
+                  <LogOut className="mr-1 size-3" /> Switch Account
+                </button>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="login-form">
             <label htmlFor="email">Email Address</label>

@@ -1,0 +1,34 @@
+export const SUPER_ADMIN_EMAILS = [
+  'basithunyawrr@gmail.com',
+  'basithadi@gmail.com',
+  'superadmin@eduflow.pk',
+]
+
+export function isSuperAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false
+  return SUPER_ADMIN_EMAILS.includes(email.toLowerCase().trim())
+}
+
+export function normalizeRole(role: string | null | undefined): string {
+  if (!role) return ''
+  return role.toLowerCase().trim().replace(/-/g, '_')
+}
+
+export const ROLE_HOME_ROUTES: Record<string, string> = {
+  super_admin: '/super-admin',
+  school_admin: '/admin',
+  admin: '/admin',
+  teacher: '/teacher',
+  parent: '/parent',
+}
+
+export function getHomeRoute(role: string | null | undefined, email?: string | null): string {
+  if (isSuperAdminEmail(email)) {
+    return '/super-admin'
+  }
+  const normalized = normalizeRole(role)
+  if (normalized === 'super_admin') {
+    return '/super-admin'
+  }
+  return ROLE_HOME_ROUTES[normalized] || '/admin'
+}

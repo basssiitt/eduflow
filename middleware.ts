@@ -4,7 +4,7 @@ import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
 const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin']
 
-export async function updateSession(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -38,6 +38,7 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
   const force = request.nextUrl.searchParams.get('force') === '1'
 
+  // Helper for clean redirect with status 303 (See Other) and preserving session cookies
   const safeRedirect = (target: string | URL) => {
     const targetUrl = new URL(target, request.url)
     if (targetUrl.pathname === pathname) {
@@ -56,6 +57,7 @@ export async function updateSession(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   )
 
+  // 1. Unauthenticated handling
   if (!user) {
     if (isProtected) {
       if (pathname === '/login' || pathname.startsWith('/login/')) {
@@ -68,6 +70,7 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
+  // 2. Authenticated user handling
   const userEmail = (user.email || '').toLowerCase().trim()
   let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
   if (!role) {
@@ -90,6 +93,7 @@ export async function updateSession(request: NextRequest) {
 
   const homeUrl = getHomeRoute(normalizedRole, userEmail)
 
+  // If already authenticated and visiting /login:
   if (pathname === '/login' || pathname.startsWith('/login/')) {
     if (force) {
       return response
@@ -105,6 +109,7 @@ export async function updateSession(request: NextRequest) {
     return safeRedirect(homeUrl)
   }
 
+  // Guard /super-admin
   if (pathname === '/super-admin' || pathname.startsWith('/super-admin/')) {
     if (user && (normalizedRole === 'super_admin' || isSuperAdmin)) {
       return response
@@ -112,6 +117,7 @@ export async function updateSession(request: NextRequest) {
     return safeRedirect(homeUrl)
   }
 
+  // Guard /admin
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     if (!isSuperAdmin && !['school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
@@ -119,6 +125,7 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
+  // Guard /teacher
   if (pathname === '/teacher' || pathname.startsWith('/teacher/')) {
     if (!isSuperAdmin && !['teacher', 'school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
@@ -126,6 +133,7 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
+  // Guard /parent
   if (pathname === '/parent' || pathname.startsWith('/parent/')) {
     if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
@@ -134,4 +142,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   return response
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }

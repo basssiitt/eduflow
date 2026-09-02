@@ -12,6 +12,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ReceiptText,
+  ShieldCheck,
   Sparkles,
   User,
 } from 'lucide-react'
@@ -209,6 +210,10 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
                   <p className="truncate font-semibold">{userEmail || 'parent@school.edu.pk'}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                  <span>Switch Account</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
                   <LogOut className="mr-2 size-4 text-rose-600" />
                   <span>Sign out</span>

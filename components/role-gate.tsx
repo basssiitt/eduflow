@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
+import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
 export function RoleGate({
   role,
@@ -38,10 +39,7 @@ export function RoleGate({
         }
 
         const userEmail = (user.email || '').toLowerCase().trim()
-        const isSuperAdminEmail =
-          userEmail === 'basithunyawrr@gmail.com' ||
-          userEmail === 'basithadi@gmail.com' ||
-          userEmail === 'superadmin@eduflow.pk'
+        const isSuper = isSuperAdminEmail(userEmail)
 
         // Query user's role strictly from the `profiles` table
         let userRole = ''
@@ -61,35 +59,28 @@ export function RoleGate({
           userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
         }
 
-        let normalizedUserRole = (userRole || '').toLowerCase().replace(/-/g, '_')
-        if (isSuperAdminEmail || normalizedUserRole === 'super_admin') {
+        let normalizedUserRole = normalizeRole(userRole)
+        if (isSuper || normalizedUserRole === 'super_admin') {
           normalizedUserRole = 'super_admin'
         }
 
-        const normalizedTargetRole = role.toLowerCase().replace(/-/g, '_')
+        const normalizedTargetRole = normalizeRole(role)
 
         let isAuthorized = false
 
         // Super Admin route is strictly guarded: only super_admin role or authorized superadmin email
         if (normalizedTargetRole === 'super_admin') {
-          isAuthorized = normalizedUserRole === 'super_admin' || isSuperAdminEmail
+          isAuthorized = normalizedUserRole === 'super_admin' || isSuper
         } else if (normalizedTargetRole === 'school_admin') {
-          isAuthorized = isSuperAdminEmail || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'teacher') {
-          isAuthorized = isSuperAdminEmail || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuper || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'parent') {
-          isAuthorized = isSuperAdminEmail || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuper || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         }
 
         if (!isAuthorized) {
-          const roleHomes: Record<string, string> = {
-            super_admin: '/super-admin',
-            school_admin: '/admin',
-            admin: '/admin',
-            teacher: '/teacher',
-            parent: '/parent',
-          }
-          const destination = roleHomes[normalizedUserRole] || '/login'
+          const destination = getHomeRoute(normalizedUserRole, userEmail)
           if (mounted) {
             router.replace(destination)
           }
