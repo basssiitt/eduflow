@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
+  Users,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -21,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -199,19 +201,52 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuLabel>
-                  <p className="text-xs font-normal text-muted-foreground">Signed in as Teacher</p>
-                  <p className="truncate font-semibold">{userEmail || 'teacher@school.edu.pk'}</p>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <p className="text-xs font-normal text-muted-foreground">Signed in as Teacher</p>
+                    <p className="truncate font-semibold">{userEmail || 'teacher@school.edu.pk'}</p>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
-                  <span>Switch Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                  <LogOut className="mr-2 size-4 text-rose-600" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                    <CalendarCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Daily Haziri Register</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/diary'} className="cursor-pointer">
+                    <Mic className="mr-2 size-4 text-emerald-600" />
+                    <span>Audio Voice Diary</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/gradebook'} className="cursor-pointer">
+                    <BookOpen className="mr-2 size-4 text-emerald-600" />
+                    <span>Gradebook &amp; Marks</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Switch Workspace
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                    <GraduationCap className="mr-2 size-4 text-slate-500" />
+                    <span>Campus Admin Portal</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
+                    <Users className="mr-2 size-4 text-slate-500" />
+                    <span>Parent Portal</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Switch Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <LogOut className="mr-2 size-4 text-rose-600" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

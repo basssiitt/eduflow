@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { fetchStudents } from '@/lib/live-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Award, BookOpen, Check, Download, Search, Sparkles } from 'lucide-react'
+import { ArrowLeft, Award, BookOpen, Check, Download, Search, Sparkles } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 type StudentScore = {
@@ -85,6 +86,21 @@ export function TeacherGradebook() {
 
   return (
     <div className="flex flex-col gap-6">
+      <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/teacher" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Classroom Haziri
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Gradebook &amp; Marks</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/teacher/diary" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Audio Voice Diary →
+          </Link>
+        </div>
+      </nav>
+
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">

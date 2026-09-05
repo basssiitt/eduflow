@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -205,19 +206,52 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuLabel>
-                  <p className="text-xs font-normal text-muted-foreground">Signed in as Parent</p>
-                  <p className="truncate font-semibold">{userEmail || 'parent@school.edu.pk'}</p>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <p className="text-xs font-normal text-muted-foreground">Signed in as Parent</p>
+                    <p className="truncate font-semibold">{userEmail || 'parent@school.edu.pk'}</p>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
-                  <span>Switch Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                  <LogOut className="mr-2 size-4 text-rose-600" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent#attendance'} className="cursor-pointer">
+                    <CalendarCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Attendance Status</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent#fees'} className="cursor-pointer">
+                    <ReceiptText className="mr-2 size-4 text-emerald-600" />
+                    <span>Fee Invoices &amp; Receipts</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent#ai'} className="cursor-pointer">
+                    <Bot className="mr-2 size-4 text-emerald-600" />
+                    <span>AI Learning Companion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Switch Workspace
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                    <GraduationCap className="mr-2 size-4 text-slate-500" />
+                    <span>Campus Admin Portal</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                    <User className="mr-2 size-4 text-slate-500" />
+                    <span>Teacher Console</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Switch Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <LogOut className="mr-2 size-4 text-rose-600" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

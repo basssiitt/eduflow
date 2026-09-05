@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { createExpense, fetchAdminStats } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
-import { ArrowDownLeft, ArrowUpRight, Banknote, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, Download, FileText, Image as ImageIcon, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, Wallet, X } from "lucide-react"
+import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Banknote, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, Download, FileText, Image as ImageIcon, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, Wallet, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ZeroDataEmptyState } from "@/components/zero-data-empty-state"
 
@@ -139,6 +140,25 @@ export function FinanceWorkspace() {
 
   return (
     <main className="finance-page">
+      <nav className="flex items-center justify-between text-xs text-slate-500 mb-6 no-print">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Overview
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Finance Ledger</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/admin/fees" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Fee Challans →
+          </Link>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+          <Link href="/admin/billing" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Campus Billing →
+          </Link>
+        </div>
+      </nav>
+
       <header className="finance-page-header">
         <div>
           <span className="finance-eyebrow">FINANCE CONTROL CENTER</span>

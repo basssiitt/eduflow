@@ -7,6 +7,7 @@ import {
   CalendarCheck,
   Check,
   ChevronDown,
+  CreditCard,
   Globe,
   GraduationCap,
   LayoutDashboard,
@@ -54,6 +55,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Attendance', href: '/admin/attendance', icon: CalendarCheck, testId: 'nav-attendance' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
   { label: 'Finance Ledger', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
+  { label: 'Billing & Plan', href: '/admin/billing', icon: CreditCard, testId: 'nav-billing' },
   { label: 'Campus Settings', href: '/admin/settings', icon: Settings, testId: 'nav-settings' },
 ]
 
@@ -310,26 +312,52 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuLabel>
-                  <p className="text-xs font-normal text-muted-foreground">Signed in as</p>
-                  <p className="truncate font-semibold">{userEmail || 'admin@school.edu.pk'}</p>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <p className="text-xs font-normal text-muted-foreground">Signed in as</p>
+                    <p className="truncate font-semibold">{userEmail || 'admin@school.edu.pk'}</p>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                    <Settings className="mr-2 size-4" />
-                    <span>Campus Settings</span>
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin/settings'} className="cursor-pointer">
+                    <Settings className="mr-2 size-4 text-slate-500" />
+                    <span>Campus Settings Page</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin/billing'} className="cursor-pointer">
+                    <CreditCard className="mr-2 size-4 text-slate-500" />
+                    <span>Billing &amp; Subscription</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer">
+                    <Globe className="mr-2 size-4 text-slate-500" />
+                    <span>Quick Preferences (Language/Alerts)</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
-                  <span>Switch Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                  <LogOut className="mr-2 size-4 text-rose-600" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Switch Workspace
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                    <GraduationCap className="mr-2 size-4 text-emerald-600" />
+                    <span>Teacher Console</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
+                    <Users className="mr-2 size-4 text-emerald-600" />
+                    <span>Parent Portal</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Switch Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <LogOut className="mr-2 size-4 text-rose-600" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

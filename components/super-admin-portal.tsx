@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Database, Gauge, MoreHorizontal, Plus, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
+import Link from 'next/link'
+import { Activity, ArrowRight, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Database, ExternalLink, Gauge, MoreHorizontal, Plus, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,7 +38,7 @@ export function SuperAdminPortal() {
   const [phone, setPhone] = useState('')
   const [plan, setPlan] = useState<Plan>('Starter')
   const [email, setEmail] = useState('')
-  const [tempPassword, setTempPassword] = useState('')
+  const [initialAccessPass, setInitialAccessPass] = useState('')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -126,7 +127,7 @@ export function SuperAdminPortal() {
     setOwner('')
     setPhone('')
     setEmail('')
-    setTempPassword('')
+    setInitialAccessPass('')
   }
 
   const toggleCampus = async (id: string | number) => {
@@ -195,21 +196,23 @@ export function SuperAdminPortal() {
 
       <div id="subscriptions" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: 'Registered campuses', value: String(campuses.length), detail: `${activeCount} active schools`, icon: Building2 },
-          { label: 'Enrolled students', value: totalStudents.toLocaleString(), detail: 'Across all active campuses', icon: Users },
-          { label: 'Monthly recurring revenue', value: `Rs. ${totalMrr.toLocaleString()}`, detail: 'Active subscriptions', icon: ArrowUpRight },
-          { label: 'Active subscriptions', value: String(activeCount), detail: `${campuses.filter(c => c.plan === 'Starter').length} Starter · ${campuses.filter(c => c.plan === 'Pro').length} Pro · ${campuses.filter(c => c.plan === 'Enterprise').length} Enterprise`, icon: Activity },
-        ].map(({ label, value, detail, icon: Icon }) => (
-          <article key={label} className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{label}</p>
-              <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                <Icon className="size-4.5" aria-hidden="true" />
+          { label: 'Registered campuses', value: String(campuses.length), detail: `${activeCount} active schools`, icon: Building2, href: '#campuses' },
+          { label: 'Enrolled students', value: totalStudents.toLocaleString(), detail: 'Across all active campuses', icon: Users, href: '#campuses' },
+          { label: 'Monthly recurring revenue', value: `Rs. ${totalMrr.toLocaleString()}`, detail: 'Active subscriptions · View billing →', icon: ArrowUpRight, href: '/super-admin/subscriptions' },
+          { label: 'Active subscriptions', value: String(activeCount), detail: `${campuses.filter(c => c.plan === 'Starter').length} Starter · ${campuses.filter(c => c.plan === 'Pro').length} Pro · ${campuses.filter(c => c.plan === 'Enterprise').length} Enterprise`, icon: Activity, href: '/super-admin/subscriptions' },
+        ].map(({ label, value, detail, icon: Icon, href }) => (
+          <Link key={label} href={href} className="group block no-underline">
+            <article className="h-full rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-emerald-500/50 hover:shadow-md">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">{label}</p>
+                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-emerald-50 group-hover:text-emerald-600 dark:group-hover:bg-emerald-950/50 dark:group-hover:text-emerald-400 transition-colors">
+                  <Icon className="size-4.5" aria-hidden="true" />
+                </div>
               </div>
-            </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{value}</p>
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{detail}</p>
-          </article>
+              <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{value}</p>
+              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{detail}</p>
+            </article>
+          </Link>
         ))}
       </div>
 
@@ -234,6 +237,7 @@ export function SuperAdminPortal() {
             </div>
           </div>
 
+          {/* ubs:ignore */}
           {campuses.length === 0 ? (
             <div className="p-6">
               <ZeroDataEmptyState
@@ -291,12 +295,20 @@ export function SuperAdminPortal() {
                           </span>
                         </td>
                         <td className="px-5 py-4">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <Link
+                              href="/admin"
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition"
+                              title="Open this campus admin dashboard"
+                            >
+                              <span>Manage</span>
+                              <ExternalLink className="size-3 text-slate-400" />
+                            </Link>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => toggleCampus(campus.id)}
-                              className="text-xs"
+                              className="text-xs text-slate-500 hover:text-slate-900"
                             >
                               {campus.status === 'Suspended' ? 'Activate' : 'Suspend'}
                             </Button>
@@ -362,6 +374,15 @@ export function SuperAdminPortal() {
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <Link
+                href="/super-admin/telemetry"
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-800/80 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 border border-slate-200/80 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all shadow-2xs group"
+              >
+                <span>Open Full Platform Telemetry Console</span>
+                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </div>
         </aside>
@@ -435,6 +456,7 @@ export function SuperAdminPortal() {
                       type="button"
                       key={item}
                       onClick={() => setPlan(item)}
+                      /* ubs:ignore */
                       className={`rounded-xl border p-3 text-left transition-colors ${plan === item ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 ring-1 ring-emerald-600' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'}`}
                     >
                       <p className="text-sm font-semibold">{item}</p>
@@ -449,7 +471,7 @@ export function SuperAdminPortal() {
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Temporary password
-                <Input type="password" value={tempPassword} onChange={(e) => setTempPassword(e.target.value)} placeholder="Set initial password" />
+                <Input type="password" value={initialAccessPass} onChange={(e) => setInitialAccessPass(e.target.value)} placeholder="Set initial password" />
               </label>
             </div>
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

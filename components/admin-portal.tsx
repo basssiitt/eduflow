@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
-import { Check, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, X } from "lucide-react"
+import Link from "next/link"
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, Plus, Printer, ReceiptText, Search, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
@@ -209,6 +210,29 @@ export function AdminPortal() {
 
   return (
     <div className="flex flex-col gap-6">
+      <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Overview
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Fee Challans</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/admin/students" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Student Register →
+          </Link>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+          <Link href="/admin/finance" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Finance Ledger →
+          </Link>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+          <Link href="/admin/billing" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Campus Billing →
+          </Link>
+        </div>
+      </nav>
+
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end no-print">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Fee Challans &amp; Accounts</span>

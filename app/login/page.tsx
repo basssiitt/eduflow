@@ -6,6 +6,19 @@ import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 import { ArrowRight, Eye, EyeOff, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck } from 'lucide-react'
 
+function isSafeRedirectUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== 'string') return false
+  const trimmed = url.trim()
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.startsWith('/\\')) return false
+  if (/[\r\n]/.test(trimmed)) return false
+  try {
+    const parsed = new URL(trimmed, 'http://localhost')
+    return parsed.origin === 'http://localhost' && parsed.pathname.startsWith('/')
+  } catch {
+    return false
+  }
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -125,14 +138,14 @@ export default function LoginPage() {
 
       const destination = getHomeRoute(normalizedRole, userEmail)
 
-      // Honor next query param if authorized
+      // Honor next query param only if safe relative URL and authorized
       const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
       const nextPath = searchParams?.get('next')
-      if (nextPath && nextPath.startsWith('/') && !nextPath.startsWith('/login')) {
-        if (nextPath.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
+      if (isSafeRedirectUrl(nextPath) && !nextPath!.startsWith('/login')) {
+        if (nextPath!.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
           window.location.href = destination
         } else {
-          window.location.href = nextPath
+          window.location.href = nextPath!
         }
       } else {
         window.location.href = destination
@@ -252,11 +265,22 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <footer className="login-footer">
-          <span>Need help signing in?</span>
-          <a href="https://wa.me/923001234567" target="_blank" rel="noreferrer">
-            <MessageCircle /> WhatsApp support
-          </a>
+        <footer className="login-footer flex flex-col gap-3 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500">
+            <Link href="/" className="hover:text-emerald-600 transition">← Back to EduFlow Homepage</Link>
+            <span>•</span>
+            <Link href="/admin" className="hover:text-emerald-600 transition">Campus Admin</Link>
+            <span>•</span>
+            <Link href="/teacher" className="hover:text-emerald-600 transition">Teacher Console</Link>
+            <span>•</span>
+            <Link href="/parent" className="hover:text-emerald-600 transition">Parent Portal</Link>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-xs">
+            <span>Need help signing in?</span>
+            <a href="https://wa.me/923127803616" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-emerald-600 hover:underline">
+              <MessageCircle className="size-3.5" /> WhatsApp Support
+            </a>
+          </div>
         </footer>
       </div>
     </main>

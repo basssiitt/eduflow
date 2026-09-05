@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Check, CreditCard, Download, ExternalLink, HelpCircle, MessageCircle, ShieldCheck, Sparkles, Zap } from 'lucide-react'
+import { ArrowLeft, Check, CreditCard, Download, ExternalLink, HelpCircle, MessageCircle, ShieldCheck, Sparkles, Zap } from 'lucide-react'
 
 export default function BillingPage() {
   const [currentPlan] = useState({
@@ -31,6 +32,25 @@ export default function BillingPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <nav className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Overview
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Billing &amp; Subscription</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/admin/finance" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Finance Ledger →
+          </Link>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+          <Link href="/admin/settings" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Campus Settings →
+          </Link>
+        </div>
+      </nav>
+
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { fetchStudents, saveAttendance, uploadVoiceDiary } from '@/lib/live-data'
 import { isSupabaseConfigured } from '@/lib/supabaseClient'
-import { Award, BookOpen, Check, CircleCheck, Mic, Pause, Save, Send, UserRound, Volume2, X } from 'lucide-react'
+import Link from 'next/link'
+import { Award, ArrowRight, BookOpen, Check, CircleCheck, Mic, Pause, Save, Send, UserRound, Volume2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -227,7 +228,14 @@ export function TeacherPortal() {
               <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Class Diary</p>
               <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Daily Diary &amp; Voice Homework</h3>
             </div>
-            <Volume2 className="size-5 text-emerald-600" aria-hidden="true" />
+            <Link href="/teacher/diary" className="rounded-lg p-1 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/50" title="Open full diary page">
+              <Volume2 className="size-5" aria-hidden="true" />
+            </Link>
+          </div>
+          <div className="mt-2">
+            <Link href="/teacher/diary" className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+              Open Dedicated Voice Diary Studio <ArrowRight className="size-3" />
+            </Link>
           </div>
           <div className="mt-5 flex flex-wrap gap-1 rounded-xl bg-slate-50 dark:bg-slate-950 p-1.5 border border-slate-100 dark:border-slate-800">
             {subjects.map((item) => (
@@ -288,20 +296,30 @@ export function TeacherPortal() {
       </div>
 
       <section id="gradebook" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-xs">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Term Evaluation</span>
             <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Gradebook &amp; Marks Entry</h3>
-            <p className="text-xs text-slate-500">Record midterm and final term examination scores.</p>
+            <p className="text-xs text-slate-500">Record midterm and final term examination scores and generate student report cards.</p>
           </div>
-          <Award className="size-5 text-emerald-600" />
+          <Link
+            href="/teacher/gradebook"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-xs"
+          >
+            <Award className="size-4" /> Open Gradebook Register <ArrowRight className="size-3.5" />
+          </Link>
         </div>
-        <div className="mt-4">
-          <ZeroDataEmptyState
-            icon={BookOpen}
-            title="No examination schedule active"
-            description="Gradebook entries open during the scheduled examination terms."
-          />
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <BookOpen className="size-5 text-emerald-600" />
+            <div className="text-xs">
+              <p className="font-semibold text-slate-800 dark:text-slate-200">Active Examination Session: Mid-Term Examination 2026</p>
+              <p className="text-slate-500">Enter marks for Mathematics, English, General Science, and Urdu.</p>
+            </div>
+          </div>
+          <Link href="/teacher/gradebook" className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+            Score Entry →
+          </Link>
         </div>
       </section>
 

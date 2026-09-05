@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Activity,
+  BookOpen,
   Building2,
   ChevronDown,
+  CreditCard,
   Gauge,
   GraduationCap,
   LogOut,
@@ -13,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
+  Users,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -21,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -41,8 +45,8 @@ type NavItem = {
 // Dedicated Super Admin Navigation - strictly multi-campus and platform management
 const superAdminNavItems: NavItem[] = [
   { label: 'Campuses & Tenants', href: '/super-admin', icon: Building2, testId: 'nav-superadmin-campuses' },
-  { label: 'Subscriptions', href: '/super-admin#subscriptions', icon: Activity, testId: 'nav-superadmin-subscriptions' },
-  { label: 'Platform Telemetry', href: '/super-admin#health', icon: Gauge, testId: 'nav-superadmin-health' },
+  { label: 'Subscriptions & Revenue', href: '/super-admin/subscriptions', icon: Activity, testId: 'nav-superadmin-subscriptions' },
+  { label: 'Platform Telemetry', href: '/super-admin/telemetry', icon: Gauge, testId: 'nav-superadmin-telemetry' },
 ]
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
@@ -95,6 +99,52 @@ function SuperAdminNavigation({
           </Link>
         )
       })}
+
+      <div className="my-2 border-t border-slate-100 dark:border-slate-800" />
+      {!collapsed && (
+        <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+          Campus Workspace Views
+        </span>
+      )}
+      <Link
+        href="/admin"
+        onClick={onNavigate}
+        className={cn(
+          'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+          'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+          collapsed && 'justify-center px-2'
+        )}
+        title={collapsed ? 'Campus Admin' : undefined}
+      >
+        <GraduationCap className="size-4.5 shrink-0 text-emerald-600" />
+        {!collapsed && <span>Campus Admin</span>}
+      </Link>
+      <Link
+        href="/teacher"
+        onClick={onNavigate}
+        className={cn(
+          'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+          'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+          collapsed && 'justify-center px-2'
+        )}
+        title={collapsed ? 'Teacher Console' : undefined}
+      >
+        <BookOpen className="size-4.5 shrink-0 text-emerald-600" />
+        {!collapsed && <span>Teacher Console</span>}
+      </Link>
+      <Link
+        href="/parent"
+        onClick={onNavigate}
+        className={cn(
+          'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+          'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+          collapsed && 'justify-center px-2'
+        )}
+        title={collapsed ? 'Parent Portal' : undefined}
+      >
+        <Users className="size-4.5 shrink-0 text-emerald-600" />
+        {!collapsed && <span>Parent Portal</span>}
+      </Link>
     </nav>
   )
 }
@@ -203,19 +253,53 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuLabel>
-                  <p className="text-xs font-normal text-muted-foreground">Super Administrator</p>
-                  <p className="truncate font-semibold">{userEmail || 'superadmin@eduflow.pk'}</p>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <p className="text-xs font-normal text-muted-foreground">Super Administrator</p>
+                    <p className="truncate font-semibold">{userEmail || 'superadmin@eduflow.pk'}</p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin'} className="cursor-pointer">
+                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <span>Control Plane Home</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin/subscriptions'} className="cursor-pointer">
+                    <CreditCard className="mr-2 size-4 text-emerald-600" />
+                    <span>Subscriptions & Revenue</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin/telemetry'} className="cursor-pointer">
+                    <Gauge className="mr-2 size-4 text-emerald-600" />
+                    <span>Platform Telemetry</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                  <ShieldCheck className="mr-2 size-4 text-emerald-600" />
-                  <span>Switch Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                  <LogOut className="mr-2 size-4 text-rose-600" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    Switch Workspace
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                    <GraduationCap className="mr-2 size-4 text-emerald-600" />
+                    <span>Campus Admin Portal</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                    <BookOpen className="mr-2 size-4 text-emerald-600" />
+                    <span>Teacher Console</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
+                    <Users className="mr-2 size-4 text-emerald-600" />
+                    <span>Parent Portal</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                    <ShieldCheck className="mr-2 size-4 text-slate-500" />
+                    <span>Switch Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <LogOut className="mr-2 size-4 text-rose-600" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

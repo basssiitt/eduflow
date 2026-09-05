@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Bell, Building2, Check, Globe, Lock, Mail, Phone, Save, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Bell, Building2, Check, Globe, Lock, Mail, Phone, Save, ShieldCheck } from 'lucide-react'
 
 export default function AdminSettingsPage() {
   const [campusName, setCampusName] = useState('Greenfield International School')
@@ -25,6 +26,21 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl">
+      <nav className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Overview
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Campus Settings</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/admin/billing" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Billing &amp; Plan →
+          </Link>
+        </div>
+      </nav>
+
       <div>
         <div className="flex items-center gap-2">
           <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">

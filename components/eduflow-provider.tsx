@@ -18,7 +18,14 @@ export function EduFlowProvider({ children }: { children: React.ReactNode }) {
     const storedLang = window.localStorage.getItem('eduflow-language') as Lang | null
     const storedQueue = window.localStorage.getItem(QUEUE_KEY)
     if (storedLang === 'en' || storedLang === 'ur') setLang(storedLang)
-    if (storedQueue) setPendingActions(JSON.parse(storedQueue))
+    if (storedQueue) {
+      try {
+        const parsed = JSON.parse(storedQueue)
+        if (Array.isArray(parsed)) setPendingActions(parsed)
+      } catch {
+        window.localStorage.removeItem(QUEUE_KEY)
+      }
+    }
     const onOnline = () => setOnline(true)
     const onOffline = () => setOnline(false)
     const onInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event) }

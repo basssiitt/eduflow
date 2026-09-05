@@ -47,7 +47,12 @@ export async function updateSession(request: NextRequest) {
       status: 303,
     })
     response.cookies.getAll().forEach((cookie: { name: string; value: string }) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value)
+      redirectResponse.cookies.set(cookie.name, cookie.value, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      })
     })
     return redirectResponse
   }

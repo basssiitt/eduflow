@@ -86,7 +86,8 @@ function AiAssistant() {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ prompt: text })
+        body: JSON.stringify({ prompt: text }),
+        signal: AbortSignal.timeout(15000),
       })
       if (!response.ok) {
         setMessages((m) => [...m, { role: 'ai', text: 'Session expired. Please sign in again.', time: now }])

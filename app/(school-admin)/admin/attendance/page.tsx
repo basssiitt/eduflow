@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'
 import { fetchStudents } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { CalendarCheck, CheckCircle2, Clock, Download, Search, UserX, Users } from 'lucide-react'
+import { ArrowLeft, CalendarCheck, CheckCircle2, Clock, Download, Search, UserX, Users } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 
 type AttendanceRecord = {
@@ -91,6 +92,25 @@ export default function AdminAttendancePage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <nav className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+            <ArrowLeft className="size-3.5" /> Overview
+          </Link>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">Attendance Register</span>
+        </div>
+        <div className="hidden sm:flex items-center gap-3">
+          <Link href="/admin/students" className="hover:text-emerald-600 transition font-medium text-slate-500">
+            Student Register →
+          </Link>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+          <Link href="/teacher" className="hover:text-emerald-600 transition font-medium text-emerald-600 dark:text-emerald-400">
+            Teacher Haziri Console →
+          </Link>
+        </div>
+      </nav>
+
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
