@@ -19,12 +19,36 @@ function isSafeRedirectUrl(url: string | null | undefined): boolean {
   }
 }
 
+function GoogleIcon() {
+  return (
+    <svg className="size-4 shrink-0" viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+      />
+    </svg>
+  )
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [currentUser, setCurrentUser] = useState<{ email: string; role: string; destination: string } | null>(null)
 
   useEffect(() => {
@@ -76,11 +100,47 @@ export default function LoginPage() {
 
   const handleSwitchAccount = async () => {
     if (supabaseClient) {
-      await supabaseClient.auth.signOut()
+      try {
+        await supabaseClient.auth.signOut()
+      } catch {}
     }
     setCurrentUser(null)
     setEmail('')
     setPassword('')
+  }
+
+  const handleGoogleAuth = async () => {
+    setError('')
+    setGoogleLoading(true)
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+        const nextParam = searchParams?.get('next')
+        const nextUrl = isSafeRedirectUrl(nextParam) ? nextParam : '/admin'
+
+        const { error: oauthError } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl!)}`,
+          },
+        })
+        if (oauthError) throw oauthError
+        return
+      } catch (err: any) {
+        setError(err?.message || 'Google sign-in could not be initiated.')
+        setGoogleLoading(false)
+        return
+      }
+    }
+
+    // Demo Mode Google Simulator
+    sessionStorage.setItem('eduflow-demo-user', 'true')
+    sessionStorage.setItem('eduflow-demo-email', 'admin.google@school.edu.pk')
+    sessionStorage.setItem('eduflow-demo-school', 'Beacon Scholars Academy')
+    sessionStorage.setItem('eduflow-demo-plan', 'Pro')
+    sessionStorage.setItem('eduflow-trial-days', '30')
+    window.location.replace('/admin')
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -141,11 +201,11 @@ export default function LoginPage() {
       // Honor next query param only if safe relative URL and authorized
       const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
       const nextPath = searchParams?.get('next')
-      if (isSafeRedirectUrl(nextPath) && !nextPath!.startsWith('/login')) {
-        if (nextPath!.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
+      if (nextPath && isSafeRedirectUrl(nextPath) && !nextPath.startsWith('/login')) {
+        if (nextPath.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
           window.location.href = destination
         } else {
-          window.location.href = nextPath!
+          window.location.href = nextPath
         }
       } else {
         window.location.href = destination
@@ -201,7 +261,29 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="login-form">
+          {/* Google OAuth Option */}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={handleGoogleAuth}
+              disabled={googleLoading || loading}
+              className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-slate-200/90 bg-white py-2.5 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <GoogleIcon />
+              <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google'}</span>
+            </button>
+
+            <div className="relative my-4 text-center">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <span className="relative bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-slate-900">
+                or sign in with email
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="login-form !mt-0">
             <label htmlFor="email">Email Address</label>
             <input
               id="email"
@@ -262,6 +344,15 @@ export default function LoginPage() {
           <div className="login-help">
             <ShieldCheck />
             <span>Strict role-based authentication enforced via Supabase.</span>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Don&apos;t have a school account yet?{' '}
+              <Link href="/signup" className="font-bold text-emerald-600 hover:underline">
+                Sign Up for 30-Day Free Pro Trial →
+              </Link>
+            </p>
           </div>
         </section>
 

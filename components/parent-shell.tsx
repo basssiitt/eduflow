@@ -12,6 +12,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ReceiptText,
+  Settings,
   ShieldCheck,
   Sparkles,
   User,
@@ -34,6 +35,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { cn } from '@/lib/utils'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
+import { UserSettingsDialog } from '@/components/user-settings-dialog'
 
 type NavItem = {
   label: string
@@ -144,6 +146,7 @@ function ParentSidebar({
 export function ParentShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
@@ -155,7 +158,7 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
         if (data.user?.email) {
           setUserEmail(data.user.email)
         }
-      })
+      }).catch(() => {})
     }
   }, [])
 
@@ -226,6 +229,10 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
                     <Bot className="mr-2 size-4 text-emerald-600" />
                     <span>AI Learning Companion</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
+                    <Settings className="mr-2 size-4 text-emerald-600" />
+                    <span>Settings &amp; Change Password</span>
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -261,6 +268,13 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+
+      <UserSettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        userEmail={userEmail}
+        role="parent"
+      />
     </div>
   )
 }

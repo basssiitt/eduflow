@@ -98,8 +98,13 @@ export async function middleware(request: NextRequest) {
 
   const homeUrl = getHomeRoute(normalizedRole, userEmail)
 
-  // If already authenticated and visiting /login:
-  if (pathname === '/login' || pathname.startsWith('/login/')) {
+  // If already authenticated and visiting /login or /signup:
+  if (
+    pathname === '/login' ||
+    pathname.startsWith('/login/') ||
+    pathname === '/signup' ||
+    pathname.startsWith('/signup/')
+  ) {
     if (force) {
       return response
     }

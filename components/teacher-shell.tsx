@@ -12,6 +12,7 @@ import {
   Mic,
   PanelLeftClose,
   PanelLeftOpen,
+  Settings,
   ShieldCheck,
   Users,
 } from 'lucide-react'
@@ -33,6 +34,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { cn } from '@/lib/utils'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
+import { UserSettingsDialog } from '@/components/user-settings-dialog'
 
 type NavItem = {
   label: string
@@ -139,6 +141,7 @@ function TeacherSidebar({
 export function TeacherShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
@@ -150,7 +153,7 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
         if (data.user?.email) {
           setUserEmail(data.user.email)
         }
-      })
+      }).catch(() => {})
     }
   }, [])
 
@@ -221,6 +224,10 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
                     <BookOpen className="mr-2 size-4 text-emerald-600" />
                     <span>Gradebook &amp; Marks</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
+                    <Settings className="mr-2 size-4 text-emerald-600" />
+                    <span>Settings &amp; Change Password</span>
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -256,6 +263,13 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+
+      <UserSettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        userEmail={userEmail}
+        role="teacher"
+      />
     </div>
   )
 }
