@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
-const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin']
+const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin', '/onboarding']
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -10,8 +10,8 @@ export async function updateSession(request: NextRequest) {
       headers: request.headers,
     },
   })
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mtchdghzlkiemwtzyduo.supabase.co'
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KmiVb1kw1LiOskGkpDkLpw_gapmgN09'
 
   if (!url || !key) {
     return response
@@ -135,6 +135,27 @@ export async function updateSession(request: NextRequest) {
     if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
     }
+    return response
+  }
+
+  // Guard /onboarding — only school_admins who haven't completed setup
+  if (pathname === '/onboarding' || pathname.startsWith('/onboarding/')) {
+    if (!user) {
+      return safeRedirect(new URL('/login', request.url))
+    }
+    if (normalizedRole !== 'school_admin' && !isSuperAdmin) {
+      return safeRedirect(homeUrl)
+    }
+    try {
+      const { data: onboardingProfile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle()
+      if (onboardingProfile?.onboarding_completed) {
+        return safeRedirect(new URL('/admin/overview', request.url))
+      }
+    } catch {}
     return response
   }
 

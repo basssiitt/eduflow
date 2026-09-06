@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getHomeRoute, normalizeRole, isSuperAdminEmail } from '@/lib/config'
+import { getHomeRoute, normalizeRole, isSuperAdminEmail, ROLE_PORTAL_ROUTES } from '@/lib/config'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -16,21 +16,41 @@ export async function GET(request: Request) {
         const user = data.user
         const userEmail = (user.email || '').toLowerCase().trim()
 
-      // 1. Check if user already has a profile record
-      let role = ''
-      try {
-        const { data: profile } = await supabase
+        // ── Step 1: Email-first profile lookup (prevents duplicate accounts) ─
+        const { data: existingByEmail } = await supabase
           .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single()
-        if (profile?.role) {
-          role = profile.role
-        }
-      } catch {}
+          .select('id, role, onboarding_completed, school_id')
+          .eq('email', userEmail)
+          .maybeSingle()
 
-      // 2. If no profile exists, create a new school admin profile with 30-day Pro trial
-      if (!role) {
+        if (existingByEmail) {
+          // Profile found — link auth user id if it drifted
+          if (existingByEmail.id !== user.id) {
+            await supabase
+              .from('profiles')
+              .update({ id: user.id, updated_at: new Date().toISOString() })
+              .eq('email', userEmail)
+          }
+
+          const role = existingByEmail.role as string
+          let normalizedRole = normalizeRole(role)
+          if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
+            normalizedRole = 'super_admin'
+          }
+
+          // School admins who haven't finished onboarding → wizard
+          if (normalizedRole === 'school_admin' && !existingByEmail.onboarding_completed) {
+            return NextResponse.redirect(new URL('/onboarding', request.url))
+          }
+
+          // Route to the dedicated portal
+          const destination = resolveDestination(normalizedRole, userEmail, next)
+          return NextResponse.redirect(new URL(destination, request.url))
+        }
+
+        // ── Step 2: Brand-new signup — create pending school_admin profile ───
+        const initialRole = isSuperAdminEmail(userEmail) ? 'super_admin' : 'school_admin'
+
         const fullName = (
           user.user_metadata?.full_name ||
           user.user_metadata?.name ||
@@ -38,73 +58,55 @@ export async function GET(request: Request) {
           'School Administrator'
         ).trim()
 
-        const schoolName = (
-          user.user_metadata?.school_name ||
-          `${fullName}'s Campus`
-        ).trim()
-
-        const city = (user.user_metadata?.city || 'Karachi').trim()
-        const initialRole = isSuperAdminEmail(userEmail) ? 'super_admin' : 'school_admin'
-
-        // Create new campus tenant with 30-day Pro trial
-        let campusId = null
         try {
-          const trialEnds = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          const { data: campus } = await supabase
-            .from('campuses')
-            .insert([
-              {
-                name: schoolName,
-                city,
-                owner: fullName,
-                plan: 'Pro',
-                students: 0,
-                status: 'Active',
-                admin_email: userEmail,
-                created_at: new Date().toISOString(),
-              },
-            ])
-            .select('id')
-            .single()
-
-          if (campus?.id) {
-            campusId = campus.id
-          }
-        } catch {}
-
-        // Create user profile
-        try {
-          await supabase.from('profiles').upsert({
+          await supabase.from('profiles').insert({
             id: user.id,
             email: userEmail,
             full_name: fullName,
             role: initialRole,
-            campus_id: campusId,
+            onboarding_completed: initialRole === 'super_admin',
+            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
         } catch {}
 
-        role = initialRole
-      }
-
-      let normalizedRole = normalizeRole(role)
-      if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
-        normalizedRole = 'super_admin'
-      }
-
-      // Safe destination redirect
-      let destination = getHomeRoute(normalizedRole, userEmail)
-      if (next && next.startsWith('/') && !next.startsWith('//') && !next.startsWith('/login') && !next.startsWith('/signup')) {
-        if (!next.startsWith('/super-admin') || normalizedRole === 'super_admin') {
-          destination = next
+        if (initialRole === 'super_admin') {
+          return NextResponse.redirect(new URL('/super-admin/dashboard', request.url))
         }
-      }
 
-        return NextResponse.redirect(new URL(destination, request.url))
+        // New school admin → onboarding wizard
+        return NextResponse.redirect(new URL('/onboarding', request.url))
       }
     } catch {}
   }
 
   // Fallback to login if code exchange fails
   return NextResponse.redirect(new URL('/login?error=auth_failed', request.url))
+}
+
+/**
+ * Resolves the final redirect destination based on normalized role.
+ * Respects a safe `next` param when provided.
+ */
+function resolveDestination(
+  normalizedRole: string,
+  userEmail: string,
+  next: string | null
+): string {
+  const portalRoute =
+    ROLE_PORTAL_ROUTES[normalizedRole] ?? getHomeRoute(normalizedRole, userEmail)
+
+  if (
+    next &&
+    next.startsWith('/') &&
+    !next.startsWith('//') &&
+    !next.startsWith('/login') &&
+    !next.startsWith('/signup')
+  ) {
+    if (!next.startsWith('/super-admin') || normalizedRole === 'super_admin') {
+      return next
+    }
+  }
+
+  return portalRoute
 }
