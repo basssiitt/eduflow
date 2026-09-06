@@ -68,11 +68,10 @@ export async function middleware(request: NextRequest) {
     if (demoRole) {
       const normalizedDemo = normalizeRole(demoRole)
       if (
-        (pathname.startsWith('/admin') && ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/student') && ['student', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/super-admin') && normalizedDemo === 'super_admin') ||
+        (pathname.startsWith('/admin') && ['school_admin', 'admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/student') && ['student', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         pathname.startsWith('/onboarding')
       ) {
         return response

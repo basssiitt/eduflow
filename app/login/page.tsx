@@ -153,8 +153,6 @@ export default function LoginPage() {
       sessionStorage.setItem('eduflow-demo-email', 'parent@family.edu.pk')
     } else if (role === 'student') {
       sessionStorage.setItem('eduflow-demo-email', 'zain.student@school.edu.pk')
-    } else if (role === 'super_admin') {
-      sessionStorage.setItem('eduflow-demo-email', 'superadmin@eduflow.pk')
     }
     window.location.href = destination
   }
@@ -412,14 +410,6 @@ export default function LoginPage() {
                 <span className="truncate">Parent</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('super_admin', '/super-admin')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left sm:col-span-2 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-              >
-                <ShieldCheck className="size-4 text-purple-600 shrink-0" />
-                <span className="truncate">Super Admin (Platform)</span>
-              </button>
             </div>
           </div>
 
