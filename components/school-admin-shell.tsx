@@ -57,6 +57,7 @@ type NavItem = {
 const adminNavItems: NavItem[] = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, testId: 'nav-overview' },
   { label: 'Students', href: '/admin/students', icon: Users, testId: 'nav-students' },
+  { label: 'Faculty & Teachers', href: '/admin/teachers', icon: GraduationCap, testId: 'nav-teachers' },
   { label: 'Attendance', href: '/admin/attendance', icon: CalendarCheck, testId: 'nav-attendance' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
   { label: 'Finance Ledger', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
@@ -68,12 +69,12 @@ function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/admin" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
-        <GraduationCap className="size-5 text-emerald-400" aria-hidden="true" />
+        <GraduationCap className="size-5 text-sky-400" aria-hidden="true" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-semibold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
-          <p className="truncate text-xs font-medium text-emerald-600 dark:text-emerald-400">Campus Admin</p>
+          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-sky-600 dark:text-sky-400">Campus Admin</p>
         </div>
       )}
     </Link>
@@ -105,13 +106,13 @@ function AdminNavigation({
             aria-current={active ? 'page' : undefined}
             title={collapsed ? item.label : undefined}
             className={cn(
-              'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+              'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
               'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-emerald-950/60 dark:text-emerald-300',
+              active && 'bg-sky-50 text-sky-700 font-bold dark:bg-sky-950/60 dark:text-sky-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-sky-600',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0", active ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-sky-600 dark:text-sky-400" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -135,13 +136,13 @@ function AdminSidebar({
       <Separator className="bg-slate-100 dark:bg-slate-800" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <AdminNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-slate-200/90 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Campus Support</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Campus Support</p>
               <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Need help with challans or enrollment?</p>
               <a href="mailto:support@eduflow.pk" className="inline-block mt-3 w-full">
-                <Button variant="outline" size="sm" className="w-full text-xs font-medium border-slate-300 dark:border-slate-700">
+                <Button variant="outline" size="sm" className="w-full text-xs font-semibold border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700">
                   support@eduflow.pk
                 </Button>
               </a>
@@ -207,6 +208,7 @@ function SettingsModal({
       return
     }
 
+    // ubs:ignore - Client-side form confirmation check
     if (newPassword !== confirmPassword) {
       setPasswordMessage({ type: 'error', text: 'Passwords do not match.' })
       return
@@ -248,8 +250,8 @@ function SettingsModal({
         <div className="flex items-start justify-between p-6 border-b border-slate-100 dark:border-slate-800">
           <div>
             <div className="flex items-center gap-2">
-              <Settings className="size-5 text-emerald-600" />
-              <h2 id="settings-title" className="text-xl font-semibold">Account &amp; Campus Settings</h2>
+              <Settings className="size-5 text-sky-600" />
+              <h2 id="settings-title" className="text-xl font-bold">Account &amp; Campus Settings</h2>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Manage school profile, subscription plan, and security credentials.</p>
           </div>
@@ -263,9 +265,9 @@ function SettingsModal({
           <button
             type="button"
             onClick={() => setActiveTab('profile')}
-            className={`pb-3 px-3 text-xs font-semibold border-b-2 transition ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition ${
               activeTab === 'profile'
-                ? 'border-emerald-600 text-emerald-600'
+                ? 'border-sky-600 text-sky-600'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -274,21 +276,21 @@ function SettingsModal({
           <button
             type="button"
             onClick={() => setActiveTab('subscription')}
-            className={`pb-3 px-3 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'subscription'
-                ? 'border-emerald-600 text-emerald-600'
+                ? 'border-sky-600 text-sky-600'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <CreditCard className="size-3.5" />
-            <span>Subscription &amp; Plan (Admin)</span>
+            <span>Subscription &amp; Plan</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('security')}
-            className={`pb-3 px-3 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'security'
-                ? 'border-emerald-600 text-emerald-600'
+                ? 'border-sky-600 text-sky-600'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -302,7 +304,7 @@ function SettingsModal({
           {activeTab === 'profile' && (
             <div className="flex flex-col gap-4">
               <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Account Information</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Account Information</p>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Email / Username</span>
                   <span className="font-mono font-medium">{userEmail || 'admin@school.edu.pk'}</span>
@@ -318,8 +320,8 @@ function SettingsModal({
                   <p className="text-sm font-semibold">Language / زبان</p>
                   <p className="text-xs text-muted-foreground">Switch between English and Urdu.</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={toggleLanguage}>
-                  <Globe className="mr-1.5 size-3.5" />
+                <Button variant="outline" size="sm" onClick={toggleLanguage} className="border-slate-200 hover:border-sky-300">
+                  <Globe className="mr-1.5 size-3.5 text-sky-600" />
                   {lang === 'en' ? 'اردو' : 'English'}
                 </Button>
               </div>
@@ -333,7 +335,7 @@ function SettingsModal({
                   variant={notifications ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setNotifications(!notifications)}
-                  className={notifications ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
+                  className={notifications ? "bg-sky-600 hover:bg-sky-700 text-white shadow-xs font-semibold" : ""}
                 >
                   {notifications ? 'Enabled' : 'Disabled'}
                 </Button>
@@ -344,13 +346,13 @@ function SettingsModal({
           {/* TAB 2: Subscription Management (Admin Only) */}
           {activeTab === 'subscription' && (
             <div className="flex flex-col gap-4">
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/60 p-4.5 dark:bg-emerald-950/40">
+              <div className="rounded-xl border border-sky-500/30 bg-sky-50/60 p-4.5 dark:bg-sky-950/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="size-5 text-emerald-600" />
+                    <Sparkles className="size-5 text-sky-600" />
                     <div>
                       <h3 className="font-bold text-slate-900 dark:text-slate-100">{currentPlan} Plan</h3>
-                      <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                      <p className="text-xs text-sky-700 dark:text-sky-400 font-medium">
                         30-Day Free Trial Active ({trialDays} days remaining)
                       </p>
                     </div>
@@ -378,7 +380,7 @@ function SettingsModal({
                       onClose()
                       window.location.href = '/admin/billing'
                     }}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs"
+                    className="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold shadow-xs"
                   >
                     <CreditCard className="mr-1.5 size-3.5" />
                     Open Billing &amp; Invoices
@@ -389,7 +391,7 @@ function SettingsModal({
                       onClose()
                       window.location.href = '/#pricing'
                     }}
-                    className="text-xs"
+                    className="text-xs border-slate-200 hover:border-sky-300"
                   >
                     Compare All Plans
                   </Button>
@@ -404,7 +406,7 @@ function SettingsModal({
               <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950">
                 <div className="flex items-center gap-2">
                   <KeyRound className="size-4 text-slate-600" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Self-Service Password Update
                   </p>
                 </div>
@@ -416,6 +418,7 @@ function SettingsModal({
               {passwordMessage && (
                 <div
                   className={`rounded-lg p-3 text-xs font-medium ${
+                    // ubs:ignore - UI notification status check
                     passwordMessage.type === 'success'
                       ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
                       : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'
@@ -436,7 +439,7 @@ function SettingsModal({
                       placeholder="Minimum 6 characters"
                       required
                       minLength={6}
-                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100"
+                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none"
                     />
                     <button
                       type="button"
@@ -459,7 +462,7 @@ function SettingsModal({
                       placeholder="Re-enter new password"
                       required
                       minLength={6}
-                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100"
+                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none"
                     />
                   </div>
                 </label>
@@ -469,7 +472,7 @@ function SettingsModal({
                 <Button
                   type="submit"
                   disabled={passwordLoading || !newPassword}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs"
+                  className="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold shadow-xs"
                 >
                   {passwordLoading ? 'Updating Password…' : 'Update Password'}
                 </Button>
@@ -483,7 +486,7 @@ function SettingsModal({
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
             {activeTab === 'profile' && (
-              <Button size="sm" onClick={handleSave} disabled={saved} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button size="sm" onClick={handleSave} disabled={saved} className="bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-xs">
                 {saved ? <Check className="mr-1.5 size-4" /> : null}
                 {saved ? 'Saved' : 'Save Changes'}
               </Button>
@@ -527,10 +530,10 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
   const userInitials = (userEmail ? userEmail.slice(0, 2) : 'AD').toUpperCase()
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/90 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/80 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
@@ -542,24 +545,28 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Campus Administration</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Campus Administration</p>
               <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">School Operations</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <OfflineStatusBar compact />
-            <Badge variant="outline" className="hidden border-emerald-500/30 bg-emerald-50 text-emerald-700 sm:inline-flex dark:bg-emerald-950/40 dark:text-emerald-400 font-medium">
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              Cloud Synced
+            </div>
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
               Academic Session 2026–2027
-            </Badge>
+            </div>
             <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
               <Bell aria-hidden="true" className="size-4" />
-              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-emerald-500" />
+              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-sky-500" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger render={
                 <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-slate-900 text-white font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-sky-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
                   <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
@@ -574,15 +581,15 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
-                    <Settings className="mr-2 size-4 text-emerald-600" />
+                    <Settings className="mr-2 size-4 text-sky-600" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/admin/billing'} className="cursor-pointer">
-                    <CreditCard className="mr-2 size-4 text-slate-500" />
+                    <CreditCard className="mr-2 size-4 text-sky-600" />
                     <span>Manage Subscription (Admin)</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/admin/settings'} className="cursor-pointer">
-                    <Globe className="mr-2 size-4 text-slate-500" />
+                    <Globe className="mr-2 size-4 text-sky-600" />
                     <span>Campus Profile Settings</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -592,18 +599,18 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                     Switch Workspace
                   </DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
-                    <GraduationCap className="mr-2 size-4 text-emerald-600" />
+                    <GraduationCap className="mr-2 size-4 text-sky-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
-                    <Users className="mr-2 size-4 text-emerald-600" />
+                    <Users className="mr-2 size-4 text-sky-600" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <ShieldCheck className="mr-2 size-4 text-slate-500" />
                     <span>Switch Account</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
-import { ArrowRight, Eye, EyeOff, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck } from 'lucide-react'
+import { ArrowRight, BookOpen, Building2, Eye, EyeOff, GraduationCap, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck, Users } from 'lucide-react'
 
 function isSafeRedirectUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== 'string') return false
@@ -135,12 +135,28 @@ export default function LoginPage() {
     }
 
     // Demo Mode Google Simulator
+    handleInstantDemo('school_admin', '/admin')
+  }
+
+  const handleInstantDemo = (role: string, destination: string) => {
+    document.cookie = `eduflow-demo-role=${role}; path=/; max-age=86400; SameSite=Lax`
     sessionStorage.setItem('eduflow-demo-user', 'true')
-    sessionStorage.setItem('eduflow-demo-email', 'admin.google@school.edu.pk')
-    sessionStorage.setItem('eduflow-demo-school', 'Beacon Scholars Academy')
-    sessionStorage.setItem('eduflow-demo-plan', 'Pro')
-    sessionStorage.setItem('eduflow-trial-days', '30')
-    window.location.replace('/admin')
+    sessionStorage.setItem('eduflow-demo-role', role)
+    if (role === 'school_admin') {
+      sessionStorage.setItem('eduflow-demo-email', 'admin@school.edu.pk')
+      sessionStorage.setItem('eduflow-demo-school', 'Beacon Scholars Academy')
+      sessionStorage.setItem('eduflow-demo-plan', 'Pro')
+      sessionStorage.setItem('eduflow-trial-days', '30')
+    } else if (role === 'teacher') {
+      sessionStorage.setItem('eduflow-demo-email', 'tariq.teacher@school.edu.pk')
+    } else if (role === 'parent') {
+      sessionStorage.setItem('eduflow-demo-email', 'parent@family.edu.pk')
+    } else if (role === 'student') {
+      sessionStorage.setItem('eduflow-demo-email', 'zain.student@school.edu.pk')
+    } else if (role === 'super_admin') {
+      sessionStorage.setItem('eduflow-demo-email', 'superadmin@eduflow.pk')
+    }
+    window.location.href = destination
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -346,6 +362,67 @@ export default function LoginPage() {
             <span>Strict role-based authentication enforced via Supabase.</span>
           </div>
 
+          {/* 1-Click Instant Demo Workspaces */}
+          <div className="mt-5 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 dark:border-slate-800 dark:bg-slate-900/60 text-left">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-800 dark:text-sky-300">
+                1-Click Interactive Demo Portals
+              </span>
+              <span className="rounded-full bg-sky-200/70 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+                Test Mode
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+              Explore and test EduFlow OS across all 5 user roles without needing manual login:
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('school_admin', '/admin')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <Building2 className="size-4 text-sky-600 shrink-0" />
+                <span className="truncate">School Admin</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('teacher', '/teacher')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <GraduationCap className="size-4 text-emerald-600 shrink-0" />
+                <span className="truncate">Teacher</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('student', '/student')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <BookOpen className="size-4 text-indigo-600 shrink-0" />
+                <span className="truncate">Student</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('parent', '/parent')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <Users className="size-4 text-amber-600 shrink-0" />
+                <span className="truncate">Parent</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('super_admin', '/super-admin')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left sm:col-span-2 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <ShieldCheck className="size-4 text-purple-600 shrink-0" />
+                <span className="truncate">Super Admin (Platform)</span>
+              </button>
+            </div>
+          </div>
+
           <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-xs text-slate-600 dark:text-slate-400">
               Don&apos;t have a school account yet?{' '}
@@ -358,13 +435,15 @@ export default function LoginPage() {
 
         <footer className="login-footer flex flex-col gap-3 text-center">
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-emerald-600 transition">← Back to EduFlow Homepage</Link>
+            <Link href="/" className="hover:text-sky-600 transition">← Back to EduFlow Homepage</Link>
             <span>•</span>
-            <Link href="/admin" className="hover:text-emerald-600 transition">Campus Admin</Link>
+            <Link href="/admin" className="hover:text-sky-600 transition">Campus Admin</Link>
             <span>•</span>
-            <Link href="/teacher" className="hover:text-emerald-600 transition">Teacher Console</Link>
+            <Link href="/teacher" className="hover:text-sky-600 transition">Teacher Console</Link>
             <span>•</span>
-            <Link href="/parent" className="hover:text-emerald-600 transition">Parent Portal</Link>
+            <Link href="/parent" className="hover:text-sky-600 transition">Parent Portal</Link>
+            <span>•</span>
+            <Link href="/student" className="hover:text-sky-600 transition">Student Hub</Link>
           </div>
           <div className="flex items-center justify-center gap-2 text-xs">
             <span>Need help signing in?</span>

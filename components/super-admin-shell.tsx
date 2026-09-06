@@ -55,12 +55,12 @@ function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/super-admin" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
-        <GraduationCap className="size-5 text-emerald-400" aria-hidden="true" />
+        <GraduationCap className="size-5 text-sky-400" aria-hidden="true" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-semibold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
-          <p className="truncate text-xs font-medium text-emerald-600 dark:text-emerald-400">Super Admin</p>
+          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-sky-600 dark:text-sky-400">Super Admin</p>
         </div>
       )}
     </Link>
@@ -90,13 +90,13 @@ function SuperAdminNavigation({
             aria-current={active ? 'page' : undefined}
             title={collapsed ? item.label : undefined}
             className={cn(
-              'flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors',
+              'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
               'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-emerald-950/60 dark:text-emerald-300',
+              active && 'bg-sky-50 text-sky-700 font-bold dark:bg-sky-950/60 dark:text-sky-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-sky-600',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0", active ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-sky-600 dark:text-sky-400" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -104,7 +104,7 @@ function SuperAdminNavigation({
 
       <div className="my-2 border-t border-slate-100 dark:border-slate-800" />
       {!collapsed && (
-        <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
           Campus Workspace Views
         </span>
       )}
@@ -118,7 +118,7 @@ function SuperAdminNavigation({
         )}
         title={collapsed ? 'Campus Admin' : undefined}
       >
-        <GraduationCap className="size-4.5 shrink-0 text-emerald-600" />
+        <GraduationCap className="size-4.5 shrink-0 text-sky-600 dark:text-sky-400" />
         {!collapsed && <span>Campus Admin</span>}
       </Link>
       <Link
@@ -131,7 +131,7 @@ function SuperAdminNavigation({
         )}
         title={collapsed ? 'Teacher Console' : undefined}
       >
-        <BookOpen className="size-4.5 shrink-0 text-emerald-600" />
+        <BookOpen className="size-4.5 shrink-0 text-sky-600 dark:text-sky-400" />
         {!collapsed && <span>Teacher Console</span>}
       </Link>
       <Link
@@ -144,7 +144,7 @@ function SuperAdminNavigation({
         )}
         title={collapsed ? 'Parent Portal' : undefined}
       >
-        <Users className="size-4.5 shrink-0 text-emerald-600" />
+        <Users className="size-4.5 shrink-0 text-sky-600 dark:text-sky-400" />
         {!collapsed && <span>Parent Portal</span>}
       </Link>
     </nav>
@@ -166,11 +166,11 @@ function SuperAdminSidebar({
       <Separator className="bg-slate-100 dark:bg-slate-800" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <SuperAdminNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/20 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-sky-500/20 bg-sky-50/60 dark:bg-sky-950/20 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-                <ShieldCheck className="size-4 text-emerald-600" /> Root Governance
+              <div className="flex items-center gap-1.5 text-xs font-bold text-sky-800 dark:text-sky-300">
+                <ShieldCheck className="size-4 text-sky-600" /> Root Governance
               </div>
               <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">Multi-tenant provisioning and live platform telemetry.</p>
             </>
@@ -220,10 +220,10 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
   const userInitials = (userEmail ? userEmail.slice(0, 2) : 'SA').toUpperCase()
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <SuperAdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/90 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/80 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
@@ -236,21 +236,24 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
             </Sheet>
             <div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">ROOT ACCESS</Badge>
+                <Badge variant="outline" className="text-[10px] font-mono border-sky-500/30 bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 font-semibold">ROOT ACCESS</Badge>
               </div>
               <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">Super Admin Console</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="hidden border-emerald-500/30 bg-emerald-50 text-emerald-700 sm:inline-flex dark:bg-emerald-950/40 dark:text-emerald-400">
-              <span className="mr-1.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              All Systems Operational
-            </Badge>
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              Cloud Synced
+            </div>
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
+              Academic Session 2026–2027
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger render={
                 <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-slate-900 text-white font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-sky-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
                   <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
@@ -262,19 +265,19 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                     <p className="truncate font-semibold">{userEmail || 'superadmin@eduflow.pk'}</p>
                   </DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => window.location.href = '/super-admin'} className="cursor-pointer">
-                    <ShieldCheck className="mr-2 size-4 text-emerald-600" />
+                    <ShieldCheck className="mr-2 size-4 text-sky-600" />
                     <span>Control Plane Home</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/super-admin/subscriptions'} className="cursor-pointer">
-                    <CreditCard className="mr-2 size-4 text-emerald-600" />
+                    <CreditCard className="mr-2 size-4 text-sky-600" />
                     <span>Subscriptions & Revenue</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/super-admin/telemetry'} className="cursor-pointer">
-                    <Gauge className="mr-2 size-4 text-emerald-600" />
+                    <Gauge className="mr-2 size-4 text-sky-600" />
                     <span>Platform Telemetry</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
-                    <Settings className="mr-2 size-4 text-emerald-600" />
+                    <Settings className="mr-2 size-4 text-sky-600" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -284,15 +287,15 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                     Switch Workspace
                   </DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
-                    <GraduationCap className="mr-2 size-4 text-emerald-600" />
+                    <GraduationCap className="mr-2 size-4 text-sky-600" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
-                    <BookOpen className="mr-2 size-4 text-emerald-600" />
+                    <BookOpen className="mr-2 size-4 text-sky-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
-                    <Users className="mr-2 size-4 text-emerald-600" />
+                    <Users className="mr-2 size-4 text-sky-600" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CalendarCheck, CreditCard, FileText, ReceiptText, Settings, Users, WalletCards, Sparkles } from 'lucide-react'
+import { ArrowRight, CalendarCheck, CreditCard, FileText, GraduationCap, ReceiptText, Settings, Users, WalletCards, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { fetchAdminStats } from '@/lib/live-data'
+import { fetchAdminStats, fetchTeachers } from '@/lib/live-data'
 
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState<{
@@ -19,12 +19,19 @@ export default function AdminOverviewPage() {
     invoices: [],
     expenses: [],
   })
+  const [teacherCount, setTeacherCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchAdminStats().then(({ data }) => {
-      if (data) {
-        setStats(data)
+    Promise.all([
+      fetchAdminStats(),
+      fetchTeachers(),
+    ]).then(([adminRes, teacherRes]) => {
+      if (adminRes.data) {
+        setStats(adminRes.data)
+      }
+      if (teacherRes.data) {
+        setTeacherCount(teacherRes.data.length)
       }
       setLoading(false)
     })
@@ -48,7 +55,7 @@ export default function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/admin/students" className="group rounded-xl border bg-card p-5 shadow-xs transition hover:border-primary/50 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground group-hover:text-primary font-medium transition">Enrolled Students</span>
@@ -60,6 +67,20 @@ export default function AdminOverviewPage() {
           <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
             <span>Active students registered</span>
             <span className="text-primary font-semibold group-hover:underline flex items-center">View list →</span>
+          </div>
+        </Link>
+
+        <Link href="/admin/teachers" className="group rounded-xl border bg-card p-5 shadow-xs transition hover:border-sky-500/50 hover:shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground group-hover:text-sky-600 font-medium transition">Faculty &amp; Teachers</span>
+            <div className="flex size-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600">
+              <GraduationCap className="size-5" />
+            </div>
+          </div>
+          <p className="mt-3 text-2xl font-bold">{loading ? '—' : teacherCount}</p>
+          <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+            <span>Active campus educators</span>
+            <span className="text-sky-600 font-semibold group-hover:underline flex items-center">Manage →</span>
           </div>
         </Link>
 
@@ -110,6 +131,17 @@ export default function AdminOverviewPage() {
             </div>
             <h3 className="mt-4 text-base font-semibold">Student Directory</h3>
             <p className="mt-1 text-xs text-muted-foreground">Manage enrolled students, parent contact details, and bulk CSV uploads.</p>
+          </Link>
+
+          <Link href="/admin/teachers" className="group block rounded-xl border bg-card p-5 shadow-xs transition hover:border-sky-500/50 hover:shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
+                <GraduationCap className="size-5" />
+              </div>
+              <ArrowRight className="size-4 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-sky-600" />
+            </div>
+            <h3 className="mt-4 text-base font-semibold">Faculty &amp; Teachers</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Onboard new faculty, assign subjects, and manage campus teaching staff.</p>
           </Link>
 
           <Link href="/admin/attendance" className="group block rounded-xl border bg-card p-5 shadow-xs transition hover:border-primary/50 hover:shadow-sm">

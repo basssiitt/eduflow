@@ -183,18 +183,18 @@ export default function OnboardingPage() {
 
   /* ─── Render ────────────────────────────────────────────────────────────── */
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-sky-50/20 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-emerald-600 text-white mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-sky-600 text-white mb-4 shadow-sm shadow-sky-200">
             <GraduationCap className="size-7" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Welcome to EduFlow OS
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            Let&apos;s set up your school in under 2 minutes
+            Let&apos;s set up your school campus in under 2 minutes
           </p>
         </div>
 
@@ -210,9 +210,9 @@ export default function OnboardingPage() {
                   className={[
                     'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all',
                     done
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-sky-600 text-white'
                       : active
-                      ? 'bg-emerald-600/15 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-600/40'
+                      ? 'bg-sky-50 text-sky-700 dark:text-sky-300 ring-1 ring-sky-600/30'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-400',
                   ].join(' ')}
                 >
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
                   {s.title}
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className={`h-px w-6 ${step > s.id ? 'bg-emerald-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                  <div className={`h-px w-6 ${step > s.id ? 'bg-sky-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
                 )}
               </div>
             )
@@ -230,7 +230,7 @@ export default function OnboardingPage() {
         {/* Card */}
         <form
           onSubmit={step < 3 ? (e) => { e.preventDefault(); setStep((s) => s + 1) } : handleSubmit}
-          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-8 space-y-5"
+          className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 p-8 space-y-5"
         >
           {/* ── Step 1: School Info ── */}
           {step === 1 && (
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
             <Button
               type="submit"
               disabled={!isStepValid() || submitting}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6"
+              className="bg-sky-600 hover:bg-sky-700 text-white px-6 font-semibold shadow-sm shadow-sky-200"
             >
               {submitting ? (
                 <>

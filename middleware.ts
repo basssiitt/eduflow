@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
-const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin', '/onboarding']
+const protectedRoutes = ['/admin', '/teacher', '/parent', '/student', '/super-admin', '/onboarding']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -62,8 +62,23 @@ export async function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   )
 
-  // 1. Unauthenticated handling
+  // 1. Unauthenticated handling (with demo role cookie support)
   if (!user) {
+    const demoRole = request.cookies.get('eduflow-demo-role')?.value
+    if (demoRole) {
+      const normalizedDemo = normalizeRole(demoRole)
+      if (
+        (pathname.startsWith('/admin') && ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/student') && ['student', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/super-admin') && normalizedDemo === 'super_admin') ||
+        pathname.startsWith('/onboarding')
+      ) {
+        return response
+      }
+    }
+
     if (isProtected) {
       if (pathname === '/login' || pathname.startsWith('/login/')) {
         return response
@@ -146,6 +161,14 @@ export async function middleware(request: NextRequest) {
   // Guard /parent
   if (pathname === '/parent' || pathname.startsWith('/parent/')) {
     if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
+      return safeRedirect(homeUrl)
+    }
+    return response
+  }
+
+  // Guard /student
+  if (pathname === '/student' || pathname.startsWith('/student/')) {
+    if (!isSuperAdmin && !['student', 'school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
     }
     return response

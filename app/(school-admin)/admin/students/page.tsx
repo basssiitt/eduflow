@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, ChevronLeft, ChevronRight, Download, Plus, Search, Trash2, Upload, UserPlus, Users, X } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { cn } from '@/lib/utils'
 
 type StudentRecord = {
   id: string | number
@@ -87,7 +88,7 @@ function AddStudentModal({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <UserPlus className="size-5 text-emerald-600" />
+              <UserPlus className="size-5 text-sky-600" />
               <h2 id="add-student-title" className="text-xl font-bold text-slate-900 dark:text-slate-100">Admit New Student</h2>
             </div>
             <p className="mt-1 text-xs text-slate-500">Enter student details to add them to the active academic register.</p>
@@ -107,7 +108,7 @@ function AddStudentModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Muhammad Ali"
               required
-              className="text-sm rounded-xl"
+              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
           </label>
 
@@ -118,7 +119,7 @@ function AddStudentModal({
               onChange={(e) => setFatherName(e.target.value)}
               placeholder="e.g. Tariq Mehmood"
               required
-              className="text-sm rounded-xl"
+              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
           </label>
 
@@ -127,7 +128,7 @@ function AddStudentModal({
             <select
               value={className}
               onChange={(e) => setClassName(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm"
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium"
             >
               {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((c) => (
                 <option key={c}>{c}</option>
@@ -140,7 +141,7 @@ function AddStudentModal({
             <select
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm"
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium"
             >
               <option>A</option>
               <option>B</option>
@@ -154,7 +155,7 @@ function AddStudentModal({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+92 3XX XXXXXXX"
-              className="text-sm rounded-xl"
+              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
           </label>
 
@@ -165,13 +166,13 @@ function AddStudentModal({
               value={fee}
               onChange={(e) => setFee(e.target.value)}
               placeholder="15000"
-              className="text-sm rounded-xl"
+              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
           </label>
 
           <div className="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
-            <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-slate-200">Cancel</Button>
+            <Button type="submit" disabled={saving} className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs">
               {saving ? 'Admitting…' : 'Admit Student'}
             </Button>
           </div>
@@ -277,18 +278,18 @@ export default function StudentsPage() {
     <div className="flex flex-col gap-6">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/admin" className="hover:text-sky-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
           <span className="text-slate-900 dark:text-slate-100 font-semibold">Student Register</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/attendance" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <Link href="/admin/attendance" className="hover:text-sky-600 transition font-medium text-slate-500">
             Attendance Register →
           </Link>
           <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin/fees" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <Link href="/admin/fees" className="hover:text-sky-600 transition font-medium text-slate-500">
             Fee Challans →
           </Link>
         </div>
@@ -297,26 +298,26 @@ export default function StudentsPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">
+            <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 border-sky-500/20 font-semibold">
               Academic Directory
             </Badge>
             <span className="text-sm text-slate-500 dark:text-slate-400">Session 2026–2027</span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Student Register &amp; Enrollment</h1>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Student Register &amp; Enrollment</h1>
           <p className="text-slate-500 dark:text-slate-400">Manage enrolled students, parent contact details, and classroom assignments.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             onClick={() => setImportOpen(true)}
-            className="border-slate-300 dark:border-slate-700"
+            className="border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700"
           >
             <Upload className="mr-2 size-4" />
             Bulk CSV Import
           </Button>
           <Button
             onClick={() => setAddOpen(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-medium"
+            className="bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-200 font-semibold"
           >
             <Plus className="mr-2 size-4" />
             Admit Student
@@ -324,18 +325,19 @@ export default function StudentsPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {['All', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
               <button
                 key={cls}
                 onClick={() => handleClassFilter(cls)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={cn(
+                  'rounded-xl px-3 py-1.5 text-xs font-bold transition-all',
                   classFilter === cls
-                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
+                    ? 'bg-sky-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 dark:bg-slate-800 dark:text-slate-300'
-                }`}
+                )}
               >
                 {cls}
               </button>
@@ -347,12 +349,23 @@ export default function StudentsPage() {
               placeholder="Search by name, roll no..."
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
-              className="pl-9 text-sm rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-950"
+              className="pl-9 text-xs rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
           </div>
         </div>
 
-        {students.length === 0 && !loading ? (
+        {loading ? (
+          <div className="mt-5 divide-y divide-slate-100 dark:divide-slate-800">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="py-4 flex items-center justify-between animate-pulse">
+                <div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                <div className="h-4 w-16 bg-slate-200 dark:bg-slate-800 rounded-md" />
+              </div>
+            ))}
+          </div>
+        ) : students.length === 0 ? (
           <div className="mt-6">
             <ZeroDataEmptyState
               icon={Users}
@@ -366,38 +379,50 @@ export default function StudentsPage() {
           </div>
         ) : (
           <>
-            <div className="mt-5 overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-800">
+            <div className="mt-5 overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-200/80 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-950 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <thead className="border-b border-slate-100 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-950 text-xs font-bold uppercase tracking-wider text-slate-400">
                     <tr>
-                      <th className="px-4 py-3.5">Roll No</th>
-                      <th className="px-4 py-3.5">Student Name</th>
-                      <th className="px-4 py-3.5">Father / Guardian</th>
-                      <th className="px-4 py-3.5">Class &amp; Section</th>
-                      <th className="px-4 py-3.5">Contact Phone</th>
-                      <th className="px-4 py-3.5">Status</th>
-                      <th className="px-4 py-3.5 text-right">Actions</th>
+                      <th className="px-5 py-3.5">Roll No</th>
+                      <th className="px-5 py-3.5">Student Name</th>
+                      <th className="px-5 py-3.5">Father / Guardian</th>
+                      <th className="px-5 py-3.5">Class &amp; Section</th>
+                      <th className="px-5 py-3.5">Contact Phone</th>
+                      <th className="px-5 py-3.5">Status</th>
+                      <th className="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {paginated.map((s) => (
-                      <tr key={s.id} className="transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                        <td className="px-4 py-3.5 font-mono text-xs font-medium text-slate-500">{s.roll_no}</td>
-                        <td className="px-4 py-3.5 font-semibold text-slate-900 dark:text-slate-100">{s.name}</td>
-                        <td className="px-4 py-3.5 text-slate-600 dark:text-slate-400">{s.father_name || '—'}</td>
-                        <td className="px-4 py-3.5">
-                          <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                      <tr key={s.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                        <td className="px-5 py-4">
+                          <span className="font-mono text-xs font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 rounded px-2 py-0.5">
+                            {s.roll_no}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300">
+                              {s.name.split(" ").map((x) => x[0]).join("")}
+                            </div>
+                            <span className="font-semibold text-slate-900 dark:text-slate-100">{s.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{s.father_name || '—'}</td>
+                        <td className="px-5 py-4">
+                          <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
                             {s.class} · Section {s.section}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 font-mono text-xs text-slate-500">{s.guardian_phone || '—'}</td>
-                        <td className="px-4 py-3.5">
-                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                        <td className="px-5 py-4 font-mono text-xs text-slate-500">{s.guardian_phone || '—'}</td>
+                        <td className="px-5 py-4">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 ring-1 ring-emerald-500/20">
+                            <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                             Enrolled
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 text-right">
+                        <td className="px-5 py-4 text-right">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -423,7 +448,7 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="size-8 p-0"
+                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
@@ -433,14 +458,14 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="size-8 p-0"
+                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
                 >
                   <ChevronRight className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2">
+                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2 hover:text-sky-600">
                   <Download className="mr-1.5 size-3.5" /> Export CSV
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0}>
+                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="hover:text-sky-600">
                   <Download className="mr-1.5 size-3.5" /> Print Roster
                 </Button>
               </div>

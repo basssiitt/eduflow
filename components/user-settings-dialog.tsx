@@ -22,7 +22,7 @@ interface UserSettingsDialogProps {
   open: boolean
   onClose: () => void
   userEmail: string
-  role: 'school_admin' | 'teacher' | 'parent' | 'super_admin'
+  role: 'school_admin' | 'teacher' | 'parent' | 'super_admin' | 'student'
   roleName?: string
 }
 
@@ -78,6 +78,7 @@ export function UserSettingsDialog({
       return
     }
 
+    // ubs:ignore - Client-side form confirmation check
     if (newPassword !== confirmPassword) {
       setPasswordMessage({ type: 'error', text: 'Passwords do not match. Please try again.' })
       return
@@ -120,6 +121,8 @@ export function UserSettingsDialog({
       ? 'Super Administrator'
       : role === 'teacher'
       ? 'Teacher'
+      : role === 'student'
+      ? 'Student'
       : 'Parent'
   )
 
@@ -329,6 +332,7 @@ export function UserSettingsDialog({
               {passwordMessage && (
                 <div
                   className={`rounded-lg p-3 text-xs font-medium ${
+                    // ubs:ignore - UI notification status check
                     passwordMessage.type === 'success'
                       ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
                       : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'

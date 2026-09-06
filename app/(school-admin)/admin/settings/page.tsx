@@ -73,6 +73,7 @@ export default function AdminSettingsPage() {
       return
     }
 
+    // ubs:ignore - Client-side form confirmation check, not cryptographic authentication
     if (newPassword !== confirmPassword) {
       setPasswordMessage({ type: 'error', text: 'Passwords do not match.' })
       return
@@ -247,6 +248,7 @@ export default function AdminSettingsPage() {
                 type="button"
                 variant="outline"
                 size="sm"
+                // ubs:ignore - UI language toggle
                 onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
               >
                 <Globe className="mr-1.5 size-3.5" />
@@ -317,6 +319,7 @@ export default function AdminSettingsPage() {
           {passwordMessage && (
             <div
               className={`mt-4 rounded-xl p-3 text-xs font-medium ${
+                // ubs:ignore - UI notification status check
                 passwordMessage.type === 'success'
                   ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
                   : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'

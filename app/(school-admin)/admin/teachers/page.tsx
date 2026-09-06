@@ -1,0 +1,907 @@
+'use client'
+
+import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'
+import {
+  fetchTeachers,
+  createTeacher,
+  deleteTeacher,
+  TeacherRecord,
+} from '@/lib/live-data'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  ArrowLeft,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  GraduationCap,
+  Mail,
+  MessageCircle,
+  Plus,
+  Search,
+  Trash2,
+  UserCheck,
+  UserPlus,
+  Wallet,
+  X,
+} from 'lucide-react'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { MetricCardSkeleton, TableRowSkeleton } from '@/components/skeleton-cards'
+import { cn } from '@/lib/utils'
+
+function AddTeacherModal({
+  onClose,
+  onAdded,
+  existingCount = 0,
+}: {
+  onClose: () => void
+  onAdded: () => void
+  existingCount?: number
+}) {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [employeeCode, setEmployeeCode] = useState(
+    `TCH-2026-${String(existingCount + 1).padStart(3, '0')}`
+  )
+  const [qualification, setQualification] = useState('M.Sc / M.A Master Degree')
+  const [department, setDepartment] = useState('Science & Math')
+  const [subject, setSubject] = useState('Mathematics')
+  const [classesInput, setClassesInput] = useState('Class 9-A, Class 10-A')
+  const [salary, setSalary] = useState('75000')
+  const [joiningDate, setJoiningDate] = useState(
+    new Date().toISOString().split('T')[0]
+  )
+  const [status, setStatus] = useState<'Active' | 'On Leave' | 'Inactive'>('Active')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const departments = [
+    'Science & Math',
+    'Languages',
+    'Humanities',
+    'Arts & Sports',
+    'IT & Computer Science',
+  ]
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) {
+      setError('Please provide teacher full name.')
+      return
+    }
+    if (!email.trim() || !email.includes('@')) {
+      setError('Please provide a valid email address.')
+      return
+    }
+    if (!phone.trim()) {
+      setError('Please provide a contact phone / WhatsApp number.')
+      return
+    }
+
+    setSaving(true)
+    setError('')
+
+    const classesArray = classesInput
+      .split(',')
+      .map((c) => c.trim())
+      .filter(Boolean)
+
+    const payload = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+      employee_code: employeeCode.trim() || `TCH-${Date.now()}`,
+      qualification: qualification.trim(),
+      department,
+      subject: subject.trim(),
+      classes: classesArray.length > 0 ? classesArray : ['Class 5'],
+      salary: Number(salary) || 65000,
+      joining_date: joiningDate,
+      status,
+    }
+
+    const res = await createTeacher(payload)
+    if (res.error) {
+      setError(res.error.message || 'Failed to onboard teacher')
+      setSaving(false)
+      return
+    }
+
+    setSaving(false)
+    onAdded()
+    onClose()
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-teacher-title"
+    >
+      <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 my-8">
+        <div className="flex items-start justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400">
+                <UserPlus className="size-4" />
+              </div>
+              <h2
+                id="add-teacher-title"
+                className="text-xl font-bold text-slate-900 dark:text-slate-100"
+              >
+                Onboard New Faculty Member
+              </h2>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Register teacher details, assign classes and subjects to campus roster.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {error && (
+          <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 font-semibold dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSave} className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            Teacher Full Name *
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Prof. Tariq Mahmood"
+              required
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Email Address *
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tariq@school.edu.pk"
+              required
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Phone / WhatsApp Number *
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+92 300 1234567"
+              required
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Employee Code
+            <Input
+              value={employeeCode}
+              onChange={(e) => setEmployeeCode(e.target.value)}
+              placeholder="TCH-2026-008"
+              className="mt-1 font-mono text-xs"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Academic Qualification
+            <Input
+              value={qualification}
+              onChange={(e) => setQualification(e.target.value)}
+              placeholder="e.g. M.Phil Mathematics (QAU)"
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Department
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-xs focus:border-sky-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+            >
+              {departments.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Primary Subject
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="e.g. Mathematics & Calculus"
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            Assigned Classes (comma-separated)
+            <Input
+              value={classesInput}
+              onChange={(e) => setClassesInput(e.target.value)}
+              placeholder="Class 9-A, Class 10-A, FSc-I"
+              className="mt-1"
+            />
+            <span className="text-[11px] text-slate-400 font-normal">
+              Separate each class section with a comma (e.g. Class 5-A, Class 6-B)
+            </span>
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Monthly Base Salary (PKR)
+            <Input
+              type="number"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+              placeholder="75000"
+              className="mt-1 font-mono"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Joining Date
+            <Input
+              type="date"
+              value={joiningDate}
+              onChange={(e) => setJoiningDate(e.target.value)}
+              className="mt-1"
+            />
+          </label>
+
+          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            Status
+            <div className="mt-2 flex gap-4">
+              {(['Active', 'On Leave', 'Inactive'] as const).map((s) => (
+                <label key={s} className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                  <input
+                    type="radio"
+                    name="teacher-status"
+                    checked={status === s}
+                    onChange={() => setStatus(s)}
+                    className="accent-sky-600"
+                  />
+                  <span>{s}</span>
+                </label>
+              ))}
+            </div>
+          </label>
+
+          <div className="mt-4 flex items-center justify-end gap-2 sm:col-span-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border-slate-200"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={saving}
+              className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs"
+            >
+              {saving ? 'Onboarding…' : 'Confirm & Onboard Teacher'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function DeleteTeacherModal({
+  teacher,
+  onClose,
+  onConfirm,
+}: {
+  teacher: TeacherRecord | null
+  onClose: () => void
+  onConfirm: () => void
+}) {
+  if (!teacher) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-teacher-title"
+    >
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+            <Trash2 className="size-5" />
+          </div>
+          <div>
+            <h3
+              id="delete-teacher-title"
+              className="text-lg font-bold text-slate-900 dark:text-slate-100"
+            >
+              Offboard Faculty Member
+            </h3>
+            <p className="text-xs text-slate-500">Confirm permanent removal from roster</p>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {teacher.name}
+          </p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {teacher.employee_code} · {teacher.subject} ({teacher.department})
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1">
+            {teacher.classes.map((cls) => (
+              <span
+                key={cls}
+                className="rounded bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300"
+              >
+                {cls}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-4 text-xs text-slate-500 leading-relaxed">
+          Are you sure you want to offboard this teacher? This will unassign them from their active
+          classes and remove their employee profile from the campus register.
+        </p>
+
+        <div className="mt-6 flex items-center justify-end gap-2">
+          <Button variant="outline" onClick={onClose} className="rounded-xl border-slate-200">
+            Cancel
+          </Button>
+          <Button
+            onClick={onConfirm}
+            className="bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl shadow-xs"
+          >
+            Yes, Offboard Teacher
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function TeachersPage() {
+  const [teachers, setTeachers] = useState<TeacherRecord[]>([])
+  const [query, setQuery] = useState('')
+  const [deptFilter, setDeptFilter] = useState('All')
+  const [statusFilter, setStatusFilter] = useState('All')
+  const [addOpen, setAddOpen] = useState(false)
+  const [teacherToDelete, setTeacherToDelete] = useState<TeacherRecord | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const pageSize = 8
+
+  const loadTeachers = async () => {
+    setLoading(true)
+    const { data } = await fetchTeachers()
+    setTeachers(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    loadTeachers()
+  }, [])
+
+  const handleDelete = async () => {
+    if (!teacherToDelete) return
+    const id = teacherToDelete.id
+    await deleteTeacher(id)
+    setTeachers((curr) => curr.filter((t) => String(t.id) !== String(id)))
+    setTeacherToDelete(null)
+  }
+
+  const filtered = useMemo(() => {
+    return teachers.filter((t) => {
+      const matchesDept = deptFilter === 'All' || t.department.toLowerCase().includes(deptFilter.toLowerCase())
+      const matchesStatus = statusFilter === 'All' || t.status === statusFilter
+      const q = query.toLowerCase().trim()
+      const matchesQuery =
+        !q ||
+        t.name.toLowerCase().includes(q) ||
+        t.email.toLowerCase().includes(q) ||
+        t.employee_code.toLowerCase().includes(q) ||
+        t.subject.toLowerCase().includes(q) ||
+        t.qualification.toLowerCase().includes(q)
+      return matchesDept && matchesStatus && matchesQuery
+    })
+  }, [teachers, query, deptFilter, statusFilter])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize
+    return filtered.slice(start, start + pageSize)
+  }, [filtered, page])
+
+  // Metric stats
+  const totalFaculty = teachers.length
+  const activeToday = teachers.filter((t) => t.status === 'Active').length
+  const totalMonthlyPayroll = teachers.reduce((acc, t) => acc + (t.salary || 0), 0)
+  const avgClassLoad =
+    teachers.length > 0
+      ? (teachers.reduce((acc, t) => acc + t.classes.length, 0) / teachers.length).toFixed(1)
+      : '0'
+
+  const exportCsv = () => {
+    const headers = [
+      'Employee Code',
+      'Name',
+      'Email',
+      'Phone',
+      'Department',
+      'Subject',
+      'Qualification',
+      'Assigned Classes',
+      'Salary (PKR)',
+      'Joining Date',
+      'Status',
+    ]
+    const rows = filtered.map((t) => [
+      t.employee_code,
+      `"${t.name}"`,
+      t.email,
+      `"${t.phone}"`,
+      `"${t.department}"`,
+      `"${t.subject}"`,
+      `"${t.qualification}"`,
+      `"${t.classes.join(', ')}"`,
+      t.salary,
+      t.joining_date,
+      t.status,
+    ])
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
+    const encoded = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encoded)
+    link.setAttribute('download', `eduflow-faculty-register-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Top Breadcrumb & Actions Bar */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin"
+              className="text-xs text-slate-500 hover:text-sky-600 transition flex items-center gap-1 font-medium"
+            >
+              <ArrowLeft className="size-3.5" /> Campus Admin
+            </Link>
+            <span className="text-xs text-slate-400">/</span>
+            <Badge className="bg-sky-50 text-sky-700 hover:bg-sky-50 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+              Session 2026–2027
+            </Badge>
+          </div>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+            Faculty &amp; Teachers
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">
+            Onboard new teachers, assign classes &amp; subjects, monitor workloads, and manage payroll.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportCsv}
+            disabled={teachers.length === 0}
+            className="rounded-xl border-slate-200 hover:border-sky-300 hover:text-sky-700 text-xs"
+          >
+            <Download className="mr-1.5 size-3.5" /> Export Faculty CSV
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setAddOpen(true)}
+            className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs text-xs"
+          >
+            <UserPlus className="mr-1.5 size-4" /> Onboard Teacher
+          </Button>
+        </div>
+      </div>
+
+      {/* 4 Metric Cards */}
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {loading ? (
+          <>
+            <MetricCardSkeleton />
+            <MetricCardSkeleton />
+            <MetricCardSkeleton />
+            <MetricCardSkeleton />
+          </>
+        ) : (
+          <>
+            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Faculty Members</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+                  <GraduationCap className="size-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+                {totalFaculty}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Registered academic educators</p>
+            </article>
+
+            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Active in Classroom</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  <UserCheck className="size-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+                {activeToday}
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                  {totalFaculty > 0 ? `${Math.round((activeToday / totalFaculty) * 100)}%` : '0%'} on duty
+                </span>
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Avg Subject Load</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                  <BookOpen className="size-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+                {avgClassLoad}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Classes per faculty member</p>
+            </article>
+
+            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Monthly Faculty Payroll</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                  <Wallet className="size-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+                Rs. {totalMonthlyPayroll.toLocaleString()}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Base salary commitment</p>
+            </article>
+          </>
+        )}
+      </section>
+
+      {/* Main Faculty Table Section */}
+      <section className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900">
+        {/* Table Filter and Search Header */}
+        <div className="flex flex-col gap-3 border-b border-slate-100 p-5 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              FACULTY DIRECTORY
+            </span>
+            <h2 className="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-100">
+              Campus Teaching Staff
+            </h2>
+          </div>
+
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+            {/* Status pills */}
+            <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+              {['All', 'Active', 'On Leave', 'Inactive'].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => {
+                    setStatusFilter(s)
+                    setPage(1)
+                  }}
+                  className={cn(
+                    'rounded-lg px-2.5 py-1 text-xs font-semibold transition-all',
+                    statusFilter === s
+                      ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-900 dark:text-sky-300'
+                      : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+                  )}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
+              <Input
+                placeholder="Search name, code, subject…"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setPage(1)
+                }}
+                className="h-9 w-full sm:w-64 pl-9 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Department Quick Filter Sub-bar */}
+        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-100 px-5 py-2.5 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-950/40 text-xs">
+          <span className="font-semibold text-slate-400 mr-2 shrink-0">Department:</span>
+          {['All', 'Science & Math', 'Languages', 'Humanities', 'Arts & Sports', 'IT'].map((d) => (
+            <button
+              key={d}
+              onClick={() => {
+                setDeptFilter(d)
+                setPage(1)
+              }}
+              className={cn(
+                'rounded-lg px-2.5 py-1 font-medium transition shrink-0',
+                deptFilter === d
+                  ? 'bg-sky-600 text-white font-semibold shadow-2xs'
+                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-sky-300'
+              )}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+
+        {/* Table Body */}
+        {loading ? (
+          <div className="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <table className="w-full">
+              <tbody>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <TableRowSkeleton key={i} columns={6} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-8">
+            <ZeroDataEmptyState
+              icon={GraduationCap}
+              title="No faculty members found"
+              description={
+                query || deptFilter !== 'All' || statusFilter !== 'All'
+                  ? 'Try clearing your search query or department filters.'
+                  : 'Start by onboarding teachers to assign them to classes and record attendance.'
+              }
+              actionLabel="Onboard New Teacher"
+              onAction={() => setAddOpen(true)}
+              secondaryActionLabel={query || deptFilter !== 'All' ? 'Reset Filters' : undefined}
+              onSecondaryAction={() => {
+                setQuery('')
+                setDeptFilter('All')
+                setStatusFilter('All')
+              }}
+            />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[850px] text-left text-sm">
+              <thead className="border-b border-slate-100 bg-slate-50/70 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:border-slate-800 dark:bg-slate-950/60">
+                <tr>
+                  <th className="px-5 py-3.5">Code</th>
+                  <th className="px-5 py-3.5">Teacher Name &amp; Degree</th>
+                  <th className="px-5 py-3.5">Department &amp; Subject</th>
+                  <th className="px-5 py-3.5">Assigned Classes</th>
+                  <th className="px-5 py-3.5">Monthly Salary</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {paginated.map((teacher) => {
+                  const statusTone = {
+                    Active:
+                      'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-300',
+                    'On Leave':
+                      'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-950/40 dark:text-amber-300',
+                    Inactive:
+                      'bg-slate-100 text-slate-600 ring-1 ring-slate-400/20 dark:bg-slate-800 dark:text-slate-400',
+                  }[teacher.status]
+
+                  const dotColor = {
+                    Active: 'bg-emerald-500',
+                    'On Leave': 'bg-amber-500',
+                    Inactive: 'bg-slate-400',
+                  }[teacher.status]
+
+                  return (
+                    <tr
+                      key={teacher.id}
+                      className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/50"
+                    >
+                      {/* Employee Code */}
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-xs font-bold text-sky-700 bg-sky-50 dark:bg-sky-950 dark:text-sky-300 rounded px-1.5 py-0.5 border border-sky-200 dark:border-sky-800">
+                          {teacher.employee_code}
+                        </span>
+                      </td>
+
+                      {/* Teacher Profile */}
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-900 text-xs font-bold text-sky-700 dark:text-sky-300">
+                            {teacher.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .slice(0, 2)
+                              .join('')}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900 dark:text-slate-100">
+                              {teacher.name}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                              {teacher.qualification}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Department & Subject */}
+                      <td className="px-5 py-4">
+                        <p className="font-semibold text-slate-800 dark:text-slate-200">
+                          {teacher.subject}
+                        </p>
+                        <p className="text-xs text-slate-400">{teacher.department}</p>
+                      </td>
+
+                      {/* Classes */}
+                      <td className="px-5 py-4">
+                        <div className="flex flex-wrap gap-1 max-w-[220px]">
+                          {teacher.classes.map((cls) => (
+                            <span
+                              key={cls}
+                              className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            >
+                              {cls}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+
+                      {/* Salary */}
+                      <td className="px-5 py-4 font-mono font-semibold text-slate-900 dark:text-slate-100">
+                        Rs. {(teacher.salary || 0).toLocaleString()}
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-5 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone}`}
+                        >
+                          <span
+                            className={`size-1.5 rounded-full ${dotColor} ${teacher.status === 'Active' ? 'animate-pulse' : ''}`}
+                            aria-hidden="true"
+                          />
+                          {teacher.status}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* WhatsApp contact */}
+                          {teacher.phone && (
+                            <a
+                              href={`https://wa.me/${teacher.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                                `Assalam-o-Alaikum ${teacher.name}, message from EduFlow School Administration.`
+                              )}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Message teacher on WhatsApp"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                            >
+                              <MessageCircle className="size-3.5" />
+                            </a>
+                          )}
+
+                          {/* Email contact */}
+                          {teacher.email && (
+                            <a
+                              href={`mailto:${teacher.email}?subject=EduFlow Campus Notification`}
+                              title="Email teacher"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-sky-300 hover:text-sky-600 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                            >
+                              <Mail className="size-3.5" />
+                            </a>
+                          )}
+
+                          {/* Delete / Offboard */}
+                          <button
+                            onClick={() => setTeacherToDelete(teacher)}
+                            title="Offboard / Remove teacher"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-rose-300 hover:text-rose-600 hover:bg-rose-50 transition dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-rose-950/30"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination Footer */}
+        <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-xs text-slate-500 dark:border-slate-800">
+          <span>
+            Showing {paginated.length} of {filtered.length} faculty members
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="size-8 p-0"
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="px-2 font-medium">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="size-8 p-0"
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Modals */}
+      {addOpen && (
+        <AddTeacherModal
+          onClose={() => setAddOpen(false)}
+          onAdded={loadTeachers}
+          existingCount={teachers.length}
+        />
+      )}
+
+      {teacherToDelete && (
+        <DeleteTeacherModal
+          teacher={teacherToDelete}
+          onClose={() => setTeacherToDelete(null)}
+          onConfirm={handleDelete}
+        />
+      )}
+    </div>
+  )
+}

@@ -45,7 +45,23 @@ export function useEduFlow() { const value = useContext(EduFlowContext); if (!va
 function InstallBanner() {
   const { installPrompt, dismissInstall } = useEduFlow()
   if (!installPrompt) return null
-  return <div className="install-banner" role="status"><div><strong>Install EduFlow OS</strong><span>Keep your school tools ready, even on slower connections.</span></div><button onClick={async () => { const prompt = installPrompt as Event & { prompt?: () => Promise<void> }; await prompt.prompt?.(); dismissInstall() }}>Install</button><button className="install-dismiss" onClick={dismissInstall} aria-label="Dismiss install prompt">×</button></div>
+  const handleInstall = () => {
+    void (async () => {
+      const prompt = installPrompt as Event & { prompt?: () => Promise<void> }
+      await prompt.prompt?.()
+      dismissInstall()
+    })()
+  }
+  return (
+    <div className="install-banner" role="status">
+      <div>
+        <strong>Install EduFlow OS</strong>
+        <span>Keep your school tools ready, even on slower connections.</span>
+      </div>
+      <button onClick={handleInstall}>Install</button>
+      <button className="install-dismiss" onClick={dismissInstall} aria-label="Dismiss install prompt">×</button>
+    </div>
+  )
 }
 
 export function OfflineStatusBar({ compact = false }: { compact?: boolean }) {

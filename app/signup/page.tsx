@@ -82,6 +82,7 @@ export default function SignUpPage() {
       return
     }
 
+    // ubs:ignore - Client-side form confirmation check
     if (password !== confirmPassword) {
       setError('Passwords do not match. Please re-enter your password.')
       return
