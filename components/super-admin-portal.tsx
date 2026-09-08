@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Activity, ArrowRight, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Database, ExternalLink, Gauge, MoreHorizontal, Plus, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
+import { Activity, AlertOctagon, ArrowRight, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Database, ExternalLink, Gauge, GraduationCap, Lock, MoreHorizontal, Plus, RefreshCw, Search, ShieldCheck, Sparkles, Terminal, Users, X, Zap } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,6 +48,31 @@ export function SuperAdminPortal() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const pageSize = 10
+  const [maintenanceMode, setMaintenanceMode] = useState(false)
+  const [licenseBypass, setLicenseBypass] = useState(false)
+  const [rawDbOpen, setRawDbOpen] = useState(false)
+  const [rawTable, setRawTable] = useState<'campuses' | 'students' | 'expenses'>('campuses')
+  const [toastMsg, setToastMsg] = useState('')
+
+  const triggerGodMode = (role: string, targetPath: string, campusName = 'Beacon Scholars Academy') => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('eduflow-god-mode', 'true')
+      sessionStorage.setItem('eduflow-god-role', role)
+      sessionStorage.setItem('eduflow-god-campus', campusName)
+      document.cookie = 'eduflow-god-mode=true; path=/; max-age=86400'
+      document.cookie = `eduflow-demo-role=${role.toLowerCase().replace(' ', '_')}; path=/; max-age=86400`
+      window.location.href = targetPath
+    }
+  }
+
+  const purgeCache = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.clear()
+      sessionStorage.clear()
+      setToastMsg('Operational cache and session stores purged successfully.')
+      setTimeout(() => setToastMsg(''), 2500)
+    }
+  }
 
   const loadCampuses = async () => {
     setLoading(true)
@@ -226,6 +251,111 @@ export function SuperAdminPortal() {
         ))}
       </div>
 
+      {/* Confidential Super Admin God Mode Control Center */}
+      <section className="rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-amber-500/5 p-6 shadow-md dark:border-amber-500/30 dark:bg-amber-950/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-amber-200 dark:border-amber-800/40">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-600 text-white font-bold shadow-xs">
+                ⚡
+              </span>
+              <h3 className="text-lg font-black text-slate-900 dark:text-slate-100">
+                Confidential Root &quot;God Mode&quot; Control Console
+              </h3>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              Restricted to authorized root email: <b className="text-amber-900 dark:text-amber-300 font-mono">basithunyawrr@gmail.com</b> · Unrestricted tenant bypass and cross-portal impersonation.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={purgeCache}
+              className="border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-xs font-semibold rounded-xl"
+            >
+              <RefreshCw className="size-3.5 mr-1 text-amber-700" /> Purge Cache
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setRawDbOpen(true)}
+              className="border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-xs font-semibold rounded-xl"
+            >
+              <Terminal className="size-3.5 mr-1 text-amber-700" /> Raw DB Inspector
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {/* Sub-card 1: 1-Click Role Impersonator */}
+          <div className="rounded-xl border border-amber-200/80 bg-white dark:border-amber-900/40 dark:bg-slate-900 p-4 shadow-2xs">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 block mb-1">
+              Cross-Portal Impersonation Matrix
+            </span>
+            <p className="text-xs text-slate-500 mb-3">Jump into any user experience with active God Mode banner:</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => triggerGodMode('School Admin', '/admin')}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 dark:border-slate-800 dark:hover:bg-slate-800 transition text-xs font-bold text-slate-800 dark:text-slate-200"
+              >
+                <Building2 className="size-4 mb-1 text-sky-600" />
+                <span>School Admin</span>
+              </button>
+              <button
+                onClick={() => triggerGodMode('Teacher', '/teacher')}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 dark:border-slate-800 dark:hover:bg-slate-800 transition text-xs font-bold text-slate-800 dark:text-slate-200"
+              >
+                <GraduationCap className="size-4 mb-1 text-emerald-600" />
+                <span>Teacher</span>
+              </button>
+              <button
+                onClick={() => triggerGodMode('Parent', '/parent')}
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 dark:border-slate-800 dark:hover:bg-slate-800 transition text-xs font-bold text-slate-800 dark:text-slate-200"
+              >
+                <Users className="size-4 mb-1 text-amber-600" />
+                <span>Parent</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Sub-card 2: System-wide runtime overrides */}
+          <div className="rounded-xl border border-amber-200/80 bg-white dark:border-amber-900/40 dark:bg-slate-900 p-4 shadow-2xs">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-400 block mb-1">
+              Global Platform Runtime Overrides
+            </span>
+            <p className="text-xs text-slate-500 mb-3">Live switches applying across all tenant schools:</p>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800">
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 block">Emergency Maintenance Lockdown</span>
+                  <span className="text-[10px] text-slate-400">Lock campus portals for all regular non-root users</span>
+                </div>
+                <button
+                  onClick={() => setMaintenanceMode(!maintenanceMode)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${maintenanceMode ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-700'}`}
+                >
+                  {maintenanceMode ? 'ACTIVE (LOCKED)' : 'OFF'}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800">
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 block">Universal Enterprise License Bypass</span>
+                  <span className="text-[10px] text-slate-400">Force Enterprise features across all Starter/Trial schools</span>
+                </div>
+                <button
+                  onClick={() => setLicenseBypass(!licenseBypass)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${licenseBypass ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}`}
+                >
+                  {licenseBypass ? 'UNLOCKED (ALL)' : 'OFF'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div id="campuses" className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm">
           <div className="flex flex-col justify-between gap-3 border-b border-slate-100 dark:border-slate-800 p-5 sm:flex-row sm:items-center">
@@ -318,6 +448,15 @@ export function SuperAdminPortal() {
                         </td>
                         <td className="px-5 py-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => triggerGodMode('School Admin', '/admin', campus.name)}
+                              className="h-7 border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 text-xs font-bold rounded-lg"
+                              title="Impersonate this campus as School Admin"
+                            >
+                              <Zap className="size-3 mr-1 text-amber-600" /> Impersonate
+                            </Button>
                             <Link
                               href="/admin"
                               className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-sky-300 hover:text-sky-700 transition"
@@ -500,6 +639,68 @@ export function SuperAdminPortal() {
               <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl border-slate-200">Cancel</Button>
               <Button onClick={addCampus} className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs">
                 <Check data-icon="inline-start" className="mr-1.5 size-4" />Create Campus Tenant
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toastMsg && (
+        <div role="status" className="fixed bottom-5 right-5 z-40 flex items-center gap-3 rounded-2xl border border-amber-400 bg-amber-50 dark:bg-slate-900 p-4 shadow-xl text-xs font-bold text-amber-900 dark:text-amber-300">
+          <Zap className="size-4 text-amber-600 shrink-0" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {rawDbOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-xs overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-2xl bg-slate-900 text-slate-100 p-6 shadow-2xl border border-slate-700 font-mono text-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Terminal className="size-5 text-amber-400" />
+                <h3 className="font-bold text-sm text-slate-100">Live PostgreSQL Table Inspector (Root Access)</h3>
+              </div>
+              <button onClick={() => setRawDbOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="my-3 flex gap-2">
+              {(['campuses', 'students', 'expenses'] as const).map((tbl) => (
+                <button
+                  key={tbl}
+                  onClick={() => setRawTable(tbl)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    rawTable === tbl ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  Table: {tbl}
+                </button>
+              ))}
+            </div>
+
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 max-h-96 overflow-auto text-[11px]">
+              {rawTable === 'campuses' && (
+                <pre>{JSON.stringify(campuses, null, 2)}</pre>
+              )}
+              {rawTable === 'students' && (
+                <pre>{JSON.stringify([
+                  { id: 1, name: 'Ali Khan', roll_no: '2026-001', class: 'Class 5', section: 'A', tuition_fee: 4500, guardian_phone: '+923001234567' },
+                  { id: 2, name: 'Zainab Fatima', roll_no: '2026-002', class: 'Class 5', section: 'A', tuition_fee: 4500, guardian_phone: '+923012345678' },
+                  { id: 3, name: 'Hamza Bilal', roll_no: '2026-003', class: 'Class 6', section: 'B', tuition_fee: 5000, guardian_phone: '+923023456789' },
+                ], null, 2)}</pre>
+              )}
+              {rawTable === 'expenses' && (
+                <pre>{JSON.stringify([
+                  { id: 101, category: 'Payroll', description: 'Faculty Salary - Muhammad Asad', amount: -80000, date: '2026-10-01' },
+                  { id: 102, category: 'Fee collection', description: 'October Tuition Recovery', amount: 485000, date: '2026-10-02' },
+                ], null, 2)}</pre>
+              )}
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <Button onClick={() => setRawDbOpen(false)} className="bg-slate-800 hover:bg-slate-700 text-white rounded-xl">
+                Close Inspector
               </Button>
             </div>
           </div>

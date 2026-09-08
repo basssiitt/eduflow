@@ -1,7 +1,5 @@
 export const SUPER_ADMIN_EMAILS = [
   'basithunyawrr@gmail.com',
-  'basithadi@gmail.com',
-  'superadmin@eduflow.pk',
 ]
 
 export function isSuperAdminEmail(email: string | null | undefined): boolean {
@@ -21,7 +19,7 @@ export const ROLE_HOME_ROUTES: Record<string, string> = {
   admin: '/admin',
   teacher: '/teacher',
   parent: '/parent',
-  student: '/student',
+  student: '/parent',
 }
 
 /** Specific portal landing pages per role (used by the OAuth callback) */
@@ -31,7 +29,7 @@ export const ROLE_PORTAL_ROUTES: Record<string, string> = {
   admin: '/admin/overview',
   teacher: '/teacher/classes',
   parent: '/parent/children',
-  student: '/student/grades',
+  student: '/parent/children',
 }
 
 export function getHomeRoute(role: string | null | undefined, email?: string | null): string {

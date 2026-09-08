@@ -133,12 +133,18 @@ export async function middleware(request: NextRequest) {
     return safeRedirect(homeUrl)
   }
 
-  // Guard /super-admin
+  // Guard /super-admin - STRICTLY CONFIDENTIAL: only basithunyawrr@gmail.com
   if (pathname === '/super-admin' || pathname.startsWith('/super-admin/')) {
-    if (user && (normalizedRole === 'super_admin' || isSuperAdmin)) {
+    if (user && isSuperAdminEmail(userEmail)) {
       return response
     }
-    return safeRedirect(homeUrl)
+    // Conceal existence of super-admin from unauthorized users
+    return safeRedirect(user ? homeUrl : '/login')
+  }
+
+  // Redirect /student to /parent (4-portal architecture)
+  if (pathname === '/student' || pathname.startsWith('/student/')) {
+    return safeRedirect(new URL('/parent', request.url))
   }
 
   // Guard /admin
@@ -160,14 +166,6 @@ export async function middleware(request: NextRequest) {
   // Guard /parent
   if (pathname === '/parent' || pathname.startsWith('/parent/')) {
     if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
-      return safeRedirect(homeUrl)
-    }
-    return response
-  }
-
-  // Guard /student
-  if (pathname === '/student' || pathname.startsWith('/student/')) {
-    if (!isSuperAdmin && !['student', 'school_admin', 'admin'].includes(normalizedRole)) {
       return safeRedirect(homeUrl)
     }
     return response

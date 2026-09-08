@@ -371,9 +371,9 @@ export default function LoginPage() {
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
-              Explore and test EduFlow OS across all 5 user roles without needing manual login:
+              Explore and test EduFlow OS across the 3 user portals without needing manual login:
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleInstantDemo('school_admin', '/admin')}
@@ -394,22 +394,12 @@ export default function LoginPage() {
 
               <button
                 type="button"
-                onClick={() => handleInstantDemo('student', '/student')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-              >
-                <BookOpen className="size-4 text-indigo-600 shrink-0" />
-                <span className="truncate">Student</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => handleInstantDemo('parent', '/parent')}
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 <Users className="size-4 text-amber-600 shrink-0" />
                 <span className="truncate">Parent</span>
               </button>
-
             </div>
           </div>
 
@@ -432,8 +422,6 @@ export default function LoginPage() {
             <Link href="/teacher" className="hover:text-sky-600 transition">Teacher Console</Link>
             <span>•</span>
             <Link href="/parent" className="hover:text-sky-600 transition">Parent Portal</Link>
-            <span>•</span>
-            <Link href="/student" className="hover:text-sky-600 transition">Student Hub</Link>
           </div>
           <div className="flex items-center justify-center gap-2 text-xs">
             <span>Need help signing in?</span>

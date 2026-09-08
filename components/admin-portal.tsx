@@ -37,71 +37,8 @@ function StatusBadge({ status }: { status: Status }) {
   )
 }
 
-function Challan({ r, label }: { r: FeeRecord; label: string }) {
-  return (
-    <article className="challan-copy">
-      <b className="challan-copy-label">{label}</b>
-      <div className="challan-heading">
-        <div className="school-mark">EF</div>
-        <div>
-          <strong>EduFlow OS Campus</strong>
-          <span>Academic Node · Fee Challan</span>
-        </div>
-        <div className="challan-session">
-          <small>SESSION</small>
-          <b>2026-2027</b>
-        </div>
-      </div>
-      <div className="challan-meta">
-        <div><small>Student Name</small><b>{r.name}</b></div>
-        <div><small>Challan No.</small><b>{r.challan}</b></div>
-        <div><small>Class</small><b>{r.cls}</b></div>
-        <div><small>Billing Month</small><b>Current Session</b></div>
-        <div><small>Due Date</small><b>{r.due}</b></div>
-      </div>
-      <table className="challan-table">
-        <tbody>
-          <tr><td>Tuition Fee</td><td>{money(r.tuition)}</td></tr>
-          {r.arrears > 0 && <tr><td>Arrears / Surcharge</td><td>{money(r.arrears)}</td></tr>}
-        </tbody>
-        <tfoot>
-          <tr><th>Total Amount Payable</th><th>{money(total(r))}</th></tr>
-        </tfoot>
-      </table>
-      <div className="challan-footer">
-        <div>
-          <b>Bank Account &amp; 1Link</b>
-          <span>Designated Campus Account<br />1Link Bill Payment</span>
-        </div>
-        <div className="signature">
-          <span>Cashier Signature</span>
-          <span>Parent Signature</span>
-        </div>
-      </div>
-    </article>
-  )
-}
-
-function Modal({ r, close }: { r: FeeRecord; close: () => void }) {
-  return (
-    <div className="admin-modal-backdrop">
-      <div className="challan-modal" role="dialog" aria-modal="true">
-        <div className="modal-toolbar">
-          <div><span className="eyebrow">PAYMENT DOCUMENT</span><h2>3-Copy Fee Challan</h2></div>
-          <div className="modal-actions">
-            <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-xs" onClick={() => window.print()}><Printer className="size-4 mr-2" /> Print 3-Copy Slip</Button>
-            <button className="icon-btn" onClick={close} aria-label="Close"><X className="size-4" /></button>
-          </div>
-        </div>
-        <div className="challan-stack">
-          <Challan r={r} label="Bank Copy" />
-          <Challan r={r} label="School Copy" />
-          <Challan r={r} label="Parent Copy" />
-        </div>
-      </div>
-    </div>
-  )
-}
+import { ThreeFaceChallanSlip } from "@/components/challan-slip"
+import { Building2 } from "lucide-react"
 
 export function AdminPortal() {
   const [data, setData] = useState<FeeRecord[]>([])
@@ -114,6 +51,31 @@ export function AdminPortal() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const pageSize = 10
+  const [bankModalOpen, setBankModalOpen] = useState(false)
+  const [bankSettings, setBankSettings] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('eduflow-bank-settings')
+        if (saved) return JSON.parse(saved)
+      } catch {}
+    }
+    return {
+      bankName: 'Meezan Bank Ltd.',
+      accountTitle: 'EduFlow School Main Campus',
+      iban: 'PK92 MEZN 0001 2345 6789 0101',
+      psidPrefix: '1004',
+      easypaisa: '03001234567',
+      jazzcash: '03121234567',
+    }
+  })
+
+  const saveBankSettings = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('eduflow-bank-settings', JSON.stringify(bankSettings))
+    }
+    setBankModalOpen(false)
+  }
 
   const loadInvoices = async () => {
     setLoading(true)
@@ -257,7 +219,14 @@ export function AdminPortal() {
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Fee Management &amp; Invoices</h1>
           <p className="text-slate-500 dark:text-slate-400">Track collections, issue 3-copy challans, and record payments.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setBankModalOpen(true)}
+            className="border-slate-200 hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700"
+          >
+            <Building2 className="mr-2 size-4 text-emerald-600" /> Bank &amp; Gateway Setup
+          </Button>
           <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)} className="border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700">
             <Upload className="mr-2 size-4" /> Bulk Import CSV
           </Button>
@@ -507,7 +476,106 @@ export function AdminPortal() {
         )}
       </section>
 
-      {selected && <Modal r={selected} close={() => setSelected(null)} />}
+      {selected && (
+        <ThreeFaceChallanSlip
+          data={{
+            challanNo: selected.challan,
+            studentName: selected.name,
+            rollNo: selected.id ? `2026-${String(selected.id).padStart(3, '0')}` : '2026-001',
+            className: selected.cls,
+            tuitionFee: selected.tuition,
+            arrears: selected.arrears,
+            dueDate: selected.due,
+            issueDate: '01 Oct 2026',
+            bankName: bankSettings.bankName,
+            accountTitle: bankSettings.accountTitle,
+            iban: bankSettings.iban,
+            schoolName: 'EduFlow Academy & College',
+            schoolBranch: 'Main Campus',
+          }}
+          onClose={() => setSelected(null)}
+        />
+      )}
+
+      {bankModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Payment Gateway &amp; Banking</span>
+                <h3 className="text-lg font-black text-slate-900 dark:text-slate-100">School Bank Account Setup</h3>
+              </div>
+              <button onClick={() => setBankModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="size-5" />
+              </button>
+            </div>
+            <form onSubmit={saveBankSettings} className="mt-4 space-y-3.5 text-xs">
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Bank Name</label>
+                <Input
+                  value={bankSettings.bankName}
+                  onChange={(e) => setBankSettings({ ...bankSettings, bankName: e.target.value })}
+                  placeholder="e.g. Meezan Bank Ltd."
+                  required
+                  className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Account Title</label>
+                <Input
+                  value={bankSettings.accountTitle}
+                  onChange={(e) => setBankSettings({ ...bankSettings, accountTitle: e.target.value })}
+                  placeholder="e.g. EduFlow School Accounts"
+                  required
+                  className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">IBAN (24 Characters)</label>
+                <Input
+                  value={bankSettings.iban}
+                  onChange={(e) => setBankSettings({ ...bankSettings, iban: e.target.value })}
+                  placeholder="PK92 MEZN 0001 2345 6789 0101"
+                  required
+                  className="font-mono rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">1Link PSID Prefix</label>
+                  <Input
+                    value={bankSettings.psidPrefix}
+                    onChange={(e) => setBankSettings({ ...bankSettings, psidPrefix: e.target.value })}
+                    placeholder="1004"
+                    className="font-mono rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">EasyPaisa / JazzCash</label>
+                  <Input
+                    value={bankSettings.easypaisa}
+                    onChange={(e) => setBankSettings({ ...bankSettings, easypaisa: e.target.value })}
+                    placeholder="03XXXXXXXXX"
+                    className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                  />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 pt-1">
+                These credentials will appear on all 3-Face Challans and power online Parent Portal fee payments.
+              </p>
+              <div className="pt-3 flex gap-2">
+                <Button type="button" variant="outline" onClick={() => setBankModalOpen(false)} className="flex-1 rounded-xl">
+                  Cancel
+                </Button>
+                <Button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
+                  Save Bank Details
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {importOpen && (
         <BulkImportModal
           onClose={() => {

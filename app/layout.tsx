@@ -39,6 +39,8 @@ export const viewport: Viewport = {
   ],
 }
 
+import { GodModeBar } from '@/components/god-mode-bar'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,7 +49,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <EduFlowProvider><OfflineClient />{children}</EduFlowProvider>
+        <EduFlowProvider>
+          <GodModeBar />
+          <OfflineClient />
+          {children}
+        </EduFlowProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
