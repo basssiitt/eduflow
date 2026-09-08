@@ -19,14 +19,14 @@ const total = (r: FeeRecord) => r.tuition + r.arrears
 
 function StatusBadge({ status }: { status: Status }) {
   const tone = {
-    Paid: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-300',
-    Pending: 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-950/40 dark:text-amber-300',
-    Overdue: 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20 dark:bg-rose-950/40 dark:text-rose-300',
+    Paid: 'bg-[#e8f5e9] text-[#166534] ring-1 ring-[#c8e6c9] dark:bg-emerald-950/40 dark:text-emerald-300',
+    Pending: 'bg-[#efebe9] text-[#5D4037] ring-1 ring-[#d7ccc8] dark:bg-amber-950/40 dark:text-amber-300',
+    Overdue: 'bg-[#fce4ec] text-[#880e4f] ring-1 ring-[#f8bbd0] dark:bg-rose-950/40 dark:text-rose-300',
   }[status]
   const dot = {
-    Paid: 'bg-emerald-500',
-    Pending: 'bg-amber-500',
-    Overdue: 'bg-rose-500',
+    Paid: 'bg-[#166534]',
+    Pending: 'bg-[#5D4037]',
+    Overdue: 'bg-[#880e4f]',
   }[status]
 
   return (
@@ -190,24 +190,24 @@ export function AdminPortal() {
 
   return (
     <div className="flex flex-col gap-6">
-      <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
+      <nav className="flex items-center justify-between text-xs text-stone-500 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-sky-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-stone-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">Fee Challans</span>
+          <span className="text-[#2c1d17] font-semibold">Fee Challans</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/students" className="hover:text-sky-600 transition font-medium text-slate-500">
+          <Link href="/admin/students" className="hover:text-[#2c1d17] transition font-medium text-stone-500">
             Student Register →
           </Link>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin/finance" className="hover:text-sky-600 transition font-medium text-slate-500">
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/finance" className="hover:text-[#2c1d17] transition font-medium text-stone-500">
             Finance Ledger →
           </Link>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin/billing" className="hover:text-sky-600 transition font-medium text-slate-500">
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/billing" className="hover:text-[#2c1d17] transition font-medium text-stone-500">
             Campus Billing →
           </Link>
         </div>
@@ -215,25 +215,25 @@ export function AdminPortal() {
 
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end no-print">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Fee Challans &amp; Accounts</span>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Fee Management &amp; Invoices</h1>
-          <p className="text-slate-500 dark:text-slate-400">Track collections, issue 3-copy challans, and record payments.</p>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#c5a059]">Fee Challans &amp; Accounts</span>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-[#2c1d17]">Fee Management &amp; Invoices</h1>
+          <p className="text-stone-500">Track collections, issue 3-copy challans, and record payments.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             onClick={() => setBankModalOpen(true)}
-            className="border-slate-200 hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700"
+            className="border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-[#2c1d17]"
           >
-            <Building2 className="mr-2 size-4 text-emerald-600" /> Bank &amp; Gateway Setup
+            <Building2 className="mr-2 size-4 text-[#c5a059]" /> Bank &amp; Gateway Setup
           </Button>
-          <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)} className="border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700">
-            <Upload className="mr-2 size-4" /> Bulk Import CSV
+          <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)} className="border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-[#2c1d17]">
+            <Upload className="mr-2 size-4 text-stone-500" /> Bulk Import CSV
           </Button>
           <Button
             onClick={generate}
             disabled={generating}
-            className="bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-sm shadow-sky-200"
+            className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs"
           >
             <Plus className="mr-2 size-4" /> Generate Invoices
           </Button>
@@ -241,14 +241,14 @@ export function AdminPortal() {
       </header>
 
       {generating && (
-        <div className="flex items-center gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm font-medium text-sky-800 shadow-xs">
-          <div className="size-4 animate-spin rounded-full border-2 border-sky-600 border-t-transparent" />
+        <div className="flex items-center gap-3 rounded-2xl border border-[#c5a059]/40 bg-[#faf9f5] p-4 text-sm font-medium text-[#2c1d17] shadow-xs">
+          <div className="size-4 animate-spin rounded-full border-2 border-[#2c1d17] border-t-transparent" />
           <span>Generating invoices for all enrolled students… Please wait.</span>
         </div>
       )}
 
       {generated && (
-        <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 shadow-xs">
+        <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-sm font-semibold text-emerald-800 shadow-xs">
           <Check className="size-4 text-emerald-600" aria-hidden="true" />
           <span>Invoices generated successfully for current academic cycle.</span>
         </div>
@@ -256,45 +256,45 @@ export function AdminPortal() {
 
       {/* Metric Cards */}
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200">
+        <article className="rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-5 shadow-xs transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Recoverable Fee</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+            <span className="text-sm font-medium text-stone-600">Total Recoverable Fee</span>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#2c1d17]/5 text-[#2c1d17] border border-[#e7e2da]">
               <FileText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{money(totalRecoverable)}</p>
-          <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{money(totalRecoverable)}</p>
+          <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
             <span>Across {data.length} active invoices</span>
-            <span className="font-medium text-slate-600 dark:text-slate-400">Session 2026–27</span>
+            <span className="font-medium text-stone-700">Session 2026–27</span>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200">
+        <article className="rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-5 shadow-xs transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Collected This Month</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+            <span className="text-sm font-medium text-stone-600">Collected This Month</span>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/60">
               <TrendingUp className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{money(totalCollected)}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{money(totalCollected)}</p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 border border-emerald-200">
               +{totalRecoverable > 0 ? `${Math.round((totalCollected / totalRecoverable) * 100)}%` : '0%'} recovery rate
             </span>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200">
+        <article className="rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-5 shadow-xs transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Pending Invoices</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+            <span className="text-sm font-medium text-stone-600">Pending Invoices</span>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#c5a059]/15 text-[#8c6b2d] border border-[#c5a059]/30">
               <ReceiptText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{pendingCount}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{pendingCount}</p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#efebe9] px-2.5 py-0.5 text-xs font-semibold text-[#5D4037] border border-[#d7ccc8]">
               {data.length > 0 ? `${Math.round((pendingCount / data.length) * 100)}%` : '0%'} uncollected
             </span>
           </div>
@@ -302,29 +302,29 @@ export function AdminPortal() {
       </section>
 
       {/* Table Section */}
-      <section className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm overflow-hidden">
-        <div className="flex flex-col justify-between gap-3 border-b border-slate-100 dark:border-slate-800 p-5 sm:flex-row sm:items-center">
+      <section className="rounded-2xl border border-[#e7e2da] bg-white shadow-xs overflow-hidden">
+        <div className="flex flex-col justify-between gap-3 border-b border-[#e7e2da] p-5 sm:flex-row sm:items-center">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">INVOICE REGISTER</span>
-            <h2 className="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-100">Student Fee Records</h2>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#c5a059]">INVOICE REGISTER</span>
+            <h2 className="mt-0.5 text-lg font-bold text-[#2c1d17]">Student Fee Records</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={exportCsv} disabled={data.length === 0} className="border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700">
+            <Button variant="outline" size="sm" onClick={exportCsv} disabled={data.length === 0} className="border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-[#2c1d17]">
               <Download className="mr-1.5 size-3.5" /> Export CSV
             </Button>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 sm:flex-row sm:items-center sm:justify-between bg-slate-50/50 dark:bg-slate-950/40">
-          <div className="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 p-1">
+        <div className="flex flex-col gap-3 border-b border-[#e7e2da] p-4 sm:flex-row sm:items-center sm:justify-between bg-[#faf9f5]">
+          <div className="flex items-center gap-1 rounded-xl bg-[#f7f5f0] p-1 border border-[#e7e2da]">
             {["All", "Paid", "Pending", "Overdue"].map((f) => (
               <button
                 key={f}
                 className={cn(
                   'rounded-lg px-3 py-1.5 text-xs font-bold transition-all',
                   filter === f
-                    ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-900 dark:text-sky-400'
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    ? 'bg-[#2c1d17] text-white shadow-xs'
+                    : 'text-stone-600 hover:text-[#2c1d17]'
                 )}
                 onClick={() => { setFilter(f); setPage(1); }}
               >
@@ -333,25 +333,25 @@ export function AdminPortal() {
             ))}
           </div>
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 size-4 text-stone-400" />
             <input
               placeholder="Search student or challan…"
               value={query}
               onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-              className="h-9 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-9 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition"
+              className="h-9 w-full rounded-xl border border-[#e7e2da] bg-white pl-9 pr-3 text-xs text-[#2c1d17] placeholder:text-stone-400 focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059]/20 outline-none transition"
             />
           </div>
         </div>
 
         {loading ? (
           <div className="p-6">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-[#e7e2da]">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="py-4 flex items-center justify-between animate-pulse">
-                  <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                  <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                  <div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                  <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                  <div className="h-4 w-28 bg-[#f7f5f0] rounded-md" />
+                  <div className="h-4 w-36 bg-[#f7f5f0] rounded-md" />
+                  <div className="h-4 w-20 bg-[#f7f5f0] rounded-md" />
+                  <div className="h-4 w-24 bg-[#f7f5f0] rounded-md" />
                 </div>
               ))}
             </div>
@@ -373,7 +373,7 @@ export function AdminPortal() {
           <>
             <div className="overflow-x-auto" data-testid="fee-table">
               <table className="w-full min-w-[850px] text-left text-sm">
-                <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <thead className="border-b border-[#e7e2da] bg-[#f7f5f0] text-xs font-bold uppercase tracking-wider text-stone-600">
                   <tr>
                     <th className="px-5 py-3.5">Challan No.</th>
                     <th className="px-5 py-3.5">Student Name</th>
@@ -386,38 +386,38 @@ export function AdminPortal() {
                     <th className="px-5 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[#e7e2da]">
                   {paginated.map((r) => (
-                    <tr key={r.challan} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                    <tr key={r.challan} className="hover:bg-[#faf9f5] transition-colors">
                       <td className="px-5 py-4">
-                        <span className="font-mono text-xs font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 rounded-md px-2 py-1">
+                        <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#f7f5f0] border border-[#e7e2da] rounded-md px-2 py-1">
                           {r.challan}
                         </span>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#2c1d17]/5 border border-[#e7e2da] text-xs font-bold text-[#2c1d17]">
                             {r.name.split(" ").map((x) => x[0]).join("")}
                           </div>
-                          <span className="font-semibold text-slate-900 dark:text-slate-100">{r.name}</span>
+                          <span className="font-semibold text-[#2c1d17]">{r.name}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{r.cls}</td>
-                      <td className="px-5 py-4 text-slate-700 dark:text-slate-300 font-medium">{money(r.tuition)}</td>
+                      <td className="px-5 py-4 text-stone-600">{r.cls}</td>
+                      <td className="px-5 py-4 text-[#2c1d17] font-medium">{money(r.tuition)}</td>
                       <td className="px-5 py-4">
                         {r.arrears > 0 ? (
-                          <span className="font-semibold text-rose-600">{money(r.arrears)}</span>
+                          <span className="font-semibold text-[#880e4f]">{money(r.arrears)}</span>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-stone-400">—</span>
                         )}
                       </td>
-                      <td className="px-5 py-4 font-bold text-slate-900 dark:text-slate-100">{money(total(r))}</td>
-                      <td className="px-5 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">{r.due}</td>
+                      <td className="px-5 py-4 font-bold text-[#2c1d17]">{money(total(r))}</td>
+                      <td className="px-5 py-4 text-xs font-mono text-stone-600">{r.due}</td>
                       <td className="px-5 py-4"><StatusBadge status={r.status} /></td>
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-sky-300 hover:text-sky-600 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-[#faf9f5] text-stone-600 hover:border-[#c5a059] hover:text-[#2c1d17] transition"
                             data-testid="btn-print-challan"
                             onClick={() => setSelected(r)}
                             title="Print challan"
@@ -425,7 +425,7 @@ export function AdminPortal() {
                             <Printer className="size-3.5" />
                           </button>
                           <a
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-emerald-300 hover:text-emerald-600 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-[#faf9f5] text-stone-600 hover:border-emerald-300 hover:text-emerald-700 transition"
                             href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`}
                             target="_blank"
                             rel="noreferrer"
@@ -434,7 +434,7 @@ export function AdminPortal() {
                             <MessageCircle className="size-3.5" />
                           </a>
                           <button
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-emerald-300 hover:text-emerald-600 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-[#faf9f5] text-stone-600 hover:border-[#c5a059] hover:text-[#2c1d17] transition"
                             onClick={() => toggleStatus(r)}
                             title="Mark as paid / pending"
                           >
@@ -448,7 +448,7 @@ export function AdminPortal() {
               </table>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 dark:border-slate-800 p-4 text-xs text-slate-500">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-[#e7e2da] p-4 text-xs text-stone-500">
               <span>Showing {paginated.length} of {shown.length} invoices</span>
               <div className="flex items-center gap-2">
                 <Button
@@ -456,17 +456,17 @@ export function AdminPortal() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
+                  className="size-8 p-0 border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-stone-700"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
-                <span className="px-2 font-medium">Page {page} of {totalPages}</span>
+                <span className="px-2 font-medium text-[#2c1d17]">Page {page} of {totalPages}</span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
+                  className="size-8 p-0 border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-stone-700"
                 >
                   <ChevronRight className="size-4" />
                 </Button>
@@ -498,76 +498,76 @@ export function AdminPortal() {
       )}
 
       {bankModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs overflow-y-auto">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-[#e7e2da]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e7e2da]">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Payment Gateway &amp; Banking</span>
-                <h3 className="text-lg font-black text-slate-900 dark:text-slate-100">School Bank Account Setup</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#c5a059]">Payment Gateway &amp; Banking</span>
+                <h3 className="text-lg font-black text-[#2c1d17]">School Bank Account Setup</h3>
               </div>
-              <button onClick={() => setBankModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setBankModalOpen(false)} className="text-stone-400 hover:text-stone-700">
                 <X className="size-5" />
               </button>
             </div>
             <form onSubmit={saveBankSettings} className="mt-4 space-y-3.5 text-xs">
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Bank Name</label>
+                <label className="font-semibold text-stone-700 block mb-1">Bank Name</label>
                 <Input
                   value={bankSettings.bankName}
                   onChange={(e) => setBankSettings({ ...bankSettings, bankName: e.target.value })}
                   placeholder="e.g. Meezan Bank Ltd."
                   required
-                  className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                  className="rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] text-xs"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Account Title</label>
+                <label className="font-semibold text-stone-700 block mb-1">Account Title</label>
                 <Input
                   value={bankSettings.accountTitle}
                   onChange={(e) => setBankSettings({ ...bankSettings, accountTitle: e.target.value })}
                   placeholder="e.g. EduFlow School Accounts"
                   required
-                  className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                  className="rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] text-xs"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">IBAN (24 Characters)</label>
+                <label className="font-semibold text-stone-700 block mb-1">IBAN (24 Characters)</label>
                 <Input
                   value={bankSettings.iban}
                   onChange={(e) => setBankSettings({ ...bankSettings, iban: e.target.value })}
                   placeholder="PK92 MEZN 0001 2345 6789 0101"
                   required
-                  className="font-mono rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                  className="font-mono rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] text-xs"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">1Link PSID Prefix</label>
+                  <label className="font-semibold text-stone-700 block mb-1">1Link PSID Prefix</label>
                   <Input
                     value={bankSettings.psidPrefix}
                     onChange={(e) => setBankSettings({ ...bankSettings, psidPrefix: e.target.value })}
                     placeholder="1004"
-                    className="font-mono rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                    className="font-mono rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] text-xs"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">EasyPaisa / JazzCash</label>
+                  <label className="font-semibold text-stone-700 block mb-1">EasyPaisa / JazzCash</label>
                   <Input
                     value={bankSettings.easypaisa}
                     onChange={(e) => setBankSettings({ ...bankSettings, easypaisa: e.target.value })}
                     placeholder="03XXXXXXXXX"
-                    className="rounded-xl border-slate-300 dark:border-slate-700 text-xs"
+                    className="rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] text-xs"
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 pt-1">
+              <p className="text-[11px] text-stone-500 pt-1">
                 These credentials will appear on all 3-Face Challans and power online Parent Portal fee payments.
               </p>
               <div className="pt-3 flex gap-2">
-                <Button type="button" variant="outline" onClick={() => setBankModalOpen(false)} className="flex-1 rounded-xl">
+                <Button type="button" variant="outline" onClick={() => setBankModalOpen(false)} className="flex-1 rounded-xl border-[#e7e2da] bg-[#faf9f5] hover:bg-[#f7f5f0] text-[#2c1d17]">
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
+                <Button type="submit" className="flex-1 bg-[#2c1d17] hover:bg-[#1e130f] text-white rounded-xl">
                   Save Bank Details
                 </Button>
               </div>

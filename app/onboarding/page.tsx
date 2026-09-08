@@ -10,12 +10,12 @@ import {
   ArrowLeft,
   Building2,
   CheckCircle2,
-  GraduationCap,
   Loader2,
   MapPin,
   Phone,
   Globe,
 } from 'lucide-react'
+import { AcademicCrest } from '@/components/academic-crest'
 
 /* ─── Types ────────────────────────────────────────────────────────────────── */
 interface FormData {
@@ -183,17 +183,17 @@ export default function OnboardingPage() {
 
   /* ─── Render ────────────────────────────────────────────────────────────── */
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-sky-50/20 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#ffffff] flex items-center justify-center p-4 selection:bg-[#c5a059]/20">
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-sky-600 text-white mb-4 shadow-sm shadow-sky-200">
-            <GraduationCap className="size-7" />
+          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-[#2c1d17] text-[#c5a059] border border-[#e7e2da] shadow-xs mb-4">
+            <AcademicCrest className="size-8" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-black tracking-tight text-[#2c1d17]">
             Welcome to EduFlow OS
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+          <p className="text-[#5c4a3e] mt-1 text-sm font-medium">
             Let&apos;s set up your school campus in under 2 minutes
           </p>
         </div>
@@ -208,19 +208,19 @@ export default function OnboardingPage() {
               <div key={s.id} className="flex items-center gap-2">
                 <div
                   className={[
-                    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all',
+                    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-all',
                     done
-                      ? 'bg-sky-600 text-white'
+                      ? 'bg-[#2c1d17] text-white shadow-xs'
                       : active
-                      ? 'bg-sky-50 text-sky-700 dark:text-sky-300 ring-1 ring-sky-600/30'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400',
+                      ? 'bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#c5a059]'
+                      : 'bg-[#faf9f5] text-[#8c7a6b] border border-[#e7e2da]',
                   ].join(' ')}
                 >
                   <Icon className="size-3.5" />
                   {s.title}
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className={`h-px w-6 ${step > s.id ? 'bg-sky-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                  <div className={`h-px w-6 ${step > s.id ? 'bg-[#2c1d17]' : 'bg-[#e7e2da]'}`} />
                 )}
               </div>
             )
@@ -230,25 +230,25 @@ export default function OnboardingPage() {
         {/* Card */}
         <form
           onSubmit={step < 3 ? (e) => { e.preventDefault(); setStep((s) => s + 1) } : handleSubmit}
-          className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 p-8 space-y-5"
+          className="bg-white rounded-2xl shadow-xs border border-[#e7e2da] p-8 space-y-5"
         >
           {/* ── Step 1: School Info ── */}
           {step === 1 && (
             <>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+                <h2 className="text-lg font-bold text-[#2c1d17] mb-1">
                   School Information
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-[#5c4a3e]">
                   This is the official name of your institution.
                 </p>
               </div>
 
               <FieldGroup label="School Name" required>
                 <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c7a6b]" />
                   <Input
-                    className="pl-9"
+                    className="pl-9 border-[#e7e2da] text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                     placeholder="e.g. Beacon Scholars Academy"
                     value={form.schoolName}
                     onChange={set('schoolName')}
@@ -260,9 +260,9 @@ export default function OnboardingPage() {
 
               <FieldGroup label="Subdomain / Slug" hint="Auto-generated — you can edit it">
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c7a6b]" />
                   <Input
-                    className="pl-9 font-mono text-sm"
+                    className="pl-9 font-mono text-sm border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                     placeholder="beacon-scholars"
                     value={form.slug}
                     onChange={(e) =>
@@ -271,9 +271,9 @@ export default function OnboardingPage() {
                   />
                 </div>
                 {form.slug && (
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-[#8c7a6b] mt-1">
                     Your portal:{' '}
-                    <span className="text-emerald-600 font-mono">
+                    <span className="text-[#166534] font-mono font-semibold">
                       {form.slug}.eduflow.pk
                     </span>
                   </p>
@@ -286,16 +286,17 @@ export default function OnboardingPage() {
           {step === 2 && (
             <>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+                <h2 className="text-lg font-bold text-[#2c1d17] mb-1">
                   Campus Details
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-[#5c4a3e]">
                   Your main campus location and contact info.
                 </p>
               </div>
 
               <FieldGroup label="Campus Name" required>
                 <Input
+                  className="border-[#e7e2da] text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                   placeholder="e.g. Main Campus"
                   value={form.campusName}
                   onChange={set('campusName')}
@@ -307,9 +308,9 @@ export default function OnboardingPage() {
               <div className="grid grid-cols-2 gap-4">
                 <FieldGroup label="City" required>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c7a6b]" />
                     <Input
-                      className="pl-9"
+                      className="pl-9 border-[#e7e2da] text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                       placeholder="e.g. Karachi"
                       value={form.city}
                       onChange={set('city')}
@@ -320,9 +321,9 @@ export default function OnboardingPage() {
 
                 <FieldGroup label="Phone">
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c7a6b]" />
                     <Input
-                      className="pl-9"
+                      className="pl-9 border-[#e7e2da] text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                       placeholder="+92 300 0000000"
                       value={form.phone}
                       onChange={set('phone')}
@@ -334,6 +335,7 @@ export default function OnboardingPage() {
 
               <FieldGroup label="Address">
                 <Input
+                  className="border-[#e7e2da] text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                   placeholder="Street, Area, City"
                   value={form.address}
                   onChange={set('address')}
@@ -346,15 +348,15 @@ export default function OnboardingPage() {
           {step === 3 && (
             <>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+                <h2 className="text-lg font-bold text-[#2c1d17] mb-1">
                   Review &amp; Launch
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-[#5c4a3e]">
                   Everything look good? Click Launch to create your school.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+              <div className="rounded-xl border border-[#e7e2da] bg-[#faf9f5] divide-y divide-[#e7e2da] text-sm">
                 <ReviewRow label="School Name" value={form.schoolName} />
                 <ReviewRow label="Subdomain" value={form.slug || toSlug(form.schoolName)} mono />
                 <ReviewRow label="Campus" value={form.campusName} />
@@ -365,7 +367,7 @@ export default function OnboardingPage() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-600 dark:text-red-400 rounded-lg bg-red-50 dark:bg-red-950/30 px-4 py-3">
+                <p className="text-sm text-[#991b1b] rounded-lg bg-rose-50 border border-rose-200 px-4 py-3">
                   {error}
                 </p>
               )}
@@ -380,6 +382,7 @@ export default function OnboardingPage() {
                 variant="ghost"
                 onClick={() => setStep((s) => s - 1)}
                 disabled={submitting}
+                className="border border-[#e7e2da] bg-white text-[#2c1d17] hover:bg-[#faf9f5]"
               >
                 <ArrowLeft className="size-4 mr-1" />
                 Back
@@ -391,11 +394,11 @@ export default function OnboardingPage() {
             <Button
               type="submit"
               disabled={!isStepValid() || submitting}
-              className="bg-sky-600 hover:bg-sky-700 text-white px-6 font-semibold shadow-sm shadow-sky-200"
+              className="bg-[#2c1d17] hover:bg-[#3d2a20] text-white px-6 font-semibold shadow-xs disabled:opacity-50"
             >
               {submitting ? (
                 <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
+                  <Loader2 className="size-4 mr-2 animate-spin text-[#c5a059]" />
                   Launching…
                 </>
               ) : step < 3 ? (
@@ -405,7 +408,7 @@ export default function OnboardingPage() {
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="size-4 mr-2" />
+                  <CheckCircle2 className="size-4 mr-2 text-[#c5a059]" />
                   Launch My School
                 </>
               )}
@@ -413,7 +416,7 @@ export default function OnboardingPage() {
           </div>
         </form>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-[#8c7a6b] mt-6">
           EduFlow OS · Pakistan Ka Pehla AI School Operating System
         </p>
       </div>
@@ -435,10 +438,10 @@ function FieldGroup({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+      <label className="text-sm font-semibold text-[#2c1d17]">
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
-        {hint && <span className="ml-2 font-normal text-slate-400 text-xs">{hint}</span>}
+        {hint && <span className="ml-2 font-normal text-[#8c7a6b] text-xs">{hint}</span>}
       </label>
       {children}
     </div>
@@ -456,8 +459,8 @@ function ReviewRow({
 }) {
   return (
     <div className="flex justify-between items-center px-4 py-2.5">
-      <span className="text-slate-500 dark:text-slate-400">{label}</span>
-      <span className={`text-slate-800 dark:text-slate-200 font-medium ${mono ? 'font-mono text-emerald-600 dark:text-emerald-400' : ''}`}>
+      <span className="text-[#5c4a3e]">{label}</span>
+      <span className={`text-[#2c1d17] font-semibold ${mono ? 'font-mono text-[#166534]' : ''}`}>
         {value}
       </span>
     </div>

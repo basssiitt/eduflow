@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 import { ArrowRight, BookOpen, Building2, Eye, EyeOff, GraduationCap, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck, Users } from 'lucide-react'
+import { AcademicCrest } from '@/components/academic-crest'
 
 function isSafeRedirectUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== 'string') return false
@@ -235,8 +236,11 @@ export default function LoginPage() {
       <div className="login-shell">
         <header className="login-brand">
           <Link href="/" className="login-brand-link" aria-label="EduFlow OS home">
-            <span>EF</span>
-            <strong>EduFlow <em>OS</em></strong>
+            <AcademicCrest size={28} className="shrink-0" />
+            <div className="flex flex-col text-left">
+              <strong className="text-base font-bold text-[#2c1d17] leading-none">EduFlow <em className="not-italic text-[#c5a059]">OS</em></strong>
+              <span className="text-[10px] font-medium text-stone-500 uppercase tracking-wider">Institutional Edition</span>
+            </div>
           </Link>
           <div className="login-session"><i /> Academic Session <b>2026–27</b></div>
         </header>
@@ -252,22 +256,22 @@ export default function LoginPage() {
           </div>
 
           {currentUser && (
-            <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-50/70 p-3 dark:bg-emerald-950/40 text-xs text-slate-700 dark:text-slate-300">
-              <div className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
-                <UserCheck className="size-4" />
+            <div className="mb-4 rounded-xl border border-[#c5a059]/40 bg-[#faf9f5] p-3 text-xs text-[#2c1d17]">
+              <div className="flex items-center gap-2 font-semibold text-[#2c1d17]">
+                <UserCheck className="size-4 text-[#c5a059]" />
                 <span>Currently active: {currentUser.email} ({currentUser.role})</span>
               </div>
               <div className="mt-2.5 flex items-center gap-2">
                 <Link
                   href={currentUser.destination}
-                  className="inline-flex items-center rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                  className="inline-flex items-center rounded-lg bg-[#2c1d17] px-2.5 py-1 text-xs font-semibold text-white hover:bg-[#1e130f]"
                 >
                   Go to Dashboard <ArrowRight className="ml-1 size-3" />
                 </Link>
                 <button
                   type="button"
                   onClick={handleSwitchAccount}
-                  className="inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50"
+                  className="inline-flex items-center rounded-lg border border-[#e7e2da] bg-white px-2.5 py-1 text-xs font-semibold text-stone-700 hover:bg-[#faf9f5]"
                 >
                   <LogOut className="mr-1 size-3" /> Switch Account
                 </button>
@@ -281,7 +285,7 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleAuth}
               disabled={googleLoading || loading}
-              className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-slate-200/90 bg-white py-2.5 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#e7e2da] bg-[#faf9f5] py-2.5 px-4 text-xs font-semibold text-[#2c1d17] shadow-xs hover:bg-[#f7f5f0] hover:border-[#c5a059] transition"
             >
               <GoogleIcon />
               <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google'}</span>
@@ -289,9 +293,9 @@ export default function LoginPage() {
 
             <div className="relative my-4 text-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <div className="w-full border-t border-[#e7e2da]" />
               </div>
-              <span className="relative bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-slate-900">
+              <span className="relative bg-white px-3 text-[11px] font-medium text-stone-400">
                 or sign in with email
               </span>
             </div>
@@ -361,52 +365,52 @@ export default function LoginPage() {
           </div>
 
           {/* 1-Click Instant Demo Workspaces */}
-          <div className="mt-5 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 dark:border-slate-800 dark:bg-slate-900/60 text-left">
+          <div className="mt-5 rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-4 text-left">
             <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-800 dark:text-sky-300">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2c1d17]">
                 1-Click Interactive Demo Portals
               </span>
-              <span className="rounded-full bg-sky-200/70 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+              <span className="rounded-full bg-[#f7f5f0] border border-[#e7e2da] px-2 py-0.5 text-[10px] font-semibold text-[#2c1d17]">
                 Test Mode
               </span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+            <p className="text-xs text-stone-600 mb-3">
               Explore and test EduFlow OS across the 3 user portals without needing manual login:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleInstantDemo('school_admin', '/admin')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="flex items-center gap-2 rounded-xl border border-[#e7e2da] bg-white p-2.5 font-semibold text-[#2c1d17] shadow-xs hover:border-[#c5a059] hover:bg-[#f7f5f0] transition text-left"
               >
-                <Building2 className="size-4 text-sky-600 shrink-0" />
+                <Building2 className="size-4 text-[#2c1d17] shrink-0" />
                 <span className="truncate">School Admin</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleInstantDemo('teacher', '/teacher')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="flex items-center gap-2 rounded-xl border border-[#e7e2da] bg-white p-2.5 font-semibold text-[#2c1d17] shadow-xs hover:border-[#c5a059] hover:bg-[#f7f5f0] transition text-left"
               >
-                <GraduationCap className="size-4 text-emerald-600 shrink-0" />
+                <GraduationCap className="size-4 text-[#c5a059] shrink-0" />
                 <span className="truncate">Teacher</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleInstantDemo('parent', '/parent')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-2xs hover:border-sky-300 hover:bg-sky-50 transition text-left dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="flex items-center gap-2 rounded-xl border border-[#e7e2da] bg-white p-2.5 font-semibold text-[#2c1d17] shadow-xs hover:border-[#c5a059] hover:bg-[#f7f5f0] transition text-left"
               >
-                <Users className="size-4 text-amber-600 shrink-0" />
+                <Users className="size-4 text-[#8c6b2d] shrink-0" />
                 <span className="truncate">Parent</span>
               </button>
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+          <div className="mt-4 pt-4 border-t border-[#e7e2da] text-center">
+            <p className="text-xs text-stone-600">
               Don&apos;t have a school account yet?{' '}
-              <Link href="/signup" className="font-bold text-emerald-600 hover:underline">
+              <Link href="/signup" className="font-bold text-[#2c1d17] hover:text-[#c5a059] hover:underline">
                 Sign Up for 30-Day Free Pro Trial →
               </Link>
             </p>
@@ -414,18 +418,18 @@ export default function LoginPage() {
         </section>
 
         <footer className="login-footer flex flex-col gap-3 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-sky-600 transition">← Back to EduFlow Homepage</Link>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-stone-500">
+            <Link href="/" className="hover:text-[#2c1d17] transition">← Back to EduFlow Homepage</Link>
             <span>•</span>
-            <Link href="/admin" className="hover:text-sky-600 transition">Campus Admin</Link>
+            <Link href="/admin" className="hover:text-[#2c1d17] transition">Campus Admin</Link>
             <span>•</span>
-            <Link href="/teacher" className="hover:text-sky-600 transition">Teacher Console</Link>
+            <Link href="/teacher" className="hover:text-[#2c1d17] transition">Teacher Console</Link>
             <span>•</span>
-            <Link href="/parent" className="hover:text-sky-600 transition">Parent Portal</Link>
+            <Link href="/parent" className="hover:text-[#2c1d17] transition">Parent Portal</Link>
           </div>
-          <div className="flex items-center justify-center gap-2 text-xs">
+          <div className="flex items-center justify-center gap-2 text-xs text-stone-600">
             <span>Need help signing in?</span>
-            <a href="https://wa.me/923127803616" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-emerald-600 hover:underline">
+            <a href="https://wa.me/923127803616" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-[#2c1d17] hover:text-[#c5a059] hover:underline">
               <MessageCircle className="size-3.5" /> WhatsApp Support
             </a>
           </div>

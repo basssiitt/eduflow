@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { ArrowRight, Building2, Check, Eye, EyeOff, LockKeyhole, Mail, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react'
+import { AcademicCrest } from '@/components/academic-crest'
 
 function GoogleIcon() {
   return (
@@ -170,8 +171,11 @@ export default function SignUpPage() {
       <div className="login-shell max-w-lg">
         <header className="login-brand">
           <Link href="/" className="login-brand-link" aria-label="EduFlow OS home">
-            <span>EF</span>
-            <strong>EduFlow <em>OS</em></strong>
+            <AcademicCrest className="size-9" />
+            <div className="flex flex-col text-left">
+              <strong className="text-base font-bold text-[#2c1d17] leading-none">EduFlow <em className="not-italic text-[#c5a059]">OS</em></strong>
+              <span className="text-[10px] font-medium text-stone-500 uppercase tracking-wider">Institutional Edition</span>
+            </div>
           </Link>
           <div className="login-session">
             <i /> Academic Session <b>2026–27</b>
@@ -181,17 +185,17 @@ export default function SignUpPage() {
         <section className="login-card" aria-labelledby="signup-title">
           {emailSent ? (
             <div className="flex flex-col items-center py-6 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
-                <Mail className="size-7" />
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-[#faf9f5] text-[#2c1d17] border border-[#c5a059]/30">
+                <Mail className="size-7 text-[#c5a059]" />
               </div>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-emerald-600">
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-[#c5a059]">
                 Verification Required
               </p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#2c1d17]">
                 Check your email inbox
               </h1>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xs">
-                We sent a confirmation link to <strong className="text-slate-900 dark:text-slate-100">{email}</strong>.
+              <p className="mt-2 text-sm text-stone-600 max-w-xs">
+                We sent a confirmation link to <strong className="text-[#2c1d17]">{email}</strong>.
                 Click the link in your email to activate your school account and start your 30-day Pro trial.
               </p>
 
@@ -205,7 +209,7 @@ export default function SignUpPage() {
                 <button
                   type="button"
                   onClick={() => setEmailSent(false)}
-                  className="py-2 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                  className="py-2 text-xs font-semibold text-stone-500 hover:text-[#2c1d17] transition"
                 >
                   Use a different email address
                 </button>
@@ -225,12 +229,12 @@ export default function SignUpPage() {
               </div>
 
               {/* 30-Day Pro Trial Banner */}
-              <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-50/70 p-3.5 dark:bg-emerald-950/30 text-xs text-slate-700 dark:text-slate-300">
-                <div className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
-                  <Sparkles className="size-4 text-emerald-600" />
+              <div className="mt-4 rounded-xl border border-[#c5a059]/30 bg-[#faf9f5] p-3.5 text-xs text-stone-700">
+                <div className="flex items-center gap-2 font-semibold text-[#2c1d17]">
+                  <Sparkles className="size-4 text-[#c5a059]" />
                   <span>Pro Plan 30-Day Free Trial Included</span>
                 </div>
-                <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                <p className="mt-1 text-[11px] text-stone-600">
                   Includes 1-Click Haziri, 3-Copy Fee Challans, WhatsApp reminders, and complete portal access. No credit card required.
                 </p>
               </div>
@@ -241,7 +245,7 @@ export default function SignUpPage() {
                   type="button"
                   onClick={handleGoogleAuth}
                   disabled={googleLoading || loading}
-                  className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-slate-200/90 bg-white py-2.5 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#e7e2da] bg-[#faf9f5] py-2.5 px-4 text-xs font-semibold text-[#2c1d17] shadow-xs hover:bg-[#f7f5f0] hover:border-[#c5a059] transition"
                 >
                   <GoogleIcon />
                   <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google'}</span>
@@ -249,9 +253,9 @@ export default function SignUpPage() {
 
                 <div className="relative my-4 text-center">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+                    <div className="w-full border-t border-[#e7e2da]" />
                   </div>
-                  <span className="relative bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-slate-900">
+                  <span className="relative bg-white px-3 text-[11px] font-medium text-stone-400">
                     or register with school email
                   </span>
                 </div>
@@ -289,7 +293,7 @@ export default function SignUpPage() {
                       id="city"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 text-xs text-slate-900 dark:text-slate-100"
+                      className="w-full h-10 rounded-md border border-[#e7e2da] bg-white px-3 text-xs text-[#2c1d17] focus:outline-hidden focus:border-[#c5a059]"
                     >
                       <option>Karachi</option>
                       <option>Lahore</option>
@@ -354,13 +358,13 @@ export default function SignUpPage() {
                 </div>
 
                 {error && (
-                  <p className="login-error text-red-500 font-medium text-xs mt-2" role="alert">
+                  <p className="login-error text-[#991b1b] font-medium text-xs mt-2" role="alert">
                     {error}
                   </p>
                 )}
 
-                <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
-                  <Check className="size-3.5 text-emerald-600 shrink-0" />
+                <div className="mt-2 text-[11px] text-stone-500 flex items-center gap-1.5">
+                  <Check className="size-3.5 text-[#166534] shrink-0" />
                   <span>By registering, you agree to EduFlow&apos;s Terms of Service and 30-day Pro trial terms.</span>
                 </div>
 
@@ -378,14 +382,14 @@ export default function SignUpPage() {
           )}
 
           <div className="login-help !mt-4">
-            <ShieldCheck className="size-4 text-emerald-600" />
+            <ShieldCheck className="size-4 text-[#c5a059]" />
             <span>Multi-tenant encrypted isolation with instant campus provisioning.</span>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+          <div className="mt-4 pt-4 border-t border-[#e7e2da] text-center">
+            <p className="text-xs text-stone-600">
               Already have a school account?{' '}
-              <Link href="/login" className="font-bold text-emerald-600 hover:underline">
+              <Link href="/login" className="font-bold text-[#2c1d17] hover:underline">
                 Sign in to your portal →
               </Link>
             </p>
@@ -393,14 +397,14 @@ export default function SignUpPage() {
         </section>
 
         <footer className="login-footer flex flex-col gap-3 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-emerald-600 transition">← Back to EduFlow Homepage</Link>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-stone-500">
+            <Link href="/" className="hover:text-[#2c1d17] transition">← Back to EduFlow Homepage</Link>
             <span>•</span>
-            <Link href="/admin" className="hover:text-emerald-600 transition">Campus Admin</Link>
+            <Link href="/admin" className="hover:text-[#2c1d17] transition">Campus Admin</Link>
             <span>•</span>
-            <Link href="/teacher" className="hover:text-emerald-600 transition">Teacher Console</Link>
+            <Link href="/teacher" className="hover:text-[#2c1d17] transition">Teacher Console</Link>
             <span>•</span>
-            <Link href="/parent" className="hover:text-emerald-600 transition">Parent Portal</Link>
+            <Link href="/parent" className="hover:text-[#2c1d17] transition">Parent Portal</Link>
           </div>
           <div className="flex items-center justify-center gap-2 text-xs">
             <span>Need assistance?</span>
@@ -408,7 +412,7 @@ export default function SignUpPage() {
               href="https://wa.me/923127803616?text=Hi%20EduFlow%2C%20I%20need%20help%20signing%20up%20my%20school."
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-emerald-600 hover:underline"
+              className="inline-flex items-center gap-1 font-semibold text-[#166534] hover:underline"
             >
               <MessageCircle className="size-3.5" /> WhatsApp Support
             </a>

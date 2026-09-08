@@ -164,18 +164,18 @@ export default function SuperAdminSubscriptionsPage() {
       {/* Breadcrumb Header */}
       <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/super-admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/super-admin" className="hover:text-[#c5a059] transition flex items-center gap-1 text-[#5c4a3e]">
             <ArrowLeft className="size-3.5" /> Control Plane
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">Subscriptions &amp; Revenue</span>
+          <span className="text-[#2c1d17] font-semibold">Subscriptions &amp; Revenue</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/super-admin/telemetry" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <Link href="/super-admin/telemetry" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
             Platform Telemetry →
           </Link>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <span className="text-[#e7e2da]">|</span>
+          <Link href="/admin" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
             Campus Admin View →
           </Link>
         </div>
@@ -185,25 +185,25 @@ export default function SuperAdminSubscriptionsPage() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">
-              <CreditCard className="mr-1 size-3" /> Recurring Revenue Control
+            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#c5a059]/30">
+              <CreditCard className="mr-1 size-3 text-[#c5a059]" /> Recurring Revenue Control
             </Badge>
-            <span className="text-sm text-slate-500 dark:text-slate-400">Multi-Tenant Billing Engine</span>
+            <span className="text-sm text-[#786c62]">Multi-Tenant Billing Engine</span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-[#2c1d17] md:text-4xl">
             Tenant Subscriptions &amp; MRR
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-[#786c62]">
             Monitor SaaS revenue, manage school plan tiers, and reconcile automated monthly renewals.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={exportSubscriptionsCsv} disabled={campuses.length === 0}>
+          <Button variant="outline" onClick={exportSubscriptionsCsv} disabled={campuses.length === 0} className="border-[#e7e2da] bg-white text-[#2c1d17] hover:bg-[#faf9f5]">
             <Download className="mr-2 size-4" /> Export Revenue CSV
           </Button>
           <Link
             href="/super-admin"
-            className="inline-flex items-center justify-center rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-xs"
+            className="inline-flex items-center justify-center rounded-xl bg-[#2c1d17] hover:bg-[#3d2a20] px-4 py-2 text-sm font-semibold text-white shadow-xs"
           >
             <Plus className="mr-1.5 size-4" /> Onboard School
           </Link>
@@ -212,58 +212,58 @@ export default function SuperAdminSubscriptionsPage() {
 
       {/* Revenue KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Monthly Recurring Revenue</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+            <span className="text-sm text-[#786c62] font-medium">Monthly Recurring Revenue</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-[#166534]">
               <ArrowUpRight className="size-4.5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">
             Rs. {totalMrr.toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-slate-500">From {activeCampuses.length} actively paying campuses</p>
+          <p className="mt-1 text-xs text-[#786c62]">From {activeCampuses.length} actively paying campuses</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Annualized Run Rate (ARR)</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <Activity className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Annualized Run Rate (ARR)</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <Activity className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">
             Rs. {totalArr.toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-emerald-600 font-medium">Estimated 12-month value</p>
+          <p className="mt-1 text-xs text-[#166534] font-semibold">Estimated 12-month value</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Tier Breakdown</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <Receipt className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Tier Breakdown</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <Receipt className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">
             {activeCampuses.length} Active
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-[#786c62]">
             {starterCount} Starter · {proCount} Pro · {enterpriseCount} Enterprise
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Average Revenue / School</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <Building2 className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Average Revenue / School</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <Building2 className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">
             Rs. {activeCampuses.length > 0 ? Math.round(totalMrr / activeCampuses.length).toLocaleString() : '0'}
           </p>
-          <p className="mt-1 text-xs text-slate-500">Per active campus per month</p>
+          <p className="mt-1 text-xs text-[#786c62]">Per active campus per month</p>
         </div>
       </div>
 
@@ -274,20 +274,20 @@ export default function SuperAdminSubscriptionsPage() {
             key={p}
             className={`rounded-2xl border p-5 transition-all shadow-xs ${
               p === 'Pro'
-                ? 'border-emerald-500/50 bg-emerald-50/20 dark:bg-emerald-950/10'
-                : 'border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900'
+                ? 'border-[#c5a059] bg-[#faf9f5]'
+                : 'border-[#e7e2da] bg-white'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900 dark:text-slate-100">{p} Tier</span>
-              <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+              <span className="font-bold text-sm text-[#2c1d17]">{p} Tier</span>
+              <span className="rounded-full bg-white border border-[#e7e2da] px-2.5 py-0.5 text-xs font-bold text-[#2c1d17]">
                 Rs. {planRates[p].toLocaleString()} / mo
               </span>
             </div>
-            <ul className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+            <ul className="mt-3 space-y-1.5 text-xs text-[#5c4a3e]">
               {planFeatures[p].map((f) => (
                 <li key={f} className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-emerald-600 shrink-0" />
+                  <Check className="size-3.5 text-[#c5a059] shrink-0" />
                   <span>{f}</span>
                 </li>
               ))}
@@ -297,14 +297,14 @@ export default function SuperAdminSubscriptionsPage() {
       </div>
 
       {/* Subscription Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xs">
-        <div className="flex flex-col justify-between gap-3 border-b border-slate-100 dark:border-slate-800 p-5 sm:flex-row sm:items-center">
+      <div className="overflow-hidden rounded-2xl border border-[#e7e2da] bg-white shadow-xs">
+        <div className="flex flex-col justify-between gap-3 border-b border-[#e7e2da] p-5 sm:flex-row sm:items-center">
           <div>
-            <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">Tenant Subscription Register</h2>
-            <p className="mt-0.5 text-xs text-slate-500">View and adjust subscription tiers for each school campus.</p>
+            <h2 className="font-bold text-base text-[#2c1d17]">Tenant Subscription Register</h2>
+            <p className="mt-0.5 text-xs text-[#786c62]">View and adjust subscription tiers for each school campus.</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs">
+            <div className="flex items-center gap-1 rounded-xl bg-[#faf9f5] border border-[#e7e2da] p-1 text-xs">
               {['All', 'Starter', 'Pro', 'Enterprise'].map((tab) => (
                 <button
                   key={tab}
@@ -314,8 +314,8 @@ export default function SuperAdminSubscriptionsPage() {
                   }}
                   className={`rounded-lg px-2.5 py-1 font-semibold transition-colors ${
                     planFilter === tab
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-[#2c1d17] text-white shadow-xs'
+                      : 'text-[#786c62] hover:text-[#2c1d17]'
                   }`}
                 >
                   {tab}
@@ -323,7 +323,7 @@ export default function SuperAdminSubscriptionsPage() {
               ))}
             </div>
             <div className="relative w-48 sm:w-60">
-              <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
+              <Search className="absolute left-3 top-2.5 size-4 text-[#8c7a6b]" />
               <Input
                 placeholder="Search campus..."
                 value={query}
@@ -331,7 +331,7 @@ export default function SuperAdminSubscriptionsPage() {
                   setQuery(e.target.value)
                   setPage(1)
                 }}
-                className="pl-9 h-9 text-xs rounded-xl"
+                className="pl-9 h-9 text-xs rounded-xl border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </div>
           </div>
@@ -349,7 +349,7 @@ export default function SuperAdminSubscriptionsPage() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[930px] text-left text-sm">
-                <thead className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-semibold uppercase tracking-wider text-[#8c7a6b]">
                   <tr>
                     <th className="px-5 py-3.5">Campus / Tenant</th>
                     <th className="px-5 py-3.5">Owner / Contact</th>
@@ -360,39 +360,39 @@ export default function SuperAdminSubscriptionsPage() {
                     <th className="px-5 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[#e7e2da]">
                   {paginated.map((campus) => (
-                    <tr key={campus.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
+                    <tr key={campus.id} className="hover:bg-[#faf9f5] transition-colors">
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-slate-900 dark:text-slate-100">{campus.name}</p>
-                        <p className="text-[11px] font-mono text-slate-400">{campus.city} · eduflow.pk/{campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 18)}</p>
+                        <p className="font-semibold text-[#2c1d17]">{campus.name}</p>
+                        <p className="text-[11px] font-mono text-[#8c7a6b]">{campus.city} · eduflow.pk/{campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 18)}</p>
                       </td>
                       <td className="px-5 py-4">
-                        <p className="font-medium text-slate-900 dark:text-slate-100">{campus.owner}</p>
-                        <p className="text-xs text-slate-400 font-mono">{campus.phone || '—'}</p>
+                        <p className="font-medium text-[#2c1d17]">{campus.owner}</p>
+                        <p className="text-xs text-[#8c7a6b] font-mono">{campus.phone || '—'}</p>
                       </td>
                       <td className="px-5 py-4">
                         <select
                           value={campus.plan}
                           onChange={(e) => changePlan(campus.id, e.target.value as Plan)}
-                          className="h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-background px-2.5 text-xs font-medium"
+                          className="h-8 rounded-lg border border-[#e7e2da] bg-white text-[#2c1d17] px-2.5 text-xs font-medium focus:border-[#c5a059] focus:outline-none"
                         >
                           <option>Starter</option>
                           <option>Pro</option>
                           <option>Enterprise</option>
                         </select>
                       </td>
-                      <td className="px-5 py-4 font-mono font-bold text-slate-900 dark:text-slate-100">
+                      <td className="px-5 py-4 font-mono font-bold text-[#2c1d17]">
                         Rs. {(planRates[campus.plan] || 2500).toLocaleString()}
                       </td>
-                      <td className="px-5 py-4 text-xs text-slate-600 dark:text-slate-400">
+                      <td className="px-5 py-4 text-xs text-[#5c4a3e]">
                         Monthly
                       </td>
                       <td className="px-5 py-4">
                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                           campus.status === 'Active'
-                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
-                            : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
+                            ? 'bg-emerald-50 text-[#166534]'
+                            : 'bg-rose-50 text-rose-700'
                         }`}>
                           {campus.status}
                         </span>
@@ -404,7 +404,7 @@ export default function SuperAdminSubscriptionsPage() {
                               href={`https://wa.me/${campus.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(campus.owner)}%2C%20this%20is%20regarding%20your%20EduFlow%20subscription.`}
                               target="_blank"
                               rel="noreferrer"
-                              className="rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              className="rounded-lg p-1.5 text-[#786c62] hover:text-[#2c1d17] hover:bg-[#faf9f5]"
                               title="WhatsApp Principal"
                             >
                               <MessageCircle className="size-4" />
@@ -412,10 +412,10 @@ export default function SuperAdminSubscriptionsPage() {
                           )}
                           <Link
                             href="/admin"
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#e7e2da] bg-white px-2.5 py-1 text-xs font-semibold text-[#2c1d17] hover:bg-[#faf9f5]"
                           >
                             <span>Inspect</span>
-                            <ExternalLink className="size-3 text-slate-400" />
+                            <ExternalLink className="size-3 text-[#8c7a6b]" />
                           </Link>
                         </div>
                       </td>
@@ -425,7 +425,7 @@ export default function SuperAdminSubscriptionsPage() {
               </table>
             </div>
 
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <div className="p-4 border-t border-[#e7e2da] flex items-center justify-between text-xs text-[#786c62]">
               <span>Showing {paginated.length} of {filtered.length} tenant subscriptions</span>
               <div className="flex items-center gap-2">
                 <Button
@@ -433,7 +433,7 @@ export default function SuperAdminSubscriptionsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="size-8 p-0"
+                  className="size-8 p-0 border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
@@ -443,7 +443,7 @@ export default function SuperAdminSubscriptionsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="size-8 p-0"
+                  className="size-8 p-0 border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"
                 >
                   <ChevronRight className="size-4" />
                 </Button>

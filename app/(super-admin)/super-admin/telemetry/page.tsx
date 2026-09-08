@@ -115,18 +115,18 @@ export default function SuperAdminTelemetryPage() {
       {/* Breadcrumbs */}
       <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/super-admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/super-admin" className="hover:text-[#c5a059] transition flex items-center gap-1 text-[#5c4a3e]">
             <ArrowLeft className="size-3.5" /> Control Plane
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">Platform Telemetry</span>
+          <span className="text-[#2c1d17] font-semibold">Platform Telemetry</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/super-admin/subscriptions" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <Link href="/super-admin/subscriptions" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
             Subscriptions &amp; Revenue →
           </Link>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <span className="text-[#e7e2da]">|</span>
+          <Link href="/admin" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
             Campus Admin View →
           </Link>
         </div>
@@ -136,24 +136,24 @@ export default function SuperAdminTelemetryPage() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">
-              <Gauge className="mr-1 size-3" /> Real-Time Telemetry
+            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#c5a059]/30">
+              <Gauge className="mr-1 size-3 text-[#c5a059]" /> Real-Time Telemetry
             </Badge>
-            <span className="text-sm text-slate-500 dark:text-slate-400">Control Plane Cluster Node</span>
+            <span className="text-sm text-[#786c62]">Control Plane Cluster Node</span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-[#2c1d17] md:text-4xl">
             Platform Health &amp; Infrastructure
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-[#786c62]">
             Real-time telemetry, database cluster metrics, AI companion status, and edge security audit stream.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing} className="border-[#e7e2da] bg-white text-[#2c1d17] hover:bg-[#faf9f5]">
             <RefreshCw className={`mr-1.5 size-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'Probing Nodes…' : 'Refresh Telemetry'}
           </Button>
-          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-mono text-xs">
+          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-[#166534] font-mono text-xs">
             <span className="mr-1.5 size-2 rounded-full bg-emerald-500 animate-pulse" />
             99.98% System Uptime
           </Badge>
@@ -162,80 +162,80 @@ export default function SuperAdminTelemetryPage() {
 
       {/* Metrics Banner */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Cluster Uptime</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+            <span className="text-sm text-[#786c62] font-medium">Cluster Uptime</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-[#166534]">
               <CheckCircle2 className="size-4.5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">99.98%</p>
-          <p className="mt-1 text-xs text-slate-500">Over past 30 calendar days</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">99.98%</p>
+          <p className="mt-1 text-xs text-[#786c62]">Over past 30 calendar days</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Avg Edge Response</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <Zap className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Avg Edge Response</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <Zap className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">42 ms</p>
-          <p className="mt-1 text-xs text-emerald-600 font-medium">Sub-50ms SSR latency</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">42 ms</p>
+          <p className="mt-1 text-xs text-[#166534] font-semibold">Sub-50ms SSR latency</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Database Pooler</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <Database className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Database Pooler</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <Database className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Healthy</p>
-          <p className="mt-1 text-xs text-slate-500">PgBouncer transactional pooler active</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">Healthy</p>
+          <p className="mt-1 text-xs text-[#786c62]">PgBouncer transactional pooler active</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Security Incidents</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              <ShieldCheck className="size-4.5" />
+            <span className="text-sm text-[#786c62] font-medium">Security Incidents</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <ShieldCheck className="size-4.5 text-[#c5a059]" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">0 Breaches</p>
-          <p className="mt-1 text-xs text-slate-500">Strict RLS &amp; Edge Token Validation</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-[#2c1d17]">0 Breaches</p>
+          <p className="mt-1 text-xs text-[#786c62]">Strict RLS &amp; Edge Token Validation</p>
         </div>
       </div>
 
       {/* Services Grid */}
       <div>
-        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-3">Service Fleet Health</h2>
+        <h2 className="text-base font-bold text-[#2c1d17] mb-3">Service Fleet Health</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => {
             const Icon = s.icon
             return (
               <div
                 key={s.name}
-                className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-xs"
+                className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs"
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                    <Icon className="size-5" />
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+                    <Icon className="size-5 text-[#c5a059]" />
                   </div>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                     s.status === 'Operational'
-                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
-                      : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                      ? 'bg-emerald-50 text-[#166534]'
+                      : 'bg-amber-50 text-amber-800'
                   }`}>
                     <span className="mr-1.5 size-1.5 rounded-full bg-emerald-500" />
                     {s.status}
                   </span>
                 </div>
-                <h3 className="mt-3 font-semibold text-sm text-slate-900 dark:text-slate-100">{s.name}</h3>
-                <p className="text-xs text-slate-500 mt-0.5">{s.detail}</p>
-                <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 text-xs">
-                  <span className="text-slate-400">Latency: <b className="font-mono text-slate-700 dark:text-slate-300">{s.latency}</b></span>
-                  <span className="text-slate-400">Uptime: <b className="font-mono text-slate-700 dark:text-slate-300">{s.uptime}</b></span>
+                <h3 className="mt-3 font-bold text-sm text-[#2c1d17]">{s.name}</h3>
+                <p className="text-xs text-[#786c62] mt-0.5">{s.detail}</p>
+                <div className="mt-4 flex items-center justify-between border-t border-[#e7e2da] pt-3 text-xs">
+                  <span className="text-[#8c7a6b]">Latency: <b className="font-mono text-[#2c1d17]">{s.latency}</b></span>
+                  <span className="text-[#8c7a6b]">Uptime: <b className="font-mono text-[#2c1d17]">{s.uptime}</b></span>
                 </div>
               </div>
             )
@@ -244,28 +244,28 @@ export default function SuperAdminTelemetryPage() {
       </div>
 
       {/* System Audit & Event Stream */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-xs">
+      <div className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Live Control Plane Audit Trail</h2>
-            <p className="text-xs text-slate-500">Security authorizations, database events, and tenant lifecycle logs.</p>
+            <h2 className="text-base font-bold text-[#2c1d17]">Live Control Plane Audit Trail</h2>
+            <p className="text-xs text-[#786c62]">Security authorizations, database events, and tenant lifecycle logs.</p>
           </div>
-          <span className="text-xs font-mono text-slate-400">Refreshed: {lastRefreshed}</span>
+          <span className="text-xs font-mono text-[#8c7a6b]">Refreshed: {lastRefreshed}</span>
         </div>
 
-        <div className="mt-5 divide-y divide-slate-100 dark:divide-slate-800 border-t border-slate-100 dark:border-slate-800">
+        <div className="mt-5 divide-y divide-[#e7e2da] border-t border-[#e7e2da]">
           {auditEvents.map((ev) => (
             <div key={ev.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 gap-2">
               <div className="flex items-center gap-3">
                 <span className={`size-2 rounded-full shrink-0 ${
-                  ev.level === 'Success' ? 'bg-emerald-500' :
-                  ev.level === 'Security' ? 'bg-indigo-500' :
-                  'bg-slate-400'
+                  ev.level === 'Success' ? 'bg-[#166534]' :
+                  ev.level === 'Security' ? 'bg-[#c5a059]' :
+                  'bg-[#8c7a6b]'
                 }`} />
-                <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400">{ev.id}</span>
-                <p className="text-xs text-slate-800 dark:text-slate-200 font-medium">{ev.event}</p>
+                <span className="text-xs font-mono font-semibold text-[#8c7a6b]">{ev.id}</span>
+                <p className="text-xs text-[#2c1d17] font-medium">{ev.event}</p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400 shrink-0 font-mono">
+              <div className="flex items-center gap-2 text-xs text-[#8c7a6b] shrink-0 font-mono">
                 <Clock className="size-3" />
                 <span>{ev.time}</span>
               </div>

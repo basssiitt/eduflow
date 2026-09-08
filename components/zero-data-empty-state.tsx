@@ -31,18 +31,15 @@ export function ZeroDataEmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200/90 bg-gradient-to-b from-slate-50/70 to-white dark:from-slate-900/40 dark:to-slate-900/80 dark:border-slate-800 p-10 md:p-14 text-center shadow-xs transition-all duration-200',
+        'flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#e7e2da] bg-[#faf9f5] p-10 md:p-14 text-center shadow-xs transition-all duration-200',
         className
       )}
     >
-      <div className="relative">
-        <div className="absolute inset-0 rounded-2xl bg-sky-100/60 dark:bg-sky-950/40 blur-xl" aria-hidden="true" />
-        <div className="relative flex size-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 shadow-xs ring-1 ring-sky-500/20">
-          <Icon className="size-7" aria-hidden="true" />
-        </div>
+      <div className="relative flex size-14 items-center justify-center rounded-2xl bg-[#2c1d17]/5 text-[#2c1d17] border border-[#e7e2da]">
+        <Icon className="size-7" aria-hidden="true" />
       </div>
-      <h3 className="mt-4 text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">{title}</h3>
-      <p className="mt-1.5 max-w-sm text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+      <h3 className="mt-4 text-base font-bold tracking-tight text-[#2c1d17]">{title}</h3>
+      <p className="mt-1.5 max-w-sm text-sm text-stone-500 leading-relaxed">
         {description}
       </p>
       {(actionLabel || secondaryActionLabel) && (
@@ -51,7 +48,7 @@ export function ZeroDataEmptyState({
             <Button
               onClick={onAction}
               disabled={disabled}
-              className="bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-200 font-semibold"
+              className="bg-[#2c1d17] hover:bg-[#1e130f] text-white shadow-xs font-semibold"
             >
               {actionLabel}
             </Button>
@@ -61,7 +58,7 @@ export function ZeroDataEmptyState({
               variant="outline"
               onClick={onSecondaryAction}
               disabled={disabled}
-              className="border-slate-200 text-slate-600 hover:border-sky-300 hover:text-sky-700 dark:border-slate-800 dark:text-slate-300"
+              className="border-[#e7e2da] bg-white text-[#2c1d17] hover:bg-[#faf9f5] hover:border-[#c5a059]"
             >
               {secondaryActionLabel}
             </Button>

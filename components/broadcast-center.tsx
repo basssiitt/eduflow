@@ -117,28 +117,28 @@ export function BroadcastCenter() {
 
   return (
     <div className="space-y-6">
-      <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
+      <nav className="flex items-center justify-between text-xs text-stone-500 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-stone-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">WhatsApp Notification Center</span>
+          <span className="text-[#2c1d17] font-semibold">WhatsApp Notification Center</span>
         </div>
       </nav>
 
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#c5a059] flex items-center gap-1.5">
             <MessageCircle className="size-3.5" /> Automated Broadcast Gateway
           </span>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">WhatsApp Notification Hub</h1>
-          <p className="text-slate-500 dark:text-slate-400">Dispatch morning absentee haziri alerts, fee challan reminders, and official campus circulars.</p>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-[#2c1d17]">WhatsApp Notification Hub</h1>
+          <p className="text-stone-500">Dispatch morning absentee haziri alerts, fee challan reminders, and official campus circulars.</p>
         </div>
         <Button
           onClick={handleQueueBroadcast}
           disabled={broadcasting || targetList.length === 0}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-xs"
+          className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs"
         >
           <Send className="mr-2 size-4" />
           {broadcasting ? 'Dispatching…' : `Broadcast to ${targetList.length} Guardians`}
@@ -157,10 +157,10 @@ export function BroadcastCenter() {
         {/* Left Column: Template & Audience */}
         <div className="space-y-5 lg:col-span-2">
           {/* Step 1: Pre-built templates */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">1. Select Notification Template</h3>
-              <span className="text-[11px] text-slate-400">Pre-approved message shapes</span>
+              <h3 className="text-sm font-bold text-[#2c1d17]">1. Select Notification Template</h3>
+              <span className="text-[11px] text-stone-400">Pre-approved message shapes</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -169,15 +169,15 @@ export function BroadcastCenter() {
                 onClick={() => { setTemplate('absent'); setAudience('absent') }}
                 className={`p-3.5 rounded-xl border text-left transition ${
                   template === 'absent'
-                    ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300 ring-1 ring-emerald-600'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                    ? 'border-[#c5a059] bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#c5a059]'
+                    : 'border-[#e7e2da] hover:bg-[#faf9f5]'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs">Morning Haziri Absent Alert</span>
-                  <span className="text-[10px] font-semibold bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded-xs">High Priority</span>
+                  <span className="text-[10px] font-semibold bg-[#fce4ec] text-[#880e4f] px-1.5 py-0.5 rounded-xs">High Priority</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">Instant notification to parents of kids marked absent today at 09:30 AM.</p>
+                <p className="text-[11px] text-stone-500 mt-1">Instant notification to parents of kids marked absent today at 09:30 AM.</p>
               </button>
 
               <button
@@ -185,15 +185,15 @@ export function BroadcastCenter() {
                 onClick={() => { setTemplate('fee'); setAudience('defaulters') }}
                 className={`p-3.5 rounded-xl border text-left transition ${
                   template === 'fee'
-                    ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300 ring-1 ring-emerald-600'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                    ? 'border-[#c5a059] bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#c5a059]'
+                    : 'border-[#e7e2da] hover:bg-[#faf9f5]'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs">Fee Due &amp; Arrears Reminder</span>
-                  <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-xs">Accounts</span>
+                  <span className="text-[10px] font-semibold bg-[#efebe9] text-[#5D4037] px-1.5 py-0.5 rounded-xs">Accounts</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">Sends student challan amount, due date, and 1Link 1Bill PSID.</p>
+                <p className="text-[11px] text-stone-500 mt-1">Sends student challan amount, due date, and 1Link 1Bill PSID.</p>
               </button>
 
               <button
@@ -201,15 +201,15 @@ export function BroadcastCenter() {
                 onClick={() => { setTemplate('smog'); setAudience('all') }}
                 className={`p-3.5 rounded-xl border text-left transition ${
                   template === 'smog'
-                    ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300 ring-1 ring-emerald-600'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                    ? 'border-[#c5a059] bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#c5a059]'
+                    : 'border-[#e7e2da] hover:bg-[#faf9f5]'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs">Smog / Weather Emergency Circular</span>
-                  <span className="text-[10px] font-semibold bg-sky-100 text-sky-800 px-1.5 py-0.5 rounded-xs">Emergency</span>
+                  <span className="text-[10px] font-semibold bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da] px-1.5 py-0.5 rounded-xs">Emergency</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">Broadcast official holiday decrees or weather announcements school-wide.</p>
+                <p className="text-[11px] text-stone-500 mt-1">Broadcast official holiday decrees or weather announcements school-wide.</p>
               </button>
 
               <button
@@ -217,24 +217,24 @@ export function BroadcastCenter() {
                 onClick={() => { setTemplate('exam'); setAudience('all') }}
                 className={`p-3.5 rounded-xl border text-left transition ${
                   template === 'exam'
-                    ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300 ring-1 ring-emerald-600'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                    ? 'border-[#c5a059] bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#c5a059]'
+                    : 'border-[#e7e2da] hover:bg-[#faf9f5]'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs">Mid-Term Exam Date Sheet</span>
-                  <span className="text-[10px] font-semibold bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded-xs">Academics</span>
+                  <span className="text-[10px] font-semibold bg-[#f7f5f0] text-[#2c1d17] border border-[#e7e2da] px-1.5 py-0.5 rounded-xs">Academics</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">Announces examination schedule dates and parent portal syllabus link.</p>
+                <p className="text-[11px] text-stone-500 mt-1">Announces examination schedule dates and parent portal syllabus link.</p>
               </button>
             </div>
           </section>
 
           {/* Step 2: Target Audience */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">2. Target Audience</h3>
-              <span className="text-xs font-semibold text-emerald-700">{targetList.length} Parents Selected</span>
+              <h3 className="text-sm font-bold text-[#2c1d17]">2. Target Audience</h3>
+              <span className="text-xs font-semibold text-[#c5a059]">{targetList.length} Parents Selected</span>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -242,7 +242,7 @@ export function BroadcastCenter() {
                 type="button"
                 onClick={() => setAudience('absent')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
-                  audience === 'absent' ? 'bg-emerald-600 text-white border-emerald-600' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  audience === 'absent' ? 'bg-[#2c1d17] text-white border-[#2c1d17]' : 'border-[#e7e2da] text-stone-600 hover:bg-[#faf9f5]'
                 }`}
               >
                 Students Absent Today ({recipientsSeed.filter(r => r.absentToday).length})
@@ -252,7 +252,7 @@ export function BroadcastCenter() {
                 type="button"
                 onClick={() => setAudience('defaulters')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
-                  audience === 'defaulters' ? 'bg-emerald-600 text-white border-emerald-600' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  audience === 'defaulters' ? 'bg-[#2c1d17] text-white border-[#2c1d17]' : 'border-[#e7e2da] text-stone-600 hover:bg-[#faf9f5]'
                 }`}
               >
                 Unpaid Arrears Defaulters ({recipientsSeed.filter(r => (r.arrears || 0) > 0).length})
@@ -262,7 +262,7 @@ export function BroadcastCenter() {
                 type="button"
                 onClick={() => setAudience('class5')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
-                  audience === 'class5' ? 'bg-emerald-600 text-white border-emerald-600' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  audience === 'class5' ? 'bg-[#2c1d17] text-white border-[#2c1d17]' : 'border-[#e7e2da] text-stone-600 hover:bg-[#faf9f5]'
                 }`}
               >
                 Class 5 Primary Only
@@ -272,7 +272,7 @@ export function BroadcastCenter() {
                 type="button"
                 onClick={() => setAudience('all')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
-                  audience === 'all' ? 'bg-emerald-600 text-white border-emerald-600' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  audience === 'all' ? 'bg-[#2c1d17] text-white border-[#2c1d17]' : 'border-[#e7e2da] text-stone-600 hover:bg-[#faf9f5]'
                 }`}
               >
                 All Enrolled Campus Students ({recipientsSeed.length})

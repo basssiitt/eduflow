@@ -113,14 +113,14 @@ export default function AdminSettingsPage() {
     <div className="flex flex-col gap-6 max-w-4xl">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-emerald-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/admin" className="hover:text-[#c5a059] transition flex items-center gap-1 text-[#5c4a3e]">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">Campus Settings</span>
+          <span className="text-[#2c1d17] font-semibold">Campus Settings</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/billing" className="hover:text-emerald-600 transition font-medium text-slate-500">
+          <Link href="/admin/billing" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
             Billing &amp; Plan →
           </Link>
         </div>
@@ -128,121 +128,121 @@ export default function AdminSettingsPage() {
 
       <div>
         <div className="flex items-center gap-2">
-          <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-500/20">
+          <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#c5a059]/30">
             Campus Configuration
           </Badge>
-          <span className="text-sm text-slate-500 dark:text-slate-400">Academic Session 2026–2027</span>
+          <span className="text-sm text-[#786c62]">Academic Session 2026–2027</span>
         </div>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Campus Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400">Manage school profile, branch metadata, WhatsApp alerts, and localization.</p>
+        <h1 className="mt-2 text-3xl font-black tracking-tight text-[#2c1d17]">Campus Settings</h1>
+        <p className="text-[#786c62]">Manage school profile, branch metadata, WhatsApp alerts, and localization.</p>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-6">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-            <Building2 className="size-5 text-emerald-600" />
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs">
+          <div className="flex items-center gap-2 text-base font-bold text-[#2c1d17]">
+            <Building2 className="size-5 text-[#c5a059]" />
             <span>School Identity &amp; Profile</span>
           </div>
-          <p className="mt-1 text-xs text-slate-500">This information appears on fee challans, report cards, and parent receipts.</p>
+          <p className="mt-1 text-xs text-[#786c62]">This information appears on fee challans, report cards, and parent receipts.</p>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17] sm:col-span-2">
               Institution Name
               <Input
                 value={campusName}
                 onChange={(e) => setCampusName(e.target.value)}
                 required
-                className="rounded-xl text-sm"
+                className="rounded-xl text-sm border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
 
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17]">
               Campus Code
               <Input
                 value={campusCode}
                 onChange={(e) => setCampusCode(e.target.value)}
                 required
-                className="rounded-xl text-sm font-mono"
+                className="rounded-xl text-sm font-mono border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
 
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17]">
               Official Contact Phone
               <Input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                className="rounded-xl text-sm font-mono"
+                className="rounded-xl text-sm font-mono border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
 
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17] sm:col-span-2">
               Administrative Email
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="rounded-xl text-sm"
+                className="rounded-xl text-sm border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
 
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17] sm:col-span-2">
               Physical Campus Address
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
-                className="rounded-xl text-sm"
+                className="rounded-xl text-sm border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-            <Bell className="size-5 text-emerald-600" />
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs">
+          <div className="flex items-center gap-2 text-base font-bold text-[#2c1d17]">
+            <Bell className="size-5 text-[#c5a059]" />
             <span>Parent Broadcast &amp; Notifications</span>
           </div>
-          <p className="mt-1 text-xs text-slate-500">Configure automated dispatch of student haziri and fee invoice alerts.</p>
+          <p className="mt-1 text-xs text-[#786c62]">Configure automated dispatch of student haziri and fee invoice alerts.</p>
 
           <div className="mt-5 space-y-4">
-            <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+            <div className="flex items-center justify-between rounded-xl border border-[#e7e2da] p-4">
               <div>
-                <p className="text-sm font-semibold">Daily Attendance Absent Alerts</p>
-                <p className="text-xs text-muted-foreground">Instantly dispatch notification to parents when student is marked absent.</p>
+                <p className="text-sm font-bold text-[#2c1d17]">Daily Attendance Absent Alerts</p>
+                <p className="text-xs text-[#786c62]">Instantly dispatch notification to parents when student is marked absent.</p>
               </div>
               <Button
                 type="button"
                 variant={notifications ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setNotifications(!notifications)}
-                className={notifications ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
+                className={notifications ? "bg-[#2c1d17] hover:bg-[#3d2a20] text-white shadow-xs" : "border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"}
               >
                 {notifications ? 'Enabled' : 'Disabled'}
               </Button>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+            <div className="flex items-center justify-between rounded-xl border border-[#e7e2da] p-4">
               <div>
-                <p className="text-sm font-semibold">Fee Challan Reminder Broadcast</p>
-                <p className="text-xs text-muted-foreground">Send payment reminder on the 5th and 10th of every calendar month.</p>
+                <p className="text-sm font-bold text-[#2c1d17]">Fee Challan Reminder Broadcast</p>
+                <p className="text-xs text-[#786c62]">Send payment reminder on the 5th and 10th of every calendar month.</p>
               </div>
               <Button
                 type="button"
                 variant={smsAlerts ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSmsAlerts(!smsAlerts)}
-                className={smsAlerts ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
+                className={smsAlerts ? "bg-[#2c1d17] hover:bg-[#3d2a20] text-white shadow-xs" : "border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"}
               >
                 {smsAlerts ? 'Enabled' : 'Disabled'}
               </Button>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+            <div className="flex items-center justify-between rounded-xl border border-[#e7e2da] p-4">
               <div>
-                <p className="text-sm font-semibold">Language Preference / زبان</p>
-                <p className="text-xs text-muted-foreground">Switch default portal interface language.</p>
+                <p className="text-sm font-bold text-[#2c1d17]">Language Preference / زبان</p>
+                <p className="text-xs text-[#786c62]">Switch default portal interface language.</p>
               </div>
               <Button
                 type="button"
@@ -250,8 +250,9 @@ export default function AdminSettingsPage() {
                 size="sm"
                 // ubs:ignore - UI language toggle
                 onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
+                className="border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"
               >
-                <Globe className="mr-1.5 size-3.5" />
+                <Globe className="mr-1.5 size-3.5 text-[#c5a059]" />
                 {lang === 'en' ? 'اردو' : 'English'}
               </Button>
             </div>
@@ -259,39 +260,39 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Subscription & Plan Card (Admin Only) */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-              <CreditCard className="size-5 text-emerald-600" />
+            <div className="flex items-center gap-2 text-base font-bold text-[#2c1d17]">
+              <CreditCard className="size-5 text-[#c5a059]" />
               <span>Campus Subscription &amp; Plan Tier</span>
-              <Badge className="ml-2 bg-emerald-600 text-white hover:bg-emerald-600 text-[10px]">
+              <Badge className="ml-2 bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da] text-[10px]">
                 Admin Only
               </Badge>
             </div>
             <Link
               href="/admin/billing"
-              className="text-xs font-semibold text-emerald-600 hover:underline inline-flex items-center gap-1"
+              className="text-xs font-semibold text-[#c5a059] hover:underline inline-flex items-center gap-1"
             >
               Billing Details →
             </Link>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-[#786c62]">
             School administrators have exclusive rights to manage campus subscription tiers, licenses, and renewal invoices.
           </p>
 
-          <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-50/60 p-4 dark:bg-emerald-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mt-4 rounded-xl border border-[#c5a059]/40 bg-[#faf9f5] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 shrink-0">
-                <Sparkles className="size-5" />
+              <div className="flex size-10 items-center justify-center rounded-xl bg-white text-[#2c1d17] border border-[#e7e2da] shrink-0">
+                <Sparkles className="size-5 text-[#c5a059]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">{plan} Plan</h3>
-                  <Badge variant="outline" className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 border-emerald-400">
+                  <h3 className="font-bold text-[#2c1d17]">{plan} Plan</h3>
+                  <Badge variant="outline" className="text-[10px] font-semibold text-[#166534] border-emerald-400 bg-emerald-50">
                     30-Day Free Trial
                   </Badge>
                 </div>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                <p className="mt-1 text-xs text-[#5c4a3e]">
                   {trialDays} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and WhatsApp broadcasts.
                 </p>
               </div>
@@ -299,7 +300,7 @@ export default function AdminSettingsPage() {
             <Button
               type="button"
               onClick={() => window.location.href = '/admin/billing'}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs shrink-0"
+              className="bg-[#2c1d17] hover:bg-[#3d2a20] text-white text-xs shrink-0 shadow-xs"
             >
               Manage Subscription &amp; Invoices
             </Button>
@@ -307,12 +308,12 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Account Password Card (Self-Service) */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-            <KeyRound className="size-5 text-emerald-600" />
+        <div className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs">
+          <div className="flex items-center gap-2 text-base font-bold text-[#2c1d17]">
+            <KeyRound className="size-5 text-[#c5a059]" />
             <span>Account Security &amp; Password</span>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-[#786c62]">
             Change your personal login password. Available to all registered user accounts.
           </p>
 
@@ -321,8 +322,8 @@ export default function AdminSettingsPage() {
               className={`mt-4 rounded-xl p-3 text-xs font-medium ${
                 // ubs:ignore - UI notification status check
                 passwordMessage.type === 'success'
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
-                  : 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'
+                  ? 'bg-emerald-50 text-[#166534] border border-emerald-200'
+                  : 'bg-rose-50 text-rose-800 border border-rose-200'
               }`}
             >
               {passwordMessage.text}
@@ -330,7 +331,7 @@ export default function AdminSettingsPage() {
           )}
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17]">
               New Password
               <div className="relative">
                 <Input
@@ -338,12 +339,12 @@ export default function AdminSettingsPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Minimum 6 characters"
-                  className="rounded-xl text-sm pr-10"
+                  className="rounded-xl text-sm pr-10 border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-[#786c62] hover:text-[#2c1d17]"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -351,14 +352,14 @@ export default function AdminSettingsPage() {
               </div>
             </label>
 
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#2c1d17]">
               Confirm New Password
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                className="rounded-xl text-sm"
+                className="rounded-xl text-sm border-[#e7e2da] text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
               />
             </label>
           </div>
@@ -368,8 +369,7 @@ export default function AdminSettingsPage() {
               type="button"
               onClick={handlePasswordUpdate}
               disabled={passwordLoading || !newPassword}
-              variant="outline"
-              className="text-xs border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400"
+              className="text-xs bg-[#2c1d17] hover:bg-[#3d2a20] text-white shadow-xs disabled:opacity-50"
             >
               {passwordLoading ? 'Updating Password…' : 'Update Password'}
             </Button>
@@ -377,8 +377,8 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6">
-            {saved ? <Check className="mr-2 size-4" /> : <Save className="mr-2 size-4" />}
+          <Button type="submit" className="bg-[#2c1d17] hover:bg-[#3d2a20] text-white font-semibold px-6 shadow-xs">
+            {saved ? <Check className="mr-2 size-4 text-[#c5a059]" /> : <Save className="mr-2 size-4" />}
             {saved ? 'Settings Saved' : 'Save Changes'}
           </Button>
         </div>

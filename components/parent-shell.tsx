@@ -37,6 +37,7 @@ import { cn } from '@/lib/utils'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { UserSettingsDialog } from '@/components/user-settings-dialog'
+import { AcademicCrest } from '@/components/academic-crest'
 
 type NavItem = {
   label: string
@@ -57,13 +58,11 @@ const parentNavItems: NavItem[] = [
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/parent" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
-        <GraduationCap className="size-5 text-sky-400" aria-hidden="true" />
-      </div>
+      <AcademicCrest size={28} className="shrink-0" />
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
-          <p className="truncate text-xs font-semibold text-sky-600 dark:text-sky-400">Parent Portal</p>
+          <p className="truncate font-bold tracking-tight text-[#2c1d17]">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-[#c5a059]">Parent Portal</p>
         </div>
       )}
     </Link>
@@ -94,12 +93,12 @@ function ParentNavigation({
             title={collapsed ? item.label : undefined}
             className={cn(
               'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
-              'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-sky-50 text-sky-700 font-bold dark:bg-sky-950/60 dark:text-sky-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-sky-600',
+              'text-stone-600 hover:bg-[#faf9f5] hover:text-[#2c1d17]',
+              active && 'bg-[#faf9f5] text-[#2c1d17] font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-[#c5a059]',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-sky-600 dark:text-sky-400" : "text-slate-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-[#c5a059]" : "text-stone-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -116,28 +115,28 @@ function ParentSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+    <aside className={cn('hidden shrink-0 border-r border-[#e7e2da] bg-white md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
       <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <Separator className="bg-[#e7e2da]" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <ParentNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-sky-500/20 bg-sky-50/60 dark:bg-sky-950/20 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-sky-800 dark:text-sky-300">
-                <Sparkles className="size-4 text-sky-600" /> 24/7 AI Companion
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#2c1d17]">
+                <Sparkles className="size-4 text-[#c5a059]" /> 24/7 AI Companion
               </div>
-              <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">Ask questions in Roman Urdu about your child&apos;s routine.</p>
+              <p className="mt-1 text-xs leading-5 text-stone-600">Ask questions in Roman Urdu about your child&apos;s routine.</p>
             </>
           )}
         </div>
       </div>
-      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <Separator className="bg-[#e7e2da]" />
       <div className="flex items-center justify-between p-4">
-        {!collapsed && <span className="text-[11px] font-medium text-slate-400">Session 2026–27</span>}
-        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
+        {!collapsed && <span className="text-[11px] font-medium text-stone-400">Session 2026–27</span>}
+        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-stone-500 hover:text-[#2c1d17]">
           {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-4" /> : <PanelLeftClose aria-hidden="true" className="size-4" />}
         </Button>
       </div>
@@ -177,87 +176,87 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
   const userInitials = (userEmail ? userEmail.slice(0, 2) : 'PT').toUpperCase()
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="flex min-h-screen bg-[#faf9f5] text-[#2c1d17]">
       <ParentSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/80 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-[#e7e2da] bg-white/95 px-5 backdrop-blur-md md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
-              <SheetContent side="left" className="w-72 p-0 bg-white dark:bg-slate-950">
+              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-stone-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
+              <SheetContent side="left" className="w-72 p-0 bg-white">
                 <SheetTitle className="sr-only">Parent navigation</SheetTitle>
                 <div className="flex h-20 items-center px-5"><Brand /></div>
-                <Separator />
+                <Separator className="bg-[#e7e2da]" />
                 <div className="p-4"><ParentNavigation onNavigate={() => setMobileOpen(false)} /></div>
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Parent Access</p>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">Family Workspace</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c5a059]">Parent Access</p>
+              <h1 className="text-lg font-bold tracking-tight text-[#2c1d17]">Family Workspace</h1>
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3">
             <OfflineStatusBar compact />
-            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+              <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
               Cloud Synced
             </div>
-            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-[#e7e2da] bg-[#faf9f5] px-3 py-1 text-xs font-semibold text-stone-700 shadow-2xs">
               Academic Session 2026–2027
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-[#faf9f5]" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-sky-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-[#2c1d17] text-[#c5a059] font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
-                  <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
+                  <ChevronDown aria-hidden="true" className="hidden size-4 text-stone-400 sm:block" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-60">
+              <DropdownMenuContent align="end" className="w-60 border-[#e7e2da] bg-white">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
-                    <p className="text-xs font-normal text-muted-foreground">Signed in as Parent</p>
-                    <p className="truncate font-semibold">{userEmail || 'parent@school.edu.pk'}</p>
+                    <p className="text-xs font-normal text-stone-500">Signed in as Parent</p>
+                    <p className="truncate font-semibold text-[#2c1d17]">{userEmail || 'parent@school.edu.pk'}</p>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da]" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#attendance'} className="cursor-pointer">
-                    <CalendarCheck className="mr-2 size-4 text-sky-600" />
+                    <CalendarCheck className="mr-2 size-4 text-[#2c1d17]" />
                     <span>Attendance Status</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#fees'} className="cursor-pointer">
-                    <ReceiptText className="mr-2 size-4 text-sky-600" />
+                    <ReceiptText className="mr-2 size-4 text-[#2c1d17]" />
                     <span>Fee Invoices &amp; Receipts</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#ai'} className="cursor-pointer">
-                    <Bot className="mr-2 size-4 text-sky-600" />
+                    <Bot className="mr-2 size-4 text-[#2c1d17]" />
                     <span>AI Learning Companion</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
-                    <Settings className="mr-2 size-4 text-sky-600" />
+                    <Settings className="mr-2 size-4 text-[#2c1d17]" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da]" />
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">
                     Switch Workspace
                   </DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
-                    <GraduationCap className="mr-2 size-4 text-sky-600" />
+                    <GraduationCap className="mr-2 size-4 text-[#2c1d17]" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
-                    <User className="mr-2 size-4 text-sky-600" />
+                    <User className="mr-2 size-4 text-[#2c1d17]" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da]" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                    <ShieldCheck className="mr-2 size-4 text-slate-500" />
+                    <ShieldCheck className="mr-2 size-4 text-stone-500" />
                     <span>Switch Account</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">

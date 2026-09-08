@@ -46,6 +46,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { cn } from '@/lib/utils'
 import { OfflineStatusBar, useEduFlow } from '@/components/eduflow-provider'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
+import { AcademicCrest } from '@/components/academic-crest'
 
 type NavItem = {
   label: string
@@ -71,13 +72,13 @@ const adminNavItems: NavItem[] = [
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/admin" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
-        <GraduationCap className="size-5 text-sky-400" aria-hidden="true" />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2c1d17] border border-[#c5a059]/40 shadow-xs">
+        <AcademicCrest className="size-6" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
-          <p className="truncate text-xs font-semibold text-sky-600 dark:text-sky-400">Campus Admin</p>
+          <p className="truncate font-bold tracking-tight text-[#1e1b18] dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-[#c5a059]">Campus Administration</p>
         </div>
       )}
     </Link>
@@ -110,12 +111,12 @@ function AdminNavigation({
             title={collapsed ? item.label : undefined}
             className={cn(
               'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
-              'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-sky-50 text-sky-700 font-bold dark:bg-sky-950/60 dark:text-sky-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-sky-600',
+              'text-slate-600 hover:bg-[#f7f5f0] hover:text-[#1e1b18] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+              active && 'bg-[#f7f5f0] text-[#2c1d17] font-bold border border-[#e7e2da] dark:bg-slate-900 dark:text-[#c5a059] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-[#c5a059]',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-sky-600 dark:text-sky-400" : "text-slate-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-[#2c1d17] dark:text-[#c5a059]" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -132,20 +133,20 @@ function AdminSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+    <aside className={cn('hidden shrink-0 border-r border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
       <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <Separator className="bg-[#e7e2da] dark:bg-slate-800" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <AdminNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-slate-200/90 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-[#e7e2da] bg-[#faf9f5] dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Campus Support</p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Need help with challans or enrollment?</p>
+              <p className="text-xs font-bold text-[#1e1b18] dark:text-slate-100">Campus Support</p>
+              <p className="mt-1 text-xs leading-relaxed text-[#786c62] dark:text-slate-400">Need help with challans or enrollment?</p>
               <a href="mailto:support@eduflow.pk" className="inline-block mt-3 w-full">
-                <Button variant="outline" size="sm" className="w-full text-xs font-semibold border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700">
+                <Button variant="outline" size="sm" className="w-full text-xs font-semibold border-[#e7e2da] hover:border-[#c5a059] hover:text-[#2c1d17] dark:border-slate-700">
                   support@eduflow.pk
                 </Button>
               </a>
@@ -153,7 +154,7 @@ function AdminSidebar({
           )}
         </div>
       </div>
-      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <Separator className="bg-[#e7e2da] dark:bg-slate-800" />
       <div className="flex items-center justify-between p-4">
         {!collapsed && <span className="text-[11px] font-medium text-slate-400">Academic Node 2026–27</span>}
         <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
@@ -253,8 +254,8 @@ function SettingsModal({
         <div className="flex items-start justify-between p-6 border-b border-slate-100 dark:border-slate-800">
           <div>
             <div className="flex items-center gap-2">
-              <Settings className="size-5 text-sky-600" />
-              <h2 id="settings-title" className="text-xl font-bold">Account &amp; Campus Settings</h2>
+              <Settings className="size-5 text-[#2c1d17] dark:text-[#c5a059]" />
+              <h2 id="settings-title" className="text-xl font-bold text-[#1e1b18] dark:text-slate-100">Account &amp; Campus Settings</h2>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Manage school profile, subscription plan, and security credentials.</p>
           </div>
@@ -264,13 +265,13 @@ function SettingsModal({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 px-6 pt-2">
+        <div className="flex border-b border-[#e7e2da] dark:border-slate-800 bg-[#faf9f5] dark:bg-slate-950/40 px-6 pt-2">
           <button
             type="button"
             onClick={() => setActiveTab('profile')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition ${
               activeTab === 'profile'
-                ? 'border-sky-600 text-sky-600'
+                ? 'border-[#2c1d17] text-[#2c1d17] dark:border-[#c5a059] dark:text-[#c5a059]'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -281,7 +282,7 @@ function SettingsModal({
             onClick={() => setActiveTab('subscription')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'subscription'
-                ? 'border-sky-600 text-sky-600'
+                ? 'border-[#2c1d17] text-[#2c1d17] dark:border-[#c5a059] dark:text-[#c5a059]'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -293,7 +294,7 @@ function SettingsModal({
             onClick={() => setActiveTab('security')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'security'
-                ? 'border-sky-600 text-sky-600'
+                ? 'border-[#2c1d17] text-[#2c1d17] dark:border-[#c5a059] dark:text-[#c5a059]'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -306,7 +307,7 @@ function SettingsModal({
           {/* TAB 1: General & Profile */}
           {activeTab === 'profile' && (
             <div className="flex flex-col gap-4">
-              <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950">
+              <div className="rounded-xl border border-[#e7e2da] bg-[#faf9f5] p-4 dark:border-slate-800 dark:bg-slate-950">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Account Information</p>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Email / Username</span>
@@ -318,18 +319,18 @@ function SettingsModal({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+              <div className="flex items-center justify-between rounded-xl border border-[#e7e2da] p-4 dark:border-slate-800">
                 <div>
                   <p className="text-sm font-semibold">Language / زبان</p>
                   <p className="text-xs text-muted-foreground">Switch between English and Urdu.</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={toggleLanguage} className="border-slate-200 hover:border-sky-300">
-                  <Globe className="mr-1.5 size-3.5 text-sky-600" />
+                <Button variant="outline" size="sm" onClick={toggleLanguage} className="border-[#e7e2da] hover:border-[#c5a059]">
+                  <Globe className="mr-1.5 size-3.5 text-[#2c1d17] dark:text-[#c5a059]" />
                   {lang === 'en' ? 'اردو' : 'English'}
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+              <div className="flex items-center justify-between rounded-xl border border-[#e7e2da] p-4 dark:border-slate-800">
                 <div>
                   <p className="text-sm font-semibold">WhatsApp &amp; Bell Notifications</p>
                   <p className="text-xs text-muted-foreground">Alerts for daily attendance and fee collections.</p>
@@ -338,7 +339,7 @@ function SettingsModal({
                   variant={notifications ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setNotifications(!notifications)}
-                  className={notifications ? "bg-sky-600 hover:bg-sky-700 text-white shadow-xs font-semibold" : ""}
+                  className={notifications ? "bg-[#2c1d17] hover:bg-[#1e130f] text-white shadow-xs font-semibold" : ""}
                 >
                   {notifications ? 'Enabled' : 'Disabled'}
                 </Button>
@@ -349,18 +350,18 @@ function SettingsModal({
           {/* TAB 2: Subscription Management (Admin Only) */}
           {activeTab === 'subscription' && (
             <div className="flex flex-col gap-4">
-              <div className="rounded-xl border border-sky-500/30 bg-sky-50/60 p-4.5 dark:bg-sky-950/40">
+              <div className="rounded-xl border border-[#c5a059]/40 bg-[#fbf9f5] p-4.5 dark:bg-slate-900/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="size-5 text-sky-600" />
+                    <Sparkles className="size-5 text-[#c5a059]" />
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-slate-100">{currentPlan} Plan</h3>
-                      <p className="text-xs text-sky-700 dark:text-sky-400 font-medium">
+                      <h3 className="font-bold text-[#1e1b18] dark:text-slate-100">{currentPlan} Plan</h3>
+                      <p className="text-xs text-[#786c62] dark:text-[#c5a059] font-medium">
                         30-Day Free Trial Active ({trialDays} days remaining)
                       </p>
                     </div>
                   </div>
-                  <Badge className="bg-emerald-600 text-white hover:bg-emerald-600 font-semibold text-xs">
+                  <Badge className="bg-[#166534] text-white hover:bg-[#166534] font-semibold text-xs">
                     Trial Active
                   </Badge>
                 </div>
@@ -372,7 +373,7 @@ function SettingsModal({
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+              <div className="rounded-xl border border-[#e7e2da] p-4 dark:border-slate-800">
                 <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Manage Campus Subscription</h4>
                 <p className="mt-1 text-xs text-muted-foreground">
                   As a School Admin, you have exclusive permission to upgrade, renew, or view invoices for your school campus.
@@ -383,7 +384,7 @@ function SettingsModal({
                       onClose()
                       window.location.href = '/admin/billing'
                     }}
-                    className="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold shadow-xs"
+                    className="bg-[#2c1d17] hover:bg-[#1e130f] text-white text-xs font-semibold shadow-xs"
                   >
                     <CreditCard className="mr-1.5 size-3.5" />
                     Open Billing &amp; Invoices
@@ -394,7 +395,7 @@ function SettingsModal({
                       onClose()
                       window.location.href = '/#pricing'
                     }}
-                    className="text-xs border-slate-200 hover:border-sky-300"
+                    className="text-xs border-[#e7e2da] hover:border-[#c5a059]"
                   >
                     Compare All Plans
                   </Button>
@@ -406,9 +407,9 @@ function SettingsModal({
           {/* TAB 3: Change Password (All Users) */}
           {activeTab === 'security' && (
             <form onSubmit={handlePasswordUpdate} className="flex flex-col gap-4">
-              <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950">
+              <div className="rounded-xl border border-[#e7e2da] bg-[#faf9f5] p-4 dark:border-slate-800 dark:bg-slate-950">
                 <div className="flex items-center gap-2">
-                  <KeyRound className="size-4 text-slate-600" />
+                  <KeyRound className="size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Self-Service Password Update
                   </p>
@@ -442,7 +443,7 @@ function SettingsModal({
                       placeholder="Minimum 6 characters"
                       required
                       minLength={6}
-                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none"
+                      className="w-full h-10 rounded-lg border border-[#e7e2da] dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20 outline-none"
                     />
                     <button
                       type="button"
@@ -465,7 +466,7 @@ function SettingsModal({
                       placeholder="Re-enter new password"
                       required
                       minLength={6}
-                      className="w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none"
+                      className="w-full h-10 rounded-lg border border-[#e7e2da] dark:border-slate-700 bg-white dark:bg-slate-950 px-3 pr-10 text-xs text-slate-900 dark:text-slate-100 focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20 outline-none"
                     />
                   </div>
                 </label>
@@ -475,7 +476,7 @@ function SettingsModal({
                 <Button
                   type="submit"
                   disabled={passwordLoading || !newPassword}
-                  className="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold shadow-xs"
+                  className="bg-[#2c1d17] hover:bg-[#1e130f] text-white text-xs font-semibold shadow-xs"
                 >
                   {passwordLoading ? 'Updating Password…' : 'Update Password'}
                 </Button>
@@ -484,12 +485,12 @@ function SettingsModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
+        <div className="flex items-center justify-between p-4 border-t border-[#e7e2da] dark:border-slate-800 bg-[#faf9f5] dark:bg-slate-950/50">
           <span className="text-[11px] text-muted-foreground">Session: 2026–2027</span>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
             {activeTab === 'profile' && (
-              <Button size="sm" onClick={handleSave} disabled={saved} className="bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-xs">
+              <Button size="sm" onClick={handleSave} disabled={saved} className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs">
                 {saved ? <Check className="mr-1.5 size-4" /> : null}
                 {saved ? 'Saved' : 'Save Changes'}
               </Button>
@@ -536,7 +537,7 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/80 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-[#e7e2da] bg-white/95 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
@@ -548,71 +549,71 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Campus Administration</p>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">School Operations</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c5a059]">Campus Administration</p>
+              <h1 className="text-lg font-bold tracking-tight text-[#1e1b18] dark:text-slate-100">School Operations</h1>
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3">
             <OfflineStatusBar compact />
-            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#c8e6c9] bg-[#e8f5e9] px-3 py-1 text-xs font-semibold text-[#166534] dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="size-2 rounded-full bg-[#166534] animate-pulse" />
               Cloud Synced
             </div>
-            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-[#e7e2da] bg-[#faf9f5] px-3 py-1 text-xs font-semibold text-[#2c1d17] dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
               Academic Session 2026–2027
             </div>
             <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
               <Bell aria-hidden="true" className="size-4" />
-              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-sky-500" />
+              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-[#c5a059]" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-[#f7f5f0] dark:hover:bg-slate-800" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-sky-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-[#2c1d17] text-[#c5a059] font-bold text-xs border border-[#c5a059]/30">{userInitials}</AvatarFallback>
                   </Avatar>
                   <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-60">
+              <DropdownMenuContent align="end" className="w-60 border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
                     <p className="text-xs font-normal text-muted-foreground">Signed in as</p>
-                    <p className="truncate font-semibold">{userEmail || 'admin@school.edu.pk'}</p>
+                    <p className="truncate font-semibold text-[#1e1b18] dark:text-slate-100">{userEmail || 'admin@school.edu.pk'}</p>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
-                    <Settings className="mr-2 size-4 text-sky-600" />
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium hover:bg-[#f7f5f0]">
+                    <Settings className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin/billing'} className="cursor-pointer">
-                    <CreditCard className="mr-2 size-4 text-sky-600" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin/billing'} className="cursor-pointer hover:bg-[#f7f5f0]">
+                    <CreditCard className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                     <span>Manage Subscription (Admin)</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin/settings'} className="cursor-pointer">
-                    <Globe className="mr-2 size-4 text-sky-600" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin/settings'} className="cursor-pointer hover:bg-[#f7f5f0]">
+                    <Globe className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                     <span>Campus Profile Settings</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
-                    <GraduationCap className="mr-2 size-4 text-sky-600" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer hover:bg-[#f7f5f0]">
+                    <GraduationCap className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
-                    <Users className="mr-2 size-4 text-sky-600" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer hover:bg-[#f7f5f0]">
+                    <Users className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer hover:bg-[#f7f5f0]">
                     <ShieldCheck className="mr-2 size-4 text-slate-500" />
                     <span>Switch Account</span>
                   </DropdownMenuItem>

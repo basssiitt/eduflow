@@ -123,16 +123,16 @@ function AddTeacherModal({
       aria-modal="true"
       aria-labelledby="add-teacher-title"
     >
-      <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 my-8">
-        <div className="flex items-start justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+      <div className="w-full max-w-xl rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-2xl my-8">
+        <div className="flex items-start justify-between border-b border-[#e7e2da] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
                 <UserPlus className="size-4" />
               </div>
               <h2
                 id="add-teacher-title"
-                className="text-xl font-bold text-slate-900 dark:text-slate-100"
+                className="text-xl font-bold text-slate-900"
               >
                 Onboard New Faculty Member
               </h2>
@@ -144,31 +144,31 @@ function AddTeacherModal({
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {error && (
-          <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 font-semibold dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300">
+          <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 font-semibold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSave} className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+          <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
             Teacher Full Name *
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Prof. Tariq Mahmood"
               required
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Email Address *
             <Input
               type="email"
@@ -176,47 +176,47 @@ function AddTeacherModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tariq@school.edu.pk"
               required
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Phone / WhatsApp Number *
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+92 300 1234567"
               required
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Employee Code
             <Input
               value={employeeCode}
               onChange={(e) => setEmployeeCode(e.target.value)}
               placeholder="TCH-2026-008"
-              className="mt-1 font-mono text-xs"
+              className="mt-1 font-mono text-xs border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Academic Qualification
             <Input
               value={qualification}
               onChange={(e) => setQualification(e.target.value)}
               placeholder="e.g. M.Phil Mathematics (QAU)"
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Department
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-xs focus:border-sky-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+              className="mt-1 flex h-9 w-full rounded-md border border-[#e7e2da] bg-white px-3 py-1 text-sm shadow-xs focus:border-[#c5a059] focus:outline-none text-[#2c1d17]"
             >
               {departments.map((d) => (
                 <option key={d} value={d}>
@@ -226,51 +226,51 @@ function AddTeacherModal({
             </select>
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Primary Subject
             <Input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Mathematics & Calculus"
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+          <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
             Assigned Classes (comma-separated)
             <Input
               value={classesInput}
               onChange={(e) => setClassesInput(e.target.value)}
               placeholder="Class 9-A, Class 10-A, FSc-I"
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
             <span className="text-[11px] text-slate-400 font-normal">
               Separate each class section with a comma (e.g. Class 5-A, Class 6-B)
             </span>
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Monthly Base Salary (PKR)
             <Input
               type="number"
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
               placeholder="75000"
-              className="mt-1 font-mono"
+              className="mt-1 font-mono border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Joining Date
             <Input
               type="date"
               value={joiningDate}
               onChange={(e) => setJoiningDate(e.target.value)}
-              className="mt-1"
+              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+          <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
             Status
             <div className="mt-2 flex gap-4">
               {(['Active', 'On Leave', 'Inactive'] as const).map((s) => (
@@ -280,7 +280,7 @@ function AddTeacherModal({
                     name="teacher-status"
                     checked={status === s}
                     onChange={() => setStatus(s)}
-                    className="accent-sky-600"
+                    className="accent-[#2c1d17]"
                   />
                   <span>{s}</span>
                 </label>
@@ -288,19 +288,19 @@ function AddTeacherModal({
             </div>
           </label>
 
-          <div className="mt-4 flex items-center justify-end gap-2 sm:col-span-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <div className="mt-4 flex items-center justify-end gap-2 sm:col-span-2 border-t border-[#e7e2da] pt-4">
             <Button
               variant="outline"
               type="button"
               onClick={onClose}
-              className="rounded-xl border-slate-200"
+              className="rounded-xl border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={saving}
-              className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs"
+              className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs"
             >
               {saving ? 'Onboarding…' : 'Confirm & Onboard Teacher'}
             </Button>
@@ -493,16 +493,16 @@ export default function TeachersPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/admin"
-              className="text-xs text-slate-500 hover:text-sky-600 transition flex items-center gap-1 font-medium"
+              className="text-xs text-slate-500 hover:text-[#2c1d17] transition flex items-center gap-1 font-medium"
             >
               <ArrowLeft className="size-3.5" /> Campus Admin
             </Link>
             <span className="text-xs text-slate-400">/</span>
-            <Badge className="bg-sky-50 text-sky-700 hover:bg-sky-50 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+            <Badge className="bg-[#faf9f5] text-[#2c1d17] hover:bg-[#faf9f5] border border-[#e7e2da]">
               Session 2026–2027
             </Badge>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">
             Faculty &amp; Teachers
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -516,14 +516,14 @@ export default function TeachersPage() {
             size="sm"
             onClick={exportCsv}
             disabled={teachers.length === 0}
-            className="rounded-xl border-slate-200 hover:border-sky-300 hover:text-sky-700 text-xs"
+            className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17] text-xs"
           >
-            <Download className="mr-1.5 size-3.5" /> Export Faculty CSV
+            <Download className="mr-1.5 size-3.5 text-[#c5a059]" /> Export Faculty CSV
           </Button>
           <Button
             size="sm"
             onClick={() => setAddOpen(true)}
-            className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs text-xs"
+            className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs text-xs"
           >
             <UserPlus className="mr-1.5 size-4" /> Onboard Teacher
           </Button>
@@ -541,57 +541,57 @@ export default function TeachersPage() {
           </>
         ) : (
           <>
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Faculty Members</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+                <p className="text-sm font-medium text-[#5c4a3e]">Total Faculty Members</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
                   <GraduationCap className="size-5" />
                 </div>
               </div>
-              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
                 {totalFaculty}
               </p>
               <p className="mt-1 text-xs text-slate-500">Registered academic educators</p>
             </article>
 
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Active in Classroom</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                <p className="text-sm font-medium text-[#5c4a3e]">Active in Classroom</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                   <UserCheck className="size-5" />
                 </div>
               </div>
-              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
                 {activeToday}
               </p>
               <div className="mt-1 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                   {totalFaculty > 0 ? `${Math.round((activeToday / totalFaculty) * 100)}%` : '0%'} on duty
                 </span>
               </div>
             </article>
 
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Avg Subject Load</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                <p className="text-sm font-medium text-[#5c4a3e]">Avg Subject Load</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
                   <BookOpen className="size-5" />
                 </div>
               </div>
-              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
                 {avgClassLoad}
               </p>
               <p className="mt-1 text-xs text-slate-500">Classes per faculty member</p>
             </article>
 
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Monthly Faculty Payroll</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                <p className="text-sm font-medium text-[#5c4a3e]">Monthly Faculty Payroll</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                   <Wallet className="size-5" />
                 </div>
               </div>
-              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
                 Rs. {totalMonthlyPayroll.toLocaleString()}
               </p>
               <p className="mt-1 text-xs text-slate-500">Base salary commitment</p>
@@ -626,8 +626,8 @@ export default function TeachersPage() {
                   className={cn(
                     'rounded-lg px-2.5 py-1 text-xs font-semibold transition-all',
                     statusFilter === s
-                      ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-900 dark:text-sky-300'
-                      : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+                      ? 'bg-[#2c1d17] text-white shadow-xs'
+                      : 'text-[#5c4a3e] hover:text-[#2c1d17]'
                   )}
                 >
                   {s}
@@ -645,15 +645,15 @@ export default function TeachersPage() {
                   setQuery(e.target.value)
                   setPage(1)
                 }}
-                className="h-9 w-full sm:w-64 pl-9 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                className="h-9 w-full sm:w-64 pl-9 text-xs rounded-xl bg-white border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
               />
             </div>
           </div>
         </div>
 
         {/* Department Quick Filter Sub-bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-100 px-5 py-2.5 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-950/40 text-xs">
-          <span className="font-semibold text-slate-400 mr-2 shrink-0">Department:</span>
+        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[#e7e2da] px-5 py-2.5 bg-[#faf9f5] text-xs">
+          <span className="font-semibold text-slate-500 mr-2 shrink-0">Department:</span>
           {['All', 'Science & Math', 'Languages', 'Humanities', 'Arts & Sports', 'IT'].map((d) => (
             <button
               key={d}
@@ -664,8 +664,8 @@ export default function TeachersPage() {
               className={cn(
                 'rounded-lg px-2.5 py-1 font-medium transition shrink-0',
                 deptFilter === d
-                  ? 'bg-sky-600 text-white font-semibold shadow-2xs'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-sky-300'
+                  ? 'bg-[#2c1d17] text-white font-semibold shadow-xs'
+                  : 'bg-white text-[#5c4a3e] border border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#f7f5f0]'
               )}
             >
               {d}
@@ -675,7 +675,7 @@ export default function TeachersPage() {
 
         {/* Table Body */}
         {loading ? (
-          <div className="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="p-4 divide-y divide-[#e7e2da]">
             <table className="w-full">
               <tbody>
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -707,7 +707,7 @@ export default function TeachersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px] text-left text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50/70 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:border-slate-800 dark:bg-slate-950/60">
+              <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-semibold uppercase tracking-wider text-[#5c4a3e]">
                 <tr>
                   <th className="px-5 py-3.5">Code</th>
                   <th className="px-5 py-3.5">Teacher Name &amp; Degree</th>
@@ -718,15 +718,15 @@ export default function TeachersPage() {
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-[#e7e2da]">
                 {paginated.map((teacher) => {
                   const statusTone = {
                     Active:
-                      'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-300',
+                      'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20',
                     'On Leave':
-                      'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-950/40 dark:text-amber-300',
+                      'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20',
                     Inactive:
-                      'bg-slate-100 text-slate-600 ring-1 ring-slate-400/20 dark:bg-slate-800 dark:text-slate-400',
+                      'bg-slate-100 text-slate-600 ring-1 ring-slate-400/20',
                   }[teacher.status]
 
                   const dotColor = {
@@ -738,11 +738,11 @@ export default function TeachersPage() {
                   return (
                     <tr
                       key={teacher.id}
-                      className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/50"
+                      className="hover:bg-[#faf9f5] transition-colors"
                     >
                       {/* Employee Code */}
                       <td className="px-5 py-4">
-                        <span className="font-mono text-xs font-bold text-sky-700 bg-sky-50 dark:bg-sky-950 dark:text-sky-300 rounded px-1.5 py-0.5 border border-sky-200 dark:border-sky-800">
+                        <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#faf9f5] rounded px-1.5 py-0.5 border border-[#e7e2da]">
                           {teacher.employee_code}
                         </span>
                       </td>
@@ -750,7 +750,7 @@ export default function TeachersPage() {
                       {/* Teacher Profile */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-900 text-xs font-bold text-sky-700 dark:text-sky-300">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f7f5f0] border border-[#e7e2da] text-xs font-bold text-[#2c1d17]">
                             {teacher.name
                               .split(' ')
                               .map((n) => n[0])
@@ -758,10 +758,10 @@ export default function TeachersPage() {
                               .join('')}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900 dark:text-slate-100">
+                            <p className="font-bold text-slate-900">
                               {teacher.name}
                             </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                            <p className="text-xs text-slate-500 line-clamp-1">
                               {teacher.qualification}
                             </p>
                           </div>
@@ -770,7 +770,7 @@ export default function TeachersPage() {
 
                       {/* Department & Subject */}
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-slate-800 dark:text-slate-200">
+                        <p className="font-semibold text-slate-800">
                           {teacher.subject}
                         </p>
                         <p className="text-xs text-slate-400">{teacher.department}</p>
@@ -782,7 +782,7 @@ export default function TeachersPage() {
                           {teacher.classes.map((cls) => (
                             <span
                               key={cls}
-                              className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                              className="rounded-md bg-[#f7f5f0] border border-[#e7e2da] px-2 py-0.5 text-[11px] font-medium text-[#2c1d17]"
                             >
                               {cls}
                             </span>
@@ -791,7 +791,7 @@ export default function TeachersPage() {
                       </td>
 
                       {/* Salary */}
-                      <td className="px-5 py-4 font-mono font-semibold text-slate-900 dark:text-slate-100">
+                      <td className="px-5 py-4 font-mono font-semibold text-slate-900">
                         Rs. {(teacher.salary || 0).toLocaleString()}
                       </td>
 
@@ -820,7 +820,7 @@ export default function TeachersPage() {
                               target="_blank"
                               rel="noreferrer"
                               title="Message teacher on WhatsApp"
-                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition"
                             >
                               <MessageCircle className="size-3.5" />
                             </a>
@@ -831,7 +831,7 @@ export default function TeachersPage() {
                             <a
                               href={`mailto:${teacher.email}?subject=EduFlow Campus Notification`}
                               title="Email teacher"
-                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-sky-300 hover:text-sky-600 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-500 hover:border-[#c5a059] hover:text-[#2c1d17] transition"
                             >
                               <Mail className="size-3.5" />
                             </a>
@@ -841,7 +841,7 @@ export default function TeachersPage() {
                           <button
                             onClick={() => setTeacherToDelete(teacher)}
                             title="Offboard / Remove teacher"
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-rose-300 hover:text-rose-600 hover:bg-rose-50 transition dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-rose-950/30"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-400 hover:border-rose-300 hover:text-rose-600 hover:bg-rose-50 transition"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -856,7 +856,7 @@ export default function TeachersPage() {
         )}
 
         {/* Pagination Footer */}
-        <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-xs text-slate-500 dark:border-slate-800">
+        <div className="flex items-center justify-between border-t border-[#e7e2da] px-5 py-3 text-xs text-slate-500">
           <span>
             Showing {paginated.length} of {filtered.length} faculty members
           </span>

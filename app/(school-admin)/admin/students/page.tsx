@@ -84,16 +84,16 @@ function AddStudentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true" aria-labelledby="add-student-title">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <div className="w-full max-w-lg rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <UserPlus className="size-5 text-sky-600" />
-              <h2 id="add-student-title" className="text-xl font-bold text-slate-900 dark:text-slate-100">Admit New Student</h2>
+              <UserPlus className="size-5 text-[#2c1d17]" />
+              <h2 id="add-student-title" className="text-xl font-bold text-slate-900">Admit New Student</h2>
             </div>
             <p className="mt-1 text-xs text-slate-500">Enter student details to add them to the active academic register.</p>
           </div>
-          <button onClick={onClose} aria-label="Close modal" className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <button onClick={onClose} aria-label="Close modal" className="rounded-md p-1 text-slate-400 hover:bg-slate-100">
             <X className="size-4" />
           </button>
         </div>
@@ -101,34 +101,34 @@ function AddStudentModal({
         {error && <p className="mt-4 text-xs font-semibold text-rose-600">{error}</p>}
 
         <form onSubmit={handleSave} className="mt-5 grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 sm:col-span-2">
             Student Full Name *
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Muhammad Ali"
               required
-              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
             />
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 sm:col-span-2">
             Father / Guardian Name *
             <Input
               value={fatherName}
               onChange={(e) => setFatherName(e.target.value)}
               placeholder="e.g. Tariq Mehmood"
               required
-              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
             />
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700">
             Class
             <select
               value={className}
               onChange={(e) => setClassName(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium"
+              className="h-10 rounded-xl border border-[#e7e2da] bg-background px-3 text-sm font-medium text-[#2c1d17]"
             >
               {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((c) => (
                 <option key={c}>{c}</option>
@@ -136,12 +136,12 @@ function AddStudentModal({
             </select>
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700">
             Section
             <select
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium"
+              className="h-10 rounded-xl border border-[#e7e2da] bg-background px-3 text-sm font-medium text-[#2c1d17]"
             >
               <option>A</option>
               <option>B</option>
@@ -149,30 +149,30 @@ function AddStudentModal({
             </select>
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700">
             WhatsApp Phone No.
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+92 3XX XXXXXXX"
-              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
             />
           </label>
 
-          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700">
             Monthly Tuition Fee (PKR)
             <Input
               type="number"
               value={fee}
               onChange={(e) => setFee(e.target.value)}
               placeholder="15000"
-              className="text-sm rounded-xl border-slate-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
             />
           </label>
 
           <div className="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
-            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-slate-200">Cancel</Button>
-            <Button type="submit" disabled={saving} className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs">
+            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]">Cancel</Button>
+            <Button type="submit" disabled={saving} className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs">
               {saving ? 'Admitting…' : 'Admit Student'}
             </Button>
           </div>
@@ -278,18 +278,18 @@ export default function StudentsPage() {
     <div className="flex flex-col gap-6">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-sky-600 transition flex items-center gap-1 text-slate-600 dark:text-slate-400">
+          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <span className="text-slate-900 dark:text-slate-100 font-semibold">Student Register</span>
+          <span className="text-slate-900 font-semibold">Student Register</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/attendance" className="hover:text-sky-600 transition font-medium text-slate-500">
+          <Link href="/admin/attendance" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
             Attendance Register →
           </Link>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <Link href="/admin/fees" className="hover:text-sky-600 transition font-medium text-slate-500">
+          <span className="text-slate-300">|</span>
+          <Link href="/admin/fees" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
             Fee Challans →
           </Link>
         </div>
@@ -298,26 +298,26 @@ export default function StudentsPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 border-sky-500/20 font-semibold">
+            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#e7e2da] font-semibold">
               Academic Directory
             </Badge>
-            <span className="text-sm text-slate-500 dark:text-slate-400">Session 2026–2027</span>
+            <span className="text-sm text-slate-500">Session 2026–2027</span>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Student Register &amp; Enrollment</h1>
-          <p className="text-slate-500 dark:text-slate-400">Manage enrolled students, parent contact details, and classroom assignments.</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">Student Register &amp; Enrollment</h1>
+          <p className="text-slate-500">Manage enrolled students, parent contact details, and classroom assignments.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             onClick={() => setImportOpen(true)}
-            className="border-slate-200 hover:border-sky-300 hover:text-sky-700 dark:border-slate-700"
+            className="border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17]"
           >
-            <Upload className="mr-2 size-4" />
+            <Upload className="mr-2 size-4 text-[#c5a059]" />
             Bulk CSV Import
           </Button>
           <Button
             onClick={() => setAddOpen(true)}
-            className="bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-200 font-semibold"
+            className="bg-[#2c1d17] hover:bg-[#1e130f] text-white shadow-xs font-semibold"
           >
             <Plus className="mr-2 size-4" />
             Admit Student
@@ -325,7 +325,7 @@ export default function StudentsPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm">
+      <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-1.5">
             {['All', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
@@ -333,10 +333,10 @@ export default function StudentsPage() {
                 key={cls}
                 onClick={() => handleClassFilter(cls)}
                 className={cn(
-                  'rounded-xl px-3 py-1.5 text-xs font-bold transition-all',
+                  'rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all',
                   classFilter === cls
-                    ? 'bg-sky-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 dark:bg-slate-800 dark:text-slate-300'
+                    ? 'bg-[#2c1d17] text-white shadow-xs'
+                    : 'bg-[#faf9f5] text-[#5c4a3e] border border-[#e7e2da] hover:bg-[#f7f5f0]'
                 )}
               >
                 {cls}
@@ -349,19 +349,19 @@ export default function StudentsPage() {
               placeholder="Search by name, roll no..."
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
-              className="pl-9 text-xs rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="pl-9 text-xs rounded-xl border-[#e7e2da] bg-white focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="mt-5 divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="mt-5 divide-y divide-[#e7e2da]">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="py-4 flex items-center justify-between animate-pulse">
-                <div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded-md" />
-                <div className="h-4 w-16 bg-slate-200 dark:bg-slate-800 rounded-md" />
+                <div className="h-4 w-20 bg-slate-200 rounded-md" />
+                <div className="h-4 w-36 bg-slate-200 rounded-md" />
+                <div className="h-4 w-24 bg-slate-200 rounded-md" />
+                <div className="h-4 w-16 bg-slate-200 rounded-md" />
               </div>
             ))}
           </div>
@@ -379,10 +379,10 @@ export default function StudentsPage() {
           </div>
         ) : (
           <>
-            <div className="mt-5 overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="mt-5 overflow-hidden rounded-xl border border-[#e7e2da]">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-100 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-950 text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-bold uppercase tracking-wider text-[#5c4a3e]">
                     <tr>
                       <th className="px-5 py-3.5">Roll No</th>
                       <th className="px-5 py-3.5">Student Name</th>
@@ -393,31 +393,31 @@ export default function StudentsPage() {
                       <th className="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tbody className="divide-y divide-[#e7e2da]">
                     {paginated.map((s) => (
-                      <tr key={s.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                      <tr key={s.id} className="transition-colors hover:bg-[#faf9f5]">
                         <td className="px-5 py-4">
-                          <span className="font-mono text-xs font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 rounded px-2 py-0.5">
+                          <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#faf9f5] border border-[#e7e2da] rounded px-2 py-0.5">
                             {s.roll_no}
                           </span>
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#f7f5f0] border border-[#e7e2da] text-xs font-bold text-[#2c1d17]">
                               {s.name.split(" ").map((x) => x[0]).join("")}
                             </div>
-                            <span className="font-semibold text-slate-900 dark:text-slate-100">{s.name}</span>
+                            <span className="font-semibold text-slate-900">{s.name}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{s.father_name || '—'}</td>
+                        <td className="px-5 py-4 text-slate-600">{s.father_name || '—'}</td>
                         <td className="px-5 py-4">
-                          <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="rounded-lg bg-[#f7f5f0] border border-[#e7e2da] px-2.5 py-1 text-xs font-semibold text-[#2c1d17]">
                             {s.class} · Section {s.section}
                           </span>
                         </td>
                         <td className="px-5 py-4 font-mono text-xs text-slate-500">{s.guardian_phone || '—'}</td>
                         <td className="px-5 py-4">
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 ring-1 ring-emerald-500/20">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-500/20">
                             <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                             Enrolled
                           </span>
@@ -440,7 +440,7 @@ export default function StudentsPage() {
               </div>
             </div>
 
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-500">
               <span>Showing {paginated.length} of {filtered.length} students</span>
               <div className="flex items-center gap-2">
                 <Button
@@ -448,7 +448,7 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
+                  className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
@@ -458,14 +458,14 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="size-8 p-0 border-slate-200 dark:border-slate-700"
+                  className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
                 >
                   <ChevronRight className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2 hover:text-sky-600">
+                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2 hover:text-[#2c1d17]">
                   <Download className="mr-1.5 size-3.5" /> Export CSV
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="hover:text-sky-600">
+                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="hover:text-[#2c1d17]">
                   <Download className="mr-1.5 size-3.5" /> Print Roster
                 </Button>
               </div>

@@ -106,16 +106,16 @@ export default function TeacherClassesPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/teacher"
-              className="text-xs text-slate-500 hover:text-sky-600 transition flex items-center gap-1 font-medium"
+              className="text-xs text-slate-500 hover:text-[#2c1d17] transition flex items-center gap-1 font-medium"
             >
               <ArrowLeft className="size-3.5" /> Classroom Haziri
             </Link>
             <span className="text-xs text-slate-400">/</span>
-            <Badge className="bg-sky-50 text-sky-700 hover:bg-sky-50 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+            <Badge className="bg-[#faf9f5] text-[#2c1d17] hover:bg-[#faf9f5] border border-[#e7e2da]">
               Session 2026–2027
             </Badge>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">
             My Assigned Classes &amp; Timetable
           </h1>
           <p className="text-slate-500 text-sm mt-1">
@@ -125,13 +125,13 @@ export default function TeacherClassesPage() {
 
         <div className="flex items-center gap-2">
           <Link href="/teacher">
-            <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-xs text-xs">
-              <CalendarCheck className="mr-1.5 size-4" /> 1-Click Haziri
+            <Button className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs text-xs">
+              <CalendarCheck className="mr-1.5 size-4 text-[#c5a059]" /> 1-Click Haziri
             </Button>
           </Link>
           <Link href="/teacher/gradebook">
-            <Button variant="outline" className="rounded-xl border-slate-200 text-xs">
-              <BookOpen className="mr-1.5 size-4 text-sky-600" /> Enter Marks
+            <Button variant="outline" className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17] text-xs">
+              <BookOpen className="mr-1.5 size-4 text-[#c5a059]" /> Enter Marks
             </Button>
           </Link>
         </div>
@@ -139,57 +139,57 @@ export default function TeacherClassesPage() {
 
       {/* Top Metric Cards */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+        <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Assigned Classes</p>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+            <p className="text-sm font-medium text-[#5c4a3e]">Assigned Classes</p>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
               <GraduationCap className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
             {assignedClasses.length} Batches
           </p>
           <p className="mt-1 text-xs text-slate-500">Secondary &amp; College levels</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+        <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Enrolled Students</p>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+            <p className="text-sm font-medium text-[#5c4a3e]">Enrolled Students</p>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
               <Users className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
             {assignedClasses.reduce((acc, c) => acc + c.studentsCount, 0)} Learners
           </p>
           <p className="mt-1 text-xs text-slate-500">Across all teaching sections</p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+        <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Weekly Teaching Load</p>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+            <p className="text-sm font-medium text-[#5c4a3e]">Weekly Teaching Load</p>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <Clock className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
             {timetable.length} Periods
           </p>
           <div className="mt-1 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
               13.5 hours / week
             </span>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900">
+        <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Next Class Today</p>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+            <p className="text-sm font-medium text-[#5c4a3e]">Next Class Today</p>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
               <Calendar className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate">
+          <p className="mt-4 text-xl font-bold tracking-tight text-slate-900 truncate">
             Class 10-A
           </p>
           <p className="mt-1 text-xs text-slate-500">10:30 AM · Room 208</p>
@@ -200,7 +200,7 @@ export default function TeacherClassesPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
               My Teaching Sections
             </h2>
             <p className="text-xs text-slate-500">Primary classroom assignments for this academic term.</p>
@@ -211,18 +211,18 @@ export default function TeacherClassesPage() {
           {assignedClasses.map((cls) => (
             <article
               key={cls.id}
-              className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-200 dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between"
+              className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-lg text-slate-900 dark:text-slate-100">
+                  <span className="font-bold text-lg text-slate-900">
                     {cls.name}
                   </span>
-                  <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-bold text-sky-700 border border-sky-200 dark:bg-sky-950 dark:border-sky-800 dark:text-sky-300">
+                  <span className="rounded-full bg-[#faf9f5] px-2.5 py-0.5 text-xs font-bold text-[#2c1d17] border border-[#e7e2da]">
                     {cls.studentsCount} Students
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mt-1">
+                <p className="text-sm font-semibold text-slate-700 mt-1">
                   {cls.subject}
                 </p>
                 <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
@@ -234,17 +234,17 @@ export default function TeacherClassesPage() {
                   <span>{cls.schedule}</span>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 p-2.5 text-xs dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div className="mt-4 flex items-center justify-between rounded-xl bg-[#faf9f5] p-2.5 text-xs border border-[#e7e2da]">
                   <span className="text-slate-500">Class Haziri Average:</span>
                   <span className="font-bold text-emerald-600">{cls.attendanceRate}%</span>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="mt-5 flex items-center gap-2 pt-3 border-t border-[#e7e2da]">
                 <Link href="/teacher" className="flex-1">
                   <Button
                     size="sm"
-                    className="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium text-xs rounded-xl shadow-xs"
+                    className="w-full bg-[#2c1d17] hover:bg-[#1e130f] text-white font-medium text-xs rounded-xl shadow-xs"
                   >
                     Take Haziri
                   </Button>
@@ -253,20 +253,20 @@ export default function TeacherClassesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-slate-200 text-xs px-2.5"
+                    className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] text-xs px-2.5"
                     title="Audio Voice Diary"
                   >
-                    <Mic className="size-3.5 text-sky-600" />
+                    <Mic className="size-3.5 text-[#2c1d17]" />
                   </Button>
                 </Link>
                 <Link href="/teacher/gradebook">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-slate-200 text-xs px-2.5"
+                    className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] text-xs px-2.5"
                     title="Open Gradebook"
                   >
-                    <BookOpen className="size-3.5 text-indigo-600" />
+                    <BookOpen className="size-3.5 text-[#c5a059]" />
                   </Button>
                 </Link>
               </div>
@@ -276,19 +276,19 @@ export default function TeacherClassesPage() {
       </div>
 
       {/* Section 2: Weekly Timetable Schedule */}
-      <section className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 p-5 dark:border-slate-800 gap-3">
+      <section className="rounded-2xl border border-[#e7e2da] bg-white shadow-xs overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#e7e2da] p-5 gap-3">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#5c4a3e]">
               ACADEMIC SCHEDULE
             </span>
-            <h2 className="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="mt-0.5 text-lg font-bold text-slate-900">
               Weekly Period Timetable
             </h2>
           </div>
 
           {/* Day selection tabs */}
-          <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800 overflow-x-auto">
+          <div className="flex items-center gap-1 rounded-xl bg-[#faf9f5] border border-[#e7e2da] p-1 overflow-x-auto">
             {days.map((day) => (
               <button
                 key={day}
@@ -296,8 +296,8 @@ export default function TeacherClassesPage() {
                 className={cn(
                   'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all shrink-0',
                   selectedDay === day
-                    ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-900 dark:text-sky-300'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+                    ? 'bg-[#2c1d17] text-white shadow-xs'
+                    : 'text-[#5c4a3e] hover:text-[#2c1d17]'
                 )}
               >
                 {day}
@@ -307,7 +307,7 @@ export default function TeacherClassesPage() {
         </div>
 
         {/* Timetable List for selected day */}
-        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="divide-y divide-[#e7e2da]">
           {daySlots.length === 0 ? (
             <div className="p-8 text-center text-slate-500 text-sm">
               No classes scheduled for {selectedDay}.
@@ -316,18 +316,18 @@ export default function TeacherClassesPage() {
             daySlots.map((slot, index) => (
               <div
                 key={`${slot.day}-${slot.period}-${index}`}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:px-6 hover:bg-slate-50/70 transition-colors dark:hover:bg-slate-800/40 gap-3"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:px-6 hover:bg-[#faf9f5] transition-colors gap-3"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700 font-bold text-xs border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] font-bold text-xs border border-[#e7e2da]">
                     {slot.period.replace('Period ', 'P')}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                      <span className="font-bold text-slate-900 text-sm">
                         {slot.subject}
                       </span>
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <span className="rounded bg-[#f7f5f0] border border-[#e7e2da] px-2 py-0.5 text-[11px] font-semibold text-[#2c1d17]">
                         {slot.className}
                       </span>
                     </div>
@@ -350,9 +350,9 @@ export default function TeacherClassesPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="rounded-xl border-slate-200 text-xs hover:border-sky-300 hover:text-sky-700"
+                      className="rounded-xl border-[#e7e2da] text-xs hover:border-[#c5a059] hover:text-[#2c1d17] hover:bg-[#faf9f5]"
                     >
-                      <CalendarCheck className="mr-1.5 size-3.5 text-sky-600" /> Take Haziri
+                      <CalendarCheck className="mr-1.5 size-3.5 text-[#c5a059]" /> Take Haziri
                     </Button>
                   </Link>
                 </div>
