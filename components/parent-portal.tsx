@@ -343,35 +343,39 @@ export function ParentPortal() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
             <input
               type="text"
-              placeholder="Search problems, subjects..."
+              placeholder="Search progress, excuses, sectors..."
               className="h-9 w-52 xl:w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
+          <Button
+            variant="outline"
+            className="rounded-full border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300"
+            onClick={() => setChallanModalOpen(true)}
+          >
+            Need Status
+          </Button>
+          <Button
+            onClick={() => setChallanModalOpen(true)}
+            className="rounded-full bg-blue-600 px-4 text-xs font-bold text-white hover:bg-blue-700 shadow-xs"
+          >
+            Edit Password
+          </Button>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold text-xs">
-            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee Status: Paid
+            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee: Paid
           </span>
           <Button
             variant="outline"
             onClick={() => setChallanModalOpen(true)}
-            className="rounded-xl border-slate-200 hover:border-blue-300"
+            className="rounded-xl border-slate-200 hover:border-blue-300 text-xs font-bold"
           >
-            <Printer className="size-4 mr-1.5 text-blue-600" /> View Challan
+            <Printer className="size-3.5 mr-1.5 text-blue-600" /> View Challan
           </Button>
-          {feeStatus === 'Pending' ? (
-            <Button
-              onClick={() => setPayModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs"
-            >
-              <CreditCard className="size-4 mr-1.5" /> Pay Fee Online
-            </Button>
-          ) : (
-            <Button
-              onClick={() => setPayModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
-            >
-              <CreditCard className="size-3.5 mr-1.5" /> Pay Online
-            </Button>
-          )}
+          <Button
+            onClick={() => setPayModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
+          >
+            <CreditCard className="size-3.5 mr-1.5" /> Pay Online
+          </Button>
         </div>
       </div>
 
@@ -429,27 +433,53 @@ export function ParentPortal() {
                   </span>
                 </div>
 
-                {/* Card 4-Metric Grid (Screen 4) */}
-                <div className="mt-4 grid grid-cols-4 gap-2 text-center bg-slate-50/70 rounded-xl p-3 border border-slate-100">
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400">Status</div>
-                    <div className="text-base font-black text-slate-900 mt-0.5">{child.status}</div>
-                    <div className="text-[9px] text-slate-400">days</div>
+                {/* Card Metric Grid Row 1 (Screen 4) */}
+                <div className="mt-4">
+                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    <span>Status</span>
                   </div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400">Grades</div>
-                    <div className="text-base font-black text-blue-600 mt-0.5">{child.grades}</div>
-                    <div className="text-[9px] text-emerald-600 font-semibold">Good</div>
+                  <div className="grid grid-cols-4 gap-2 text-center bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Rest</div>
+                      <div className="text-sm font-black text-slate-900 mt-0.5">{child.status}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Status</div>
+                      <div className="text-sm font-black text-blue-600 mt-0.5">7%</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Total</div>
+                      <div className="text-sm font-black text-slate-900 mt-0.5">10%</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Fee</div>
+                      <div className="text-sm font-black text-emerald-600 mt-0.5">100%</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400">Total</div>
-                    <div className="text-base font-black text-slate-900 mt-0.5">{child.total}</div>
-                    <div className="text-[9px] text-slate-400">tasks</div>
+                </div>
+
+                {/* Card Metric Grid Row 2 (Screen 4: Attendance / Class Notes) */}
+                <div className="mt-3">
+                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    <span>{child.id === 1 ? 'Attendance' : 'Class Notes'}</span>
                   </div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400">Fee</div>
-                    <div className="text-base font-black text-emerald-600 mt-0.5">{child.fee}</div>
-                    <div className="text-[9px] text-emerald-600 font-semibold">Cleared</div>
+                  <div className="grid grid-cols-4 gap-2 text-center bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Grades</div>
+                      <div className="text-sm font-black text-blue-600 mt-0.5">{child.grades}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Status</div>
+                      <div className="text-sm font-black text-slate-900 mt-0.5">7%</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Total</div>
+                      <div className="text-sm font-black text-slate-900 mt-0.5">{child.id === 1 ? '10%' : '6%'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase font-bold text-slate-400">Attendance</div>
+                      <div className="text-sm font-black text-emerald-600 mt-0.5">{child.attendance}</div>
+                    </div>
                   </div>
                 </div>
               </div>
