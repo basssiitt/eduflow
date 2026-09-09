@@ -1,14 +1,16 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-export const defaultSupabaseUrl = 'https://mtchdghzlkiemwtzyduo.supabase.co'
-export const defaultSupabaseAnonKey = 'sb_publishable_KmiVb1kw1LiOskGkpDkLpw_gapmgN09'
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+export const isSupabaseConfigured = Boolean(url && key)
 
 export function createClient(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultSupabaseUrl
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultSupabaseAnonKey
-  return createBrowserClient(url, key)
+  return createBrowserClient(
+    url || 'https://placeholder.supabase.co',
+    key || 'placeholder-anon-key'
+  )
 }
 
 export const supabaseClient = createClient()
-export const isSupabaseConfigured = true

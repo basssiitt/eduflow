@@ -103,11 +103,11 @@ function SingleCoupon({
       <div className="grid grid-cols-2 gap-x-1 gap-y-0.5 py-1 border-y border-slate-200 text-[9px]">
         <div>
           <span className="text-[7px] uppercase tracking-wider text-stone-500 block">Challan No</span>
-          <strong className="font-mono text-[#2c1d17]">{data.challanNo}</strong>
+          <strong className="font-mono text-[#2c1d17] tabular-nums">{data.challanNo}</strong>
         </div>
         <div>
           <span className="text-[7px] uppercase tracking-wider text-stone-500 block">Due Date</span>
-          <strong className="text-[#880e4f] font-bold">{data.dueDate}</strong>
+          <strong className="text-[#880e4f] font-bold tabular-nums">{data.dueDate}</strong>
         </div>
         <div className="col-span-2">
           <span className="text-[7px] uppercase tracking-wider text-stone-500 block">Student Name</span>
@@ -134,39 +134,39 @@ function SingleCoupon({
         <tbody className="divide-y divide-[#e7e2da]/50">
           <tr>
             <td className="py-0.5 text-stone-700">Monthly Tuition Fee</td>
-            <td className="py-0.5 text-right font-medium text-[#2c1d17]">{money(tuition)}</td>
+            <td className="py-0.5 text-right font-medium text-[#2c1d17] tabular-nums">{money(tuition)}</td>
           </tr>
           {exam > 0 && (
             <tr>
               <td className="py-0.5 text-stone-700">Exam Assessment Fee</td>
-              <td className="py-0.5 text-right font-medium text-[#2c1d17]">{money(exam)}</td>
+              <td className="py-0.5 text-right font-medium text-[#2c1d17] tabular-nums">{money(exam)}</td>
             </tr>
           )}
           {lab > 0 && (
             <tr>
               <td className="py-0.5 text-stone-700">Science / Computer Lab</td>
-              <td className="py-0.5 text-right font-medium text-[#2c1d17]">{money(lab)}</td>
+              <td className="py-0.5 text-right font-medium text-[#2c1d17] tabular-nums">{money(lab)}</td>
             </tr>
           )}
           {arrears > 0 && (
             <tr className="text-[#880e4f] bg-[#fce4ec]/30">
               <td className="py-0.5 font-medium">Previous Arrears</td>
-              <td className="py-0.5 text-right font-semibold">{money(arrears)}</td>
+              <td className="py-0.5 text-right font-semibold tabular-nums">{money(arrears)}</td>
             </tr>
           )}
         </tbody>
         <tfoot className="border-t-2 border-[#2c1d17]">
           <tr>
             <th className="py-0.5 text-left font-black text-[#2c1d17]">Payable By Due Date</th>
-            <th className="py-0.5 text-right font-black text-[#2c1d17]">{money(totalWithinDue)}</th>
+            <th className="py-0.5 text-right font-black text-[#2c1d17] tabular-nums">{money(totalWithinDue)}</th>
           </tr>
           <tr className="text-[#880e4f] text-[8px]">
             <td className="py-0.5 font-medium">Late Fee Surcharge</td>
-            <td className="py-0.5 text-right font-semibold">+{money(lateFee)}</td>
+            <td className="py-0.5 text-right font-semibold tabular-nums">+{money(lateFee)}</td>
           </tr>
           <tr className="border-t border-dashed border-[#e7e2da]">
             <th className="py-0.5 text-left font-black text-[#880e4f]">Payable After Due Date</th>
-            <th className="py-0.5 text-right font-black text-[#880e4f]">{money(totalAfterDue)}</th>
+            <th className="py-0.5 text-right font-black text-[#880e4f] tabular-nums">{money(totalAfterDue)}</th>
           </tr>
         </tfoot>
       </table>

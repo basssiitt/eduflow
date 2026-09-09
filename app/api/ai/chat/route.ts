@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 })
   }
 
-  const contentLength = Number(request.headers.get('content-length') || 0)
+  const contentLength = Number(request.headers.get('content-length') ?? 0)
   if (contentLength > 32 * 1024) {
     return NextResponse.json({ error: 'Payload too large. Max 32KB allowed.' }, { status: 413 })
   }
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Message exceeds maximum length of 2,000 characters.' }, { status: 400 })
   }
 
-  const context = body.context || {
+  const context = body.context ?? {
     name: 'Ali Khan',
     grade: 'Class 5-A',
     roll: '2026-001',
@@ -43,8 +43,9 @@ export async function POST(request: Request) {
     remarks: 'Consistent in analytical thinking. Recommended to revise Urdu grammar before exams.',
   }
 
-  // Fallback intelligent simulated reasoning when GEMINI_API_KEY is not configured
-  if (!process.env.GEMINI_API_KEY) {
+  // Quota Protection: If unauthenticated demo role or GEMINI_API_KEY is not set, use high-fidelity simulation
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!authenticatedUser || !apiKey) {
     const lower = prompt.toLowerCase()
     let text = ''
     if (lower.includes('attendance') || lower.includes('haziri') || lower.includes('present') || lower.includes('absent')) {
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+    const ai = new GoogleGenAI({ apiKey })
     const systemPrompt = `You are the EduFlow AI Parent Companion for Pakistani schools.
 You have real, authoritative student records:
 - Student: ${context.name} (${context.grade}, Roll #${context.roll})
@@ -82,7 +83,7 @@ Instructions:
       contents: `${systemPrompt}\n\nParent Question: ${prompt}`,
     })
     return NextResponse.json({ text: result.text ?? 'Main aap ke sawal ka jawab talaash kar raha hoon. Baraye meherbani dobarah poochhein.' })
-  } catch (err: any) {
+  } catch (_err: unknown) {
     return NextResponse.json({
       text: `Ali Khan (${context.grade}) ki attendance ${context.attendance} hai aur unke term exam marks 88.3% (Grade A*) hain. Upcoming Mid-Term exams ${context.examDate} se start honge.`,
     }, { status: 200 })

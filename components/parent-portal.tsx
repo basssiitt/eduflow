@@ -37,6 +37,27 @@ import { Button } from '@/components/ui/button'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 import { cn } from '@/lib/utils'
 
+interface StudentContext {
+  name: string
+  class?: string
+  grade?: string
+  roll: string
+  guardian?: string
+  attendance: string
+  feeAmount?: number
+  feeDue?: string
+  feeDueDate?: string
+  dueDate?: string
+  challanNo?: string
+  bankName?: string
+  accountTitle?: string
+  iban?: string
+  psid?: string
+  examDate?: string
+  marks?: string
+  remarks?: string
+}
+
 function AudioDiary({ audioUrl, note }: { audioUrl?: string; note?: string }) {
   const [playing, setPlaying] = useState(false)
   if (!audioUrl && !note) {
@@ -59,11 +80,11 @@ function AudioDiary({ audioUrl, note }: { audioUrl?: string; note?: string }) {
           onClick={() => setPlaying(!playing)}
           aria-label={playing ? 'Pause teacher voice diary' : 'Play teacher voice diary'}
         >
-          {playing ? <Pause className="size-5" /> : <Play className="size-5 ml-0.5" />}
+          {playing ? <Pause className="size-5" key="pause-icon" /> : <Play className="size-5 ml-0.5" key="play-icon" />}
         </button>
       ) : (
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-          <Volume2 className="size-5" />
+          <Volume2 className="size-5" key="vol-icon" />
         </div>
       )}
       <div className="min-w-0 flex-1">
@@ -77,7 +98,7 @@ function AudioDiary({ audioUrl, note }: { audioUrl?: string; note?: string }) {
   )
 }
 
-function AiAssistant({ studentContext }: { studentContext: any }) {
+function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -157,7 +178,7 @@ function AiAssistant({ studentContext }: { studentContext: any }) {
       <div className="flex-1 p-4 flex flex-col gap-3 min-h-[220px] max-h-[300px] overflow-y-auto" aria-live="polite">
         {messages.map((message, index) => (
           <div
-            key={`${message.time}-${index}`}
+            key={`msg-${message.role}-${message.time}-${index}`}
             className={cn('flex flex-col', message.role === 'user' ? 'items-end' : 'items-start')}
           >
             <div
@@ -206,7 +227,7 @@ function AiAssistant({ studentContext }: { studentContext: any }) {
 }
 
 export function ParentPortal() {
-  const [live, setLive] = useState<{ attendance: any[]; fees: any[]; diary: any } | null>(null)
+  const [live, setLive] = useState<{ attendance: unknown[]; fees: unknown[]; diary: { audio_url?: string; note?: string } | null } | null>(null)
   const [parentEmail, setParentEmail] = useState('')
   const [payModalOpen, setPayModalOpen] = useState(false)
   const [challanModalOpen, setChallanModalOpen] = useState(false)
@@ -247,19 +268,26 @@ export function ParentPortal() {
   ]
 
   useEffect(() => {
+    let active = true
     const demoEmail = sessionStorage.getItem('eduflow-demo-email')
-    if (demoEmail) setParentEmail(demoEmail)
+    if (demoEmail && active) setParentEmail(demoEmail)
 
     if (isSupabaseConfigured && supabaseClient) {
       supabaseClient.auth.getUser().then(({ data }) => {
-        if (data.user?.email) setParentEmail(data.user.email)
+        if (active && data.user?.email) setParentEmail(data.user.email)
       })
     }
 
     fetchCurrentParentData().then(({ data }) => {
-      if (data) setLive(data)
-      setLoading(false)
+      if (active) {
+        if (data) setLive(data)
+        setLoading(false)
+      }
     })
+
+    return () => {
+      active = false
+    }
   }, [])
 
   return (

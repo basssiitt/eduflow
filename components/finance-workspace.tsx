@@ -269,22 +269,22 @@ export function FinanceWorkspace() {
       <section className="finance-kpis">
         <div>
           <span>Total Revenues (Fees &amp; Income)</span>
-          <strong className="income">{money(totalIncome)}</strong>
+          <strong className="income tabular-nums">{money(totalIncome)}</strong>
           <small>{transactions.filter(x => x.amount > 0).length} credits collected</small>
         </div>
         <div>
           <span>Total Operating Expenses</span>
-          <strong className="expense">{money(totalExpense)}</strong>
+          <strong className="expense tabular-nums">{money(totalExpense)}</strong>
           <small>Including teacher payroll &amp; utilities</small>
         </div>
         <div>
           <span>Net Profit &amp; Loss (P&amp;L)</span>
-          <strong className={netProfit >= 0 ? "income" : "expense"}>
+          <strong className={netProfit >= 0 ? "income tabular-nums" : "expense tabular-nums"}>
             {money(netProfit)}
           </strong>
           <small className="flex items-center gap-1 font-semibold text-emerald-700">
             {netProfit >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-            {profitMargin}% net margin · {netProfit >= 0 ? 'Surplus' : 'Deficit'}
+            <span className="tabular-nums">{profitMargin}%</span> net margin · {netProfit >= 0 ? 'Surplus' : 'Deficit'}
           </small>
         </div>
       </section>
@@ -369,7 +369,7 @@ export function FinanceWorkspace() {
                           </span>
                         </td>
                         <td><span className="font-medium text-slate-700 dark:text-slate-300">{row.category}</span></td>
-                        <td className={`text-right font-black ${row.amount > 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-slate-100'}`}>
+                        <td className={`text-right font-black tabular-nums ${row.amount > 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-slate-100'}`}>
                           {money(row.amount)}
                         </td>
                         <td>
@@ -421,7 +421,7 @@ export function FinanceWorkspace() {
                 <h3 className="font-extrabold text-emerald-900 dark:text-emerald-300 text-sm uppercase tracking-wider flex items-center gap-1.5">
                   <TrendingUp className="size-4 text-emerald-600" /> Operating Revenues (Income)
                 </h3>
-                <strong className="text-emerald-700 dark:text-emerald-400 text-base">{money(totalIncome)}</strong>
+                <strong className="text-emerald-700 dark:text-emerald-400 text-base tabular-nums">{money(totalIncome)}</strong>
               </div>
               <div className="mt-4 space-y-3 text-xs">
                 <div className="flex justify-between items-center py-1 border-b border-emerald-100 dark:border-emerald-900/40">
@@ -429,14 +429,14 @@ export function FinanceWorkspace() {
                     <span className="font-bold text-slate-800 dark:text-slate-200">Student Tuition &amp; Term Fees</span>
                     <p className="text-[10px] text-slate-500">Collected from active student challans</p>
                   </div>
-                  <span className="font-black text-slate-900 dark:text-slate-100">{money(feeIncome)}</span>
+                  <span className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(feeIncome)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-emerald-100 dark:border-emerald-900/40">
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200">Admissions &amp; Registration Vouchers</span>
                     <p className="text-[10px] text-slate-500">New student enrollment fees</p>
                   </div>
-                  <span className="font-black text-slate-900 dark:text-slate-100">{money(otherIncome)}</span>
+                  <span className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(otherIncome)}</span>
                 </div>
               </div>
             </div>
@@ -447,7 +447,7 @@ export function FinanceWorkspace() {
                 <h3 className="font-extrabold text-rose-900 dark:text-rose-300 text-sm uppercase tracking-wider flex items-center gap-1.5">
                   <TrendingDown className="size-4 text-rose-600" /> Operating Outflows (Expenses)
                 </h3>
-                <strong className="text-rose-700 dark:text-rose-400 text-base">{money(totalExpense)}</strong>
+                <strong className="text-rose-700 dark:text-rose-400 text-base tabular-nums">{money(totalExpense)}</strong>
               </div>
               <div className="mt-4 space-y-3 text-xs">
                 <div className="flex justify-between items-center py-1 border-b border-rose-100 dark:border-rose-900/40">
@@ -455,21 +455,21 @@ export function FinanceWorkspace() {
                     <span className="font-bold text-slate-800 dark:text-slate-200">Faculty &amp; Staff Monthly Payroll</span>
                     <p className="text-[10px] text-slate-500">Teacher salaries with attendance deductions</p>
                   </div>
-                  <span className="font-black text-slate-900 dark:text-slate-100">{money(payrollExpense)}</span>
+                  <span className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(payrollExpense)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-rose-100 dark:border-rose-900/40">
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200">Utilities (Electricity, Gas, Water, Net)</span>
                     <p className="text-[10px] text-slate-500">Campus operational overheads</p>
                   </div>
-                  <span className="font-black text-slate-900 dark:text-slate-100">{money(utilitiesExpense)}</span>
+                  <span className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(utilitiesExpense)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-rose-100 dark:border-rose-900/40">
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200">Stationery, Labs &amp; Maintenance</span>
                     <p className="text-[10px] text-slate-500">Examinations, laboratory restock</p>
                   </div>
-                  <span className="font-black text-slate-900 dark:text-slate-100">{money(otherExpenses)}</span>
+                  <span className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(otherExpenses)}</span>
                 </div>
               </div>
             </div>
@@ -479,13 +479,13 @@ export function FinanceWorkspace() {
           <div className="m-6 mt-0 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Net Operating Surplus / Profit</span>
-              <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-0.5">{money(netProfit)}</p>
+              <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-0.5 tabular-nums">{money(netProfit)}</p>
               <p className="text-xs text-slate-500">Calculated as: Total Operating Revenues − Total Operating Costs</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-3 text-center">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Operating Margin</span>
-                <strong className="text-lg font-black text-slate-900 dark:text-slate-100">{profitMargin}%</strong>
+                <strong className="text-lg font-black text-slate-900 dark:text-slate-100 tabular-nums">{profitMargin}%</strong>
               </div>
               <div className="rounded-xl border border-emerald-200 bg-emerald-100/60 dark:bg-emerald-950 p-3 text-center">
                 <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">Financial Health</span>
@@ -530,15 +530,15 @@ export function FinanceWorkspace() {
                       <small>{staff.role}</small>
                     </td>
                     <td><span className="font-medium text-slate-700 dark:text-slate-300">{staff.department}</span></td>
-                    <td className="font-semibold text-slate-800 dark:text-slate-200">{money(staff.baseSalary)}</td>
+                    <td className="font-semibold text-slate-800 dark:text-slate-200 tabular-nums">{money(staff.baseSalary)}</td>
                     <td>
                       {staff.deduction > 0 ? (
-                        <span className="font-bold text-rose-600">−{money(staff.deduction)} ({staff.absences} absent)</span>
+                        <span className="font-bold text-rose-600 tabular-nums">−{money(staff.deduction)} ({staff.absences} absent)</span>
                       ) : (
                         <span className="text-slate-400">PKR 0 (100% Haziri)</span>
                       )}
                     </td>
-                    <td className="font-black text-slate-900 dark:text-slate-100">{money(staff.netSalary)}</td>
+                    <td className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(staff.netSalary)}</td>
                     <td>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                         staff.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
@@ -711,7 +711,7 @@ export function FinanceWorkspace() {
 
             <div className="pt-6 grid grid-cols-2 gap-4 text-center text-[10px] font-medium text-slate-700">
               <div className="border-t border-slate-400 pt-1">Accounts Officer</div>
-              <div className="border-t border-slate-400 pt-1">Employee Signature</div>
+              <div className="border-t border-slate-400 pt-1">Employee Sign-off</div>
             </div>
           </div>
         </div>

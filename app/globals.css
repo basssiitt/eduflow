@@ -86,6 +86,9 @@
   .skeleton-pulse {
     @apply animate-pulse bg-slate-200 rounded-lg;
   }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .admin-page { min-height: 100vh; padding: 40px 48px 64px; color: #1e1b18; background: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; }

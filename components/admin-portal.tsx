@@ -263,7 +263,7 @@ export function AdminPortal() {
               <FileText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{money(totalRecoverable)}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17] tabular-nums">{money(totalRecoverable)}</p>
           <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
             <span>Across {data.length} active invoices</span>
             <span className="font-medium text-stone-700">Session 2026–27</span>
@@ -277,7 +277,7 @@ export function AdminPortal() {
               <TrendingUp className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{money(totalCollected)}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17] tabular-nums">{money(totalCollected)}</p>
           <div className="mt-2 flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 border border-emerald-200">
               +{totalRecoverable > 0 ? `${Math.round((totalCollected / totalRecoverable) * 100)}%` : '0%'} recovery rate
@@ -292,7 +292,7 @@ export function AdminPortal() {
               <ReceiptText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17]">{pendingCount}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-[#2c1d17] tabular-nums">{pendingCount}</p>
           <div className="mt-2 flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-[#efebe9] px-2.5 py-0.5 text-xs font-semibold text-[#5D4037] border border-[#d7ccc8]">
               {data.length > 0 ? `${Math.round((pendingCount / data.length) * 100)}%` : '0%'} uncollected
@@ -403,16 +403,16 @@ export function AdminPortal() {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-stone-600">{r.cls}</td>
-                      <td className="px-5 py-4 text-[#2c1d17] font-medium">{money(r.tuition)}</td>
+                      <td className="px-5 py-4 text-[#2c1d17] font-medium tabular-nums">{money(r.tuition)}</td>
                       <td className="px-5 py-4">
                         {r.arrears > 0 ? (
-                          <span className="font-semibold text-[#880e4f]">{money(r.arrears)}</span>
+                          <span className="font-semibold text-[#880e4f] tabular-nums">{money(r.arrears)}</span>
                         ) : (
                           <span className="text-stone-400">—</span>
                         )}
                       </td>
-                      <td className="px-5 py-4 font-bold text-[#2c1d17]">{money(total(r))}</td>
-                      <td className="px-5 py-4 text-xs font-mono text-stone-600">{r.due}</td>
+                      <td className="px-5 py-4 font-bold text-[#2c1d17] tabular-nums">{money(total(r))}</td>
+                      <td className="px-5 py-4 text-xs font-mono text-stone-600 tabular-nums">{r.due}</td>
                       <td className="px-5 py-4"><StatusBadge status={r.status} /></td>
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
