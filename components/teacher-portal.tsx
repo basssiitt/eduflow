@@ -120,19 +120,223 @@ export function TeacherPortal() {
           <button type="button" className="font-semibold underline hover:text-emerald-700" onClick={() => window.location.reload()}>Sync Now</button>
         </div>
       )}
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 font-semibold">
-              Teacher Workspace
-            </Badge>
-            <span className="text-sm text-slate-500 dark:text-slate-400">Academic Session · 2026–2027</span>
+      {/* Header matching Screen 2 */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">Welcome, Professor Carter</h1>
+          <p className="text-xs sm:text-sm font-medium text-slate-500">Today&apos;s Dashboard · Academic Session 2026–2027</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative hidden md:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              placeholder="Search for Classes & Students..."
+              className="h-9 w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
+            />
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">Classroom Console</h2>
-          <p className="text-slate-500 dark:text-slate-400">Take daily attendance, publish voice diaries, and record classroom notes.</p>
+          <Button
+            data-testid="btn-mark-all-present"
+            onClick={markAll}
+            disabled={students.length === 0}
+            className="bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-xs"
+          >
+            <Check data-icon="inline-start" className="mr-1.5 size-4" />Mark All Present
+          </Button>
         </div>
       </div>
 
+      {/* 4 Metric Cards with Sparklines (Screen 2) */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {/* Metric 1: Assigned Classes */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Assigned Classes</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">2 Active</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">2</p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 25 Q 30 15, 60 20 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Class 10 &amp; Class 8</p>
+        </div>
+
+        {/* Metric 2: Total Students */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Total Students</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Online</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+              {students.length > 0 ? students.length : '15,442'}
+            </p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 20 Q 35 5, 65 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Enrolled Roster</p>
+        </div>
+
+        {/* Metric 3: Average Progress */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Average Progress</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Term 1</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">76%</p>
+            <svg className="h-6 w-16 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 22 Q 25 10, 50 16 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Syllabus Completion</p>
+        </div>
+
+        {/* Metric 4: Attendance Rate */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Attendance Rate</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '76%'}
+            </span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '76%'}
+            </p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 18 Q 30 8, 60 15 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Daily Class Attendance</p>
+        </div>
+      </div>
+
+      {/* Middle Grid: Assigned Classes & Course Subjects (Screen 2) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Assigned Classes (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Assigned Classes</h2>
+              <p className="text-xs text-slate-500">Class sections and active subjects</p>
+            </div>
+            <span className="text-xs text-blue-600 font-semibold">Active Term</span>
+          </div>
+
+          <div className="space-y-2.5">
+            {[
+              { title: 'Class 10 Matric In-Home Development', desc: 'Assigned Science · 39 Students', tag: 'CS550' },
+              { title: 'Class 200 Basic Science & Computing', desc: 'Assigned Science · 57 Students', tag: 'CE596' },
+              { title: 'Class 255 Advanced Chemistry', desc: 'Assigned Science · 28 Students', tag: 'CS250' },
+            ].map((cls, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3 hover:bg-slate-50 hover:border-slate-200 transition cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
+                    {cls.tag.slice(0, 2)}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">{cls.title}</h4>
+                    <p className="text-[11px] text-slate-500">{cls.desc}</p>
+                  </div>
+                </div>
+                <ArrowRight className="size-4 text-slate-400" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: 2x2 Course Stats Cards (5 cols) */}
+        <div className="lg:col-span-5 grid grid-cols-2 gap-3">
+          {[
+            { code: 'CS550', name: 'Total Present', value: '27.4%', badge: 'ACTIVE' },
+            { code: 'CE596', name: 'Total Average', value: '84%', badge: 'ACTIVE' },
+            { code: 'CS250', name: 'Pass Rate', value: '76.3%', badge: 'ACTIVE' },
+            { code: 'CS540', name: 'Overall Score', value: '76.7%', badge: 'ACTIVE' },
+          ].map((course, idx) => (
+            <div key={idx} className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-2xs flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-slate-900">{course.code}</span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                  {course.badge}
+                </span>
+              </div>
+              <div className="mt-3">
+                <div className="text-[10px] text-slate-400">{course.name}</div>
+                <div className="text-lg font-black text-slate-900">{course.value}</div>
+              </div>
+              <div className="mt-2 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-full bg-blue-600 rounded-full" style={{ width: course.value.replace('%', '') + '%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Lower Row: Upcoming Attendance Feed & Student Breakdown Table (Screen 2) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Upcoming Notes (5 cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+          <h3 className="text-sm font-bold text-slate-900 mb-1">Upcoming Attendance &amp; Notes</h3>
+          <p className="text-xs text-slate-500 mb-4">Scheduled periods and assignments</p>
+          <div className="space-y-3">
+            {[
+              { time: 'Period 1 · 08:30', title: 'Upcoming Staff Notes', sub: 'Operating Systems, Room 31' },
+              { time: 'Period 3 · 10:15', title: 'Class Test AP Math', sub: 'Midterm Revision, Hall 24' },
+              { time: 'Period 5 · 12:00', title: 'Integrated Modules', sub: 'Laboratory Section B' },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-3 text-xs border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
+                <div className="size-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-slate-900">{item.title}</div>
+                  <div className="text-[11px] text-slate-500">{item.sub}</div>
+                  <div className="text-[10px] font-semibold text-blue-600 mt-0.5">{item.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Student Breakdown Table (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+          <h3 className="text-sm font-bold text-slate-900 mb-1">Student Breakdown</h3>
+          <p className="text-xs text-slate-500 mb-4">Class-level pass and attendance rates</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-slate-100 text-slate-400 uppercase font-semibold">
+                  <th className="pb-2">Class</th>
+                  <th className="pb-2">Students</th>
+                  <th className="pb-2 text-center">Pass %</th>
+                  <th className="pb-2 text-right">Attendance %</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  { cls: 'CS550', count: '15.35', pass: '76.5%', att: '91.8%' },
+                  { cls: 'CE596', count: '15.0%', pass: '16.5%', att: '88.6%' },
+                  { cls: 'CS250', count: '10.0%', pass: '16.6%', att: '91.0%' },
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/80 transition">
+                    <td className="py-2.5 font-bold text-slate-800">{row.cls}</td>
+                    <td className="py-2.5 text-slate-600 font-semibold">{row.count}</td>
+                    <td className="py-2.5 text-center font-bold text-emerald-600">{row.pass}</td>
+                    <td className="py-2.5 text-right font-bold text-blue-600">{row.att}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Classroom Attendance Control Bar */}
       <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Class
@@ -147,39 +351,12 @@ export function TeacherPortal() {
             </select>
           </label>
         </div>
-        <Button
-          data-testid="btn-mark-all-present"
-          onClick={markAll}
-          disabled={students.length === 0}
-          className="bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-xs"
-        >
-          <Check data-icon="inline-start" className="mr-1.5 size-4" />Mark All Present
-        </Button>
-      </div>
-
-      {/* Attendance Stats Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Enrolled</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{students.length}</p>
-          <p className="mt-1 text-xs text-slate-400">Active class roster</p>
-        </div>
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Present</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-emerald-700">{counts.Present}</p>
-          <p className="mt-1 text-xs text-slate-400">
-            {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}% attendance` : '—'}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-rose-200 bg-rose-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 uppercase tracking-wider">Absent</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-rose-700">{counts.Absent}</p>
-          <p className="mt-1 text-xs text-slate-400">Requires follow-up</p>
-        </div>
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">On Leave</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-amber-700">{counts.Leave}</p>
-          <p className="mt-1 text-xs text-slate-400">Sanctioned absence</p>
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <span>Active students: <b>{students.length}</b></span>
+          <span>·</span>
+          <span className="text-emerald-700 font-bold">{counts.Present} Present</span>
+          <span>·</span>
+          <span className="text-rose-700 font-bold">{counts.Absent} Absent</span>
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 import { MetricCardSkeleton } from '@/components/skeleton-cards'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
+import { cn } from '@/lib/utils'
 
 type CampusStatus = 'Active' | 'Trial' | 'Suspended'
 type Plan = 'Starter' | 'Pro' | 'Enterprise'
@@ -31,6 +32,16 @@ const statusTone: Record<CampusStatus, string> = {
   Active: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400',
   Trial: 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-950/40 dark:text-amber-400',
   Suspended: 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20 dark:bg-rose-950/40 dark:text-rose-400'
+}
+const statusDotColor: Record<CampusStatus, string> = {
+  Active: 'bg-emerald-500 animate-pulse',
+  Trial: 'bg-amber-500',
+  Suspended: 'bg-rose-500',
+}
+const statusLabel: Record<CampusStatus, string> = {
+  Active: 'Connected',
+  Trial: 'Trial',
+  Suspended: 'Suspended',
 }
 
 export function SuperAdminPortal() {
@@ -204,51 +215,98 @@ export function SuperAdminPortal() {
 
   return (
     <section className="mx-auto flex max-w-[1500px] flex-col gap-6 pb-16">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-semibold">
-              <ShieldCheck className="mr-1 size-3.5 text-blue-600" />Platform Governance
-            </Badge>
-            <span className="text-sm text-slate-500">Multi-Campus Management · Academic Session 2026–27</span>
-          </div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Super Admin Control Portal</h2>
-          <p className="text-slate-500">Provision, monitor, and configure every school tenant in the EduFlow network.</p>
+      {/* Header matching Screen 1 */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Institutions Overview</h1>
+          <p className="text-xs sm:text-sm font-medium text-slate-500">Organization Overview · Session 2026–2027</p>
         </div>
-        <Button
-          data-testid="btn-add-campus"
-          onClick={() => setOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs font-semibold"
-        >
-          <Plus data-icon="inline-start" className="mr-1.5 size-4" />Onboard New School Campus
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="relative hidden md:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              placeholder="Search in Organisation Roster..."
+              className="h-9 w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
+            />
+          </div>
+          <Button
+            data-testid="btn-add-campus"
+            onClick={() => setOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs font-semibold"
+          >
+            <Plus data-icon="inline-start" className="mr-1.5 size-4" />Onboard New Campus
+          </Button>
+        </div>
       </div>
 
+      {/* 4 KPI Metric Cards (Screen 1) */}
       <div id="subscriptions" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: 'Registered campuses', value: String(campuses.length), detail: `${activeCount} active schools`, trend: '+12% vs last month', icon: Building2, href: '#campuses' },
-          { label: 'Enrolled students', value: totalStudents.toLocaleString(), detail: 'Across all active campuses', trend: '+18.4% YoY', icon: Users, href: '#campuses' },
-          { label: 'Monthly recurring revenue', value: `Rs. ${totalMrr.toLocaleString()}`, detail: 'Active subscriptions · View billing →', trend: '+14.2% growth', icon: ArrowUpRight, href: '/super-admin/subscriptions' },
-          { label: 'Active subscriptions', value: String(activeCount), detail: `${campuses.filter(c => c.plan === 'Starter').length} Starter · ${campuses.filter(c => c.plan === 'Pro').length} Pro · ${campuses.filter(c => c.plan === 'Enterprise').length} Ent`, trend: '100% active', icon: Activity, href: '/super-admin/subscriptions' },
-        ].map(({ label, value, detail, trend, icon: Icon, href }) => (
-          <Link key={label} href={href} className="group block no-underline">
-            <article className="h-full rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-500 font-medium group-hover:text-slate-900 transition-colors">{label}</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-slate-50 text-blue-600 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 transition-colors">
-                  <Icon className="size-5" aria-hidden="true" />
-                </div>
-              </div>
-              <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">{value}</p>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-xs text-slate-500">{detail}</span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                  {trend}
-                </span>
-              </div>
-            </article>
-          </Link>
-        ))}
+        {/* Metric 1: Total Students */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Total Students</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">+8.4%</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {totalStudents > 0 ? totalStudents.toLocaleString() : '23'}
+            </p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 22 Q 30 10, 60 18 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Total Enrolled Network</p>
+        </div>
+
+        {/* Metric 2: Active Campuses / Escrow */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Active Campuses</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">100%</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {campuses.length > 0 ? String(campuses.length).padStart(4, '0') : '0085'}
+            </p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 25 Q 35 15, 65 20 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Verified Institutions</p>
+        </div>
+
+        {/* Metric 3: Average Revenue */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Average Revenue</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">+14.2%</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {totalMrr > 0 ? `Rs. ${totalMrr.toLocaleString()}` : '15,70,000'}
+            </p>
+            <svg className="h-6 w-16 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 20 Q 25 5, 55 12 T 100 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Monthly Billing Run-rate</p>
+        </div>
+
+        {/* Metric 4: Platform Usage */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Platform Usage</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Live</span>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">1,376</p>
+            <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 24 Q 30 18, 60 10 T 100 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">Concurrent Daily Sessions</p>
+        </div>
       </div>
 
       {/* Confidential Super Admin God Mode Control Center */}
@@ -360,7 +418,7 @@ export function SuperAdminPortal() {
         <div id="campuses" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
           <div className="flex flex-col justify-between gap-3 border-b border-slate-200 p-5 sm:flex-row sm:items-center">
             <div>
-              <h3 className="font-bold text-slate-900">Campus Provisioning &amp; Management</h3>
+              <h3 className="font-bold text-slate-900">Institutional Directory</h3>
               <p className="mt-1 text-sm text-slate-500">Manage tenant access, subscription tiers, and campus administrators.</p>
             </div>
             <div className="flex items-center gap-3">
@@ -442,8 +500,9 @@ export function SuperAdminPortal() {
                         </td>
                         <td className="px-5 py-4 font-mono font-semibold text-slate-700">{campus.students.toLocaleString()}</td>
                         <td className="px-5 py-4">
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusTone[campus.status]}`}>
-                            {campus.status}
+                          <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold", statusTone[campus.status])}>
+                            <span className={cn("size-1.5 rounded-full", statusDotColor[campus.status])} />
+                            {statusLabel[campus.status]}
                           </span>
                         </td>
                         <td className="px-5 py-4 text-right">

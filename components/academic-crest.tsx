@@ -6,17 +6,11 @@ export function AcademicCrest({ className = 'size-8', size }: { className?: stri
   const customStyle = size ? { width: size, height: size } : undefined
   return (
     <div
-      className={`inline-flex shrink-0 items-center justify-center rounded-lg bg-[#2563eb] text-white font-black shadow-xs select-none ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold shadow-xs select-none ${className}`}
       style={customStyle}
       aria-hidden="true"
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="size-3/5"
-      >
-        <path d="M4 4h16v3H8v5h10v3H8v5h12v3H4V4z" />
-      </svg>
+      <span className="font-black text-[65%] leading-none tracking-normal">E</span>
     </div>
   )
 }

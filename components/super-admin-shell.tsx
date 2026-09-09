@@ -14,6 +14,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Search,
   Settings,
   ShieldCheck,
   Users,
@@ -22,6 +23,7 @@ import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -242,6 +244,18 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
               <h1 className="text-lg font-bold tracking-tight text-slate-900">Super Admin Console</h1>
             </div>
           </div>
+
+          {/* Header Search Bar matching Mockup */}
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
+              <Input
+                placeholder="Search anything..."
+                className="pl-9 h-9 text-xs rounded-xl border-slate-200 bg-slate-50/70 focus:bg-white focus:border-blue-500 transition-all"
+              />
+            </div>
+          </div>
+
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />

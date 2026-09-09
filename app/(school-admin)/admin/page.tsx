@@ -42,83 +42,257 @@ export default function AdminOverviewPage() {
   const totalInvoiced = stats.invoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0)
   const presentToday = stats.attendance.filter((att) => att.status === 'Present').length
 
+  const [activeGrowthTab, setActiveGrowthTab] = useState<'performance' | 'annual'>('performance')
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      {/* Top Header matching Screen 3 */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50 font-semibold">Campus Overview</Badge>
-            <span className="text-sm text-slate-500">Session 2026–2027</span>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Admin Portal Dashboard</h1>
+          <p className="text-xs sm:text-sm font-medium text-slate-500">Admin Dashboard · Session 2026–2027</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative hidden md:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              placeholder="Search in Campus Records..."
+              className="h-9 w-64 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
+            />
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">School Administration</h1>
-          <p className="text-slate-500 dark:text-slate-400">Monitor campus enrollment, fee collections, attendance, and financial ledgers.</p>
+          <Link
+            href="/admin/billing"
+            className="inline-flex items-center rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition"
+          >
+            Manage School
+          </Link>
         </div>
       </div>
 
+      {/* 4 Metric Cards with Sparklines (Screen 3) */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Link href="/admin/students" className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition hover:border-blue-500 hover:shadow-sm">
+        {/* Metric 1: Total Students */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 group-hover:text-blue-600 font-medium transition">Enrolled Students</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <Users className="size-5" />
-            </div>
+            <span className="text-xs font-semibold text-slate-500">Total Students</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">+12%</span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">{loading ? '—' : stats.students}</p>
-          <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-            <span>Active students registered</span>
-            <span className="text-blue-600 font-semibold group-hover:underline flex items-center">View list →</span>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {loading ? '—' : stats.students > 0 ? stats.students.toLocaleString() : '25,500'}
+            </p>
+            {/* Blue Wave Sparkline */}
+            <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 20 Q 25 5, 50 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
-        </Link>
+          <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Enrolled Students</span>
+            <Link href="/admin/students" className="text-blue-600 hover:underline font-semibold">View list →</Link>
+          </div>
+        </div>
 
-        <Link href="/admin/teachers" className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition hover:border-blue-500 hover:shadow-sm">
+        {/* Metric 2: Active Classes */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 group-hover:text-blue-600 font-medium transition">Faculty &amp; Teachers</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-              <GraduationCap className="size-5" />
-            </div>
+            <span className="text-xs font-semibold text-slate-500">Active Classes</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Optimal</span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">{loading ? '—' : teacherCount}</p>
-          <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-            <span>Active campus educators</span>
-            <span className="text-blue-600 font-semibold group-hover:underline flex items-center">Manage →</span>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">650</p>
+            {/* Wave Sparkline */}
+            <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 22 Q 30 25, 55 10 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
-        </Link>
+          <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Faculty Sections</span>
+            <Link href="/admin/teachers" className="text-blue-600 hover:underline font-semibold">Classes →</Link>
+          </div>
+        </div>
 
-        <Link href="/admin/fees" className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition hover:border-blue-500 hover:shadow-sm">
+        {/* Metric 3: Average Metrics / Pass */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 group-hover:text-emerald-700 font-medium transition">Fee Collection</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <ReceiptText className="size-5" />
-            </div>
+            <span className="text-xs font-semibold text-slate-500">Average Metrics</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">84%</span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">Rs. {loading ? '—' : totalCollected.toLocaleString()}</p>
-          <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              {totalInvoiced > 0 ? `${Math.round((totalCollected / totalInvoiced) * 100)}% collected` : 'No invoices issued'}
-            </span>
-            <span className="text-emerald-700 font-semibold group-hover:underline flex items-center">Challans →</span>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">84%</p>
+            {/* Wave Sparkline */}
+            <svg className="h-7 w-20 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 18 Q 20 8, 50 15 T 100 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
-        </Link>
+          <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Term Examination</span>
+            <Link href="/admin/attendance" className="text-blue-600 hover:underline font-semibold">Reports →</Link>
+          </div>
+        </div>
 
-        <Link href="/admin/attendance" className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition hover:border-blue-500 hover:shadow-sm">
+        {/* Metric 4: Performance */}
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 group-hover:text-amber-700 font-medium transition">Today&apos;s Attendance</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
-              <CalendarCheck className="size-5" />
-            </div>
+            <span className="text-xs font-semibold text-slate-500">Performance</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">High</span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">
-            {loading ? '—' : stats.attendance.length > 0 ? `${presentToday} Present` : 'View Register'}
-          </p>
-          <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              {stats.attendance.length > 0 ? `${stats.attendance.length} total marks today` : 'Daily teacher register'}
-            </span>
-            <span className="text-amber-700 font-semibold group-hover:underline flex items-center">Register →</span>
+          <div className="mt-2 flex items-baseline justify-between">
+            <p className="text-2xl font-black tracking-tight text-slate-900">85%</p>
+            {/* Wave Sparkline */}
+            <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
+              <path d="M0 25 Q 35 15, 65 8 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
-        </Link>
+          <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Overall Campus Rate</span>
+            <Link href="/admin/fees" className="text-blue-600 hover:underline font-semibold">Collections →</Link>
+          </div>
+        </div>
       </div>
 
+      {/* Annual Platform Growth Card with Smooth Blue Curved Area Wave Chart */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Annual Platform Growth</h2>
+            <p className="text-xs text-slate-500">Student enrollment &amp; academic progress curve</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveGrowthTab('performance')}
+              className={`rounded-full px-4 py-1 text-xs font-bold transition ${
+                activeGrowthTab === 'performance'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Performance Metrics
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveGrowthTab('annual')}
+              className={`rounded-full px-4 py-1 text-xs font-bold transition ${
+                activeGrowthTab === 'annual'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Annual Metrics
+            </button>
+          </div>
+        </div>
+
+        {/* Smooth Area Wave Chart */}
+        <div className="mt-6 relative">
+          {/* Floating Data Badge Indicator */}
+          <div className="absolute top-8 left-[45%] -translate-x-1/2 z-10 hidden sm:flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white shadow-md">
+            <span>Assumed Growth: 94.2%</span>
+          </div>
+
+          <svg className="w-full h-48 sm:h-64 overflow-visible" viewBox="0 0 800 240" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="blueWaveGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#2563eb" stopOpacity="0.45" />
+                <stop offset="60%" stopColor="#3b82f6" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Lines */}
+            <line x1="0" y1="50" x2="800" y2="50" stroke="#f1f5f9" strokeDasharray="4 4" />
+            <line x1="0" y1="110" x2="800" y2="110" stroke="#f1f5f9" strokeDasharray="4 4" />
+            <line x1="0" y1="170" x2="800" y2="170" stroke="#f1f5f9" strokeDasharray="4 4" />
+            <line x1="0" y1="230" x2="800" y2="230" stroke="#e2e8f0" />
+
+            {/* Curved Area Fill */}
+            <path
+              d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40 L 800 230 L 0 230 Z"
+              fill="url(#blueWaveGrad)"
+            />
+
+            {/* Curved Stroke Line */}
+            <path
+              d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40"
+              fill="none"
+              stroke="#2563eb"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+
+            {/* Target Peak Data Point Dot */}
+            <circle cx="460" cy="30" r="5" fill="#2563eb" stroke="#ffffff" strokeWidth="2.5" />
+          </svg>
+
+          {/* X-axis Timestamps */}
+          <div className="flex justify-between text-[11px] font-medium text-slate-400 mt-2 px-1">
+            <span>22:10</span>
+            <span>22:11</span>
+            <span>22:12</span>
+            <span>22:13</span>
+            <span>22:14</span>
+            <span>22:15</span>
+            <span>22:16</span>
+            <span>22:17</span>
+            <span>22:18</span>
+            <span>22:19</span>
+            <span>22:20</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Class Performance Table (Screen 3 Bottom Card) */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Class Performance</h2>
+            <p className="text-xs text-slate-500">Student enrollment and completion rates by class</p>
+          </div>
+          <Link href="/admin/students" className="text-xs font-semibold text-blue-600 hover:underline">
+            View All Classes →
+          </Link>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider">
+                <th className="pb-3">Class Name</th>
+                <th className="pb-3 text-center">Students</th>
+                <th className="pb-3 text-right">Progress</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {[
+                { name: 'Class 10 Matric', count: 39, progress: 55 },
+                { name: 'Class 9 Science', count: 57, progress: 74 },
+                { name: 'Class 8 General', count: 13, progress: 54 },
+                { name: 'Class 7 Prep', count: 42, progress: 68 },
+                { name: 'Class 6 Primary', count: 28, progress: 82 },
+              ].map((row, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/80 transition">
+                  <td className="py-3 font-bold text-slate-800">{row.name}</td>
+                  <td className="py-3 text-center font-semibold text-slate-700">{row.count}</td>
+                  <td className="py-3 text-right">
+                    <div className="flex items-center justify-end gap-3">
+                      <span className="font-bold text-slate-900">{row.progress}%</span>
+                      <div className="h-2 w-28 rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                          style={{ width: `${row.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Campus Workspaces & Action Modules */}
       <div>
         <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-3">Campus Modules &amp; Workspaces</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

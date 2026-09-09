@@ -192,6 +192,14 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="relative hidden md:block">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+              <input
+                type="text"
+                placeholder="Search for Classes & Students..."
+                className="h-8 w-48 xl:w-60 rounded-xl border border-slate-200 bg-slate-50/80 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white focus:outline-hidden"
+              />
+            </div>
             <OfflineStatusBar compact />
             <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />

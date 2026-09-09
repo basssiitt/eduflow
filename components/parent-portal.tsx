@@ -232,18 +232,56 @@ export function ParentPortal() {
   const [payModalOpen, setPayModalOpen] = useState(false)
   const [challanModalOpen, setChallanModalOpen] = useState(false)
   const [academicTab, setAcademicTab] = useState<'grades' | 'exams'>('grades')
-  const [feeStatus, setFeeStatus] = useState<'Pending' | 'Paid'>('Pending')
+  const [feeStatus, setFeeStatus] = useState<'Pending' | 'Paid'>('Paid')
   const [loading, setLoading] = useState(true)
 
+  // Dynamic children enrolled under this parent account
+  const [children, setChildren] = useState([
+    {
+      id: 1,
+      name: 'Liam Miller',
+      class: 'Grade 8 · Sec A',
+      status: 23,
+      grades: '76%',
+      total: 10,
+      fee: '100%',
+      enrolled: true,
+      avatar: 'LM',
+      roll: '2026-001',
+      feeAmount: 4500,
+      challanNo: 'CH-2026-101',
+      dueDate: '10-Oct-2026',
+      attendance: '94%',
+    },
+    {
+      id: 2,
+      name: 'Ava Miller',
+      class: 'Grade 5 · Sec B',
+      status: 23,
+      grades: '78%',
+      total: 10,
+      fee: '100%',
+      enrolled: true,
+      avatar: 'AM',
+      roll: '2026-002',
+      feeAmount: 4000,
+      challanNo: 'CH-2026-102',
+      dueDate: '10-Oct-2026',
+      attendance: '96%',
+    },
+  ])
+  const [selectedChildIndex, setSelectedChildIndex] = useState(0)
+  const activeStudent = children[selectedChildIndex] || children[0]
+
   const studentProfile = {
-    name: 'Ali Khan',
-    roll: '2026-001',
-    class: 'Class 5-A',
-    guardian: 'Tariq Khan',
-    attendance: '94%',
-    feeAmount: 4500,
-    challanNo: 'CH-2026-101',
-    dueDate: '10-Oct-2026',
+    name: activeStudent.name,
+    roll: activeStudent.roll,
+    class: activeStudent.class,
+    guardian: 'Sarah Miller',
+    attendance: activeStudent.attendance,
+    feeAmount: activeStudent.feeAmount,
+    challanNo: activeStudent.challanNo,
+    dueDate: activeStudent.dueDate,
     bankName: 'Meezan Bank Ltd.',
     accountTitle: 'EduFlow School Main Campus',
     iban: 'PK92 MEZN 0001 2345 6789 0101',
@@ -292,95 +330,198 @@ export function ParentPortal() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      {/* Header matching Screen 4 */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Academic Session 2026–2027</span>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Parent &amp; Student Learning Space</h1>
-          <p className="text-slate-500 dark:text-slate-400">Monitoring student: <b>{studentProfile.name}</b> · {studentProfile.class} (Roll #{studentProfile.roll})</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">Welcome, Sarah Miller</h1>
+          <p className="text-xs sm:text-sm font-medium text-slate-500">
+            {children.length === 1 ? '1 Student Enrolled' : children.length === 2 ? 'Two Students Enrolled' : `${children.length} Students Enrolled`} · Academic Session 2026–2027
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="relative hidden md:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              placeholder="Search problems, subjects..."
+              className="h-9 w-52 xl:w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
+            />
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold text-xs">
+            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee Status: Paid
+          </span>
           <Button
             variant="outline"
             onClick={() => setChallanModalOpen(true)}
-            className="rounded-xl border-slate-200 hover:border-emerald-300"
+            className="rounded-xl border-slate-200 hover:border-blue-300"
           >
-            <Printer className="size-4 mr-1.5 text-emerald-600" /> View 3-Face Challan
+            <Printer className="size-4 mr-1.5 text-blue-600" /> View Challan
           </Button>
           {feeStatus === 'Pending' ? (
             <Button
               onClick={() => setPayModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-xs"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs"
             >
               <CreditCard className="size-4 mr-1.5" /> Pay Fee Online
             </Button>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-xl font-bold text-xs">
-              <CheckCircle2 className="size-4" /> Fee Cleared
-            </span>
+            <Button
+              onClick={() => setPayModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
+            >
+              <CreditCard className="size-3.5 mr-1.5" /> Pay Online
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Top 3 Metric Cards */}
-      <section id="attendance" className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Classroom Haziri</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-              <CheckCircle2 className="size-5" />
-            </div>
-          </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-            Present Today
-          </p>
-          <div className="mt-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-              {studentProfile.attendance} term attendance record
+      {/* Dynamic Children Student Cards (1, 2, or N children depending on parent) */}
+      <section aria-label="Enrolled Children Profiles">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">My Kids</span>
+            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600 border border-blue-200">
+              {children.length} Enrolled
             </span>
           </div>
+          <span className="text-[11px] text-slate-400">Click a card to select active child context</span>
         </div>
 
-        <div id="fees" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Fee Status</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-              <ReceiptText className="size-5" />
-            </div>
-          </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-            PKR {feeStatus === 'Pending' ? studentProfile.feeAmount.toLocaleString('en-PK') : '0'}
-          </p>
-          <div className="mt-2 flex items-center justify-between">
-            <span className={cn(
-              'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold',
-              feeStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-            )}>
-              {feeStatus === 'Paid' ? 'Paid / Cleared' : `Pending (Due ${studentProfile.dueDate})`}
-            </span>
-            <button
-              className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold underline"
-              onClick={() => setChallanModalOpen(true)}
-            >
-              Challan #{studentProfile.challanNo}
-            </button>
-          </div>
-        </div>
+        <div className={`grid gap-4 ${
+          children.length === 1
+            ? 'grid-cols-1 max-w-xl'
+            : children.length === 2
+            ? 'grid-cols-1 md:grid-cols-2'
+            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+        }`}>
+          {children.map((child, idx) => {
+            const isSelected = selectedChildIndex === idx
+            return (
+              <div
+                key={child.id}
+                onClick={() => setSelectedChildIndex(idx)}
+                className={`rounded-2xl bg-white p-5 border shadow-2xs transition cursor-pointer ${
+                  isSelected
+                    ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-xs'
+                    : 'border-slate-200/90 hover:border-slate-300'
+                }`}
+              >
+                {/* Card Top: Avatar, Name, Grade, Enrolled Chip */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="size-11 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center shadow-2xs">
+                      {child.avatar}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-black text-slate-900">{child.name}</h3>
+                        {isSelected && (
+                          <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded-md">
+                            Selected
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium">{child.class}</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Enrolled
+                  </span>
+                </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Term Evaluation</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-              <Award className="size-5" />
-            </div>
-          </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">88.3% · A*</p>
-          <div className="mt-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-              Class Position: 3rd in 5-A
-            </span>
-          </div>
+                {/* Card 4-Metric Grid (Screen 4) */}
+                <div className="mt-4 grid grid-cols-4 gap-2 text-center bg-slate-50/70 rounded-xl p-3 border border-slate-100">
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400">Status</div>
+                    <div className="text-base font-black text-slate-900 mt-0.5">{child.status}</div>
+                    <div className="text-[9px] text-slate-400">days</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400">Grades</div>
+                    <div className="text-base font-black text-blue-600 mt-0.5">{child.grades}</div>
+                    <div className="text-[9px] text-emerald-600 font-semibold">Good</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400">Total</div>
+                    <div className="text-base font-black text-slate-900 mt-0.5">{child.total}</div>
+                    <div className="text-[9px] text-slate-400">tasks</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400">Fee</div>
+                    <div className="text-base font-black text-emerald-600 mt-0.5">{child.fee}</div>
+                    <div className="text-[9px] text-emerald-600 font-semibold">Cleared</div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </section>
+
+      {/* Split Cards: Recent Assignments & Class Events (Screen 4 Bottom Row) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left Card: Recent Assignments */}
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Recent Assignments</h3>
+              <p className="text-xs text-slate-500">Pending tasks and submissions</p>
+            </div>
+            <span className="text-xs font-semibold text-blue-600">Active</span>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { title: `${activeStudent.name} Math Algebra Chapter 5 Test`, time: '10:00 AM', status: 'Submitted' },
+              { title: 'Class Science Lab Activity - Photosynthesis', time: '12:00 PM', status: 'Due Tomorrow' },
+              { title: 'English Grammar Essay Writing Task', time: 'Yesterday', status: 'Completed' },
+            ].map((asg, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100 last:border-0 last:pb-0">
+                <div className="min-w-0 pr-3">
+                  <div className="font-bold text-slate-800 truncate">{asg.title}</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">{asg.time}</div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 ${
+                  asg.status === 'Submitted' || asg.status === 'Completed'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-amber-50 text-amber-700'
+                }`}>
+                  {asg.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Card: Class Events */}
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Class Events</h3>
+              <p className="text-xs text-slate-500">Upcoming school activities &amp; meetings</p>
+            </div>
+            <span className="text-xs font-semibold text-blue-600">Upcoming</span>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { title: 'Class Events - Term Orientation', time: '12:30 AM', date: 'Fri, 23 Oct' },
+              { title: 'Sports Gala Prep & Selection Trials', time: '02:00 AM', date: 'Mon, 26 Oct' },
+              { title: 'Parent Teacher Meeting (PTM)', time: '09:00 AM', date: 'Sat, 31 Oct' },
+            ].map((evt, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100 last:border-0 last:pb-0">
+                <div className="min-w-0 pr-3">
+                  <div className="font-bold text-slate-800 truncate">{evt.title}</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">{evt.date}</div>
+                </div>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 shrink-0">
+                  {evt.time}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Main Grid: Class Diary + Context-Aware Gemini AI */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
