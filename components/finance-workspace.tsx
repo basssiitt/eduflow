@@ -234,18 +234,18 @@ export function FinanceWorkspace() {
     <main className="finance-page">
       <nav className="flex items-center justify-between text-xs text-slate-500 mb-6 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-[#c5a059] transition flex items-center gap-1 text-[#5c4a3e]">
+          <Link href="/admin" className="hover:text-blue-600 transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <span className="text-[#2c1d17] font-semibold">Finance &amp; Accounts Ledger</span>
+          <span className="text-slate-900 font-semibold">Finance &amp; Accounts Ledger</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/fees" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
+          <Link href="/admin/fees" className="hover:text-blue-600 transition font-medium text-slate-500">
             Fee Challans →
           </Link>
-          <span className="text-[#e7e2da]">|</span>
-          <Link href="/admin/teachers/attendance" className="hover:text-[#c5a059] transition font-medium text-[#8c7a6b]">
+          <span className="text-slate-300">|</span>
+          <Link href="/admin/teachers/attendance" className="hover:text-blue-600 transition font-medium text-slate-500">
             Faculty Attendance →
           </Link>
         </div>
@@ -258,8 +258,8 @@ export function FinanceWorkspace() {
           <p>Real-time revenue tracking, faculty salary payroll, operating expenses, and net profit &amp; loss statement.</p>
         </div>
         <div className="finance-header-actions">
-          <Button variant="outline" onClick={() => window.print()} className="border-[#e7e2da] bg-white text-[#2c1d17] hover:bg-[#faf9f5]"><Printer className="mr-2 size-4" /> Print Financial Report</Button>
-          <Button onClick={() => setModal("voucher")} className="bg-[#2c1d17] hover:bg-[#3d2a20] text-white shadow-xs"><Plus className="mr-2 size-4" /> Add Voucher</Button>
+          <Button variant="outline" onClick={() => window.print()} className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50"><Printer className="mr-2 size-4" /> Print Financial Report</Button>
+          <Button onClick={() => setModal("voucher")} className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs"><Plus className="mr-2 size-4" /> Add Voucher</Button>
         </div>
       </header>
 
@@ -561,7 +561,7 @@ export function FinanceWorkspace() {
                           <Button
                             size="sm"
                             onClick={() => disburseSalary(staff)}
-                            className="h-7 text-xs bg-[#2c1d17] hover:bg-[#3d2a20] text-white rounded-lg shadow-xs"
+                            className="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs"
                           >
                             Disburse
                           </Button>
@@ -589,15 +589,15 @@ export function FinanceWorkspace() {
             </div>
           </div>
           <div className="p-6">
-            <div className="max-w-md mx-auto p-5 rounded-2xl border border-[#e7e2da] bg-white text-center shadow-xs">
-              <Wallet className="size-10 text-[#c5a059] mx-auto mb-2" />
-              <h3 className="font-black text-lg text-[#2c1d17]">Daily Vault Balance</h3>
-              <p className="text-xs text-[#786c62] mt-1">Opening Cash: PKR 50,000 · Disbursed Today: PKR 14,200</p>
-              <div className="my-4 py-3 bg-[#faf9f5] rounded-xl border border-[#e7e2da]">
-                <span className="text-xs uppercase font-bold text-[#8c7a6b]">Current Cash in Drawer</span>
-                <strong className="block text-2xl font-black text-[#166534] mt-1">PKR 35,800</strong>
+            <div className="max-w-md mx-auto p-5 rounded-2xl border border-slate-200 bg-white text-center shadow-xs">
+              <Wallet className="size-10 text-blue-600 mx-auto mb-2" />
+              <h3 className="font-black text-lg text-slate-900">Daily Vault Balance</h3>
+              <p className="text-xs text-slate-500 mt-1">Opening Cash: PKR 50,000 · Disbursed Today: PKR 14,200</p>
+              <div className="my-4 py-3 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="text-xs uppercase font-bold text-slate-500">Current Cash in Drawer</span>
+                <strong className="block text-2xl font-black text-emerald-700 mt-1">PKR 35,800</strong>
               </div>
-              <Button onClick={() => notify("Petty cash reconciled and signed off for today.")} className="w-full bg-[#2c1d17] hover:bg-[#3d2a20] text-white rounded-xl shadow-xs font-semibold">
+              <Button onClick={() => notify("Petty cash reconciled and signed off for today.")} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs font-semibold">
                 Sign-off Today&apos;s Cash
               </Button>
             </div>
@@ -679,8 +679,8 @@ export function FinanceWorkspace() {
                 <h3 className="text-lg font-black text-slate-900 dark:text-slate-100">Monthly Salary Statement</h3>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => window.print()} className="bg-[#2c1d17] hover:bg-[#3d2a20] text-white shadow-xs font-semibold"><Printer className="size-3.5 mr-1" /> Print Slip</Button>
-                <button onClick={() => setPaySlipStaff(null)} className="text-slate-400 hover:text-[#2c1d17]"><X className="size-5" /></button>
+                <Button size="sm" onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs font-semibold"><Printer className="size-3.5 mr-1" /> Print Slip</Button>
+                <button onClick={() => setPaySlipStaff(null)} className="text-slate-400 hover:text-slate-900"><X className="size-5" /></button>
               </div>
             </div>
 

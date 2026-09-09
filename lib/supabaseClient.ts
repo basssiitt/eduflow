@@ -1,8 +1,11 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const defaultUrl = 'https://mtchdghzlkiemwtzyduo.supabase.co'
+const defaultKey = 'sb_publishable_KmiVb1kw1LiOskGkpDkLpw_gapmgN09'
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultUrl
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultKey
 
 const isValidHttpUrl = (val?: string): boolean => {
   if (!val) return false

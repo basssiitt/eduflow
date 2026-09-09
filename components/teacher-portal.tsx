@@ -123,20 +123,20 @@ export function TeacherPortal() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-[#f7f5f0] text-[#2c1d17] dark:bg-slate-900 dark:text-[#c5a059] border-[#e7e2da] font-semibold">
+            <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 font-semibold">
               Teacher Workspace
             </Badge>
             <span className="text-sm text-slate-500 dark:text-slate-400">Academic Session · 2026–2027</span>
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-[#1e1b18] dark:text-slate-100 md:text-4xl">Classroom Console</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">Classroom Console</h2>
           <p className="text-slate-500 dark:text-slate-400">Take daily attendance, publish voice diaries, and record classroom notes.</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Class
-            <select className="h-10 rounded-xl border border-[#e7e2da] dark:border-slate-700 bg-background px-3 text-sm font-medium">
+            <select className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium text-slate-900 dark:text-slate-100">
               <option>All Enrolled</option>
               <option>Class 5</option>
               <option>Class 6</option>
@@ -151,7 +151,7 @@ export function TeacherPortal() {
           data-testid="btn-mark-all-present"
           onClick={markAll}
           disabled={students.length === 0}
-          className="bg-[#2c1d17] text-white hover:bg-[#1e130f] font-semibold shadow-xs"
+          className="bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-xs"
         >
           <Check data-icon="inline-start" className="mr-1.5 size-4" />Mark All Present
         </Button>
@@ -159,26 +159,26 @@ export function TeacherPortal() {
 
       {/* Attendance Stats Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Enrolled</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-[#1e1b18] dark:text-slate-100">{students.length}</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{students.length}</p>
           <p className="mt-1 text-xs text-slate-400">Active class roster</p>
         </div>
-        <div className="rounded-2xl border border-[#c8e6c9] bg-[#fbfdfb] dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-[#166534] dark:text-emerald-400 uppercase tracking-wider">Present</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-[#166534]">{counts.Present}</p>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
+          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Present</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-emerald-700">{counts.Present}</p>
           <p className="mt-1 text-xs text-slate-400">
             {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}% attendance` : '—'}
           </p>
         </div>
-        <div className="rounded-2xl border border-[#f8bbd0] bg-[#fdfafb] dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-[#880e4f] dark:text-rose-400 uppercase tracking-wider">Absent</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-[#880e4f]">{counts.Absent}</p>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
+          <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 uppercase tracking-wider">Absent</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-rose-700">{counts.Absent}</p>
           <p className="mt-1 text-xs text-slate-400">Requires follow-up</p>
         </div>
-        <div className="rounded-2xl border border-[#d7ccc8] bg-[#faf9f8] dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-[#8d6e63] dark:text-amber-400 uppercase tracking-wider">On Leave</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-[#8d6e63]">{counts.Leave}</p>
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/40 dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm">
+          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">On Leave</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-amber-700">{counts.Leave}</p>
           <p className="mt-1 text-xs text-slate-400">Sanctioned absence</p>
         </div>
       </div>
@@ -221,7 +221,7 @@ export function TeacherPortal() {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {students.map((student, idx) => (
                       <tr key={student.id} data-testid="student-row" className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
-                        <td className="px-5 py-4 font-mono text-xs font-bold text-[#8c7a6b] dark:text-[#c5a059]">2026-{String(idx + 1).padStart(3, '0')}</td>
+                        <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-500 dark:text-slate-400">2026-{String(idx + 1).padStart(3, '0')}</td>
                         <td className="px-5 py-4 font-semibold text-slate-900 dark:text-slate-100">{student.name}</td>
                         <td className="px-5 py-4 text-slate-500">{student.father || '—'}</td>
                         <td className="px-5 py-4">
@@ -251,7 +251,7 @@ export function TeacherPortal() {
                               )
                             }
                             placeholder="Add note..."
-                            className="h-8 min-w-32 text-xs rounded-lg border-[#e7e2da] bg-white text-[#2c1d17] focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059]/20"
+                            className="h-8 min-w-32 text-xs rounded-lg border-slate-200 bg-white text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                           />
                         </td>
                       </tr>
@@ -263,29 +263,29 @@ export function TeacherPortal() {
           )}
         </div>
 
-        <aside id="diary" className="rounded-2xl border border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm">
+        <aside id="diary" className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-[#c5a059]">Class Diary</p>
-              <h3 className="mt-1 text-lg font-bold text-[#1e1b18] dark:text-slate-100">Daily Diary &amp; Voice Homework</h3>
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-600">Class Diary</p>
+              <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Daily Diary &amp; Voice Homework</h3>
             </div>
-            <Link href="/teacher/diary" className="rounded-xl p-2 text-[#2c1d17] hover:bg-[#f7f5f0] dark:hover:bg-slate-800 transition-colors" title="Open full diary page">
+            <Link href="/teacher/diary" className="rounded-xl p-2 text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Open full diary page">
               <Volume2 className="size-5" aria-hidden="true" />
             </Link>
           </div>
           <div className="mt-2">
-            <Link href="/teacher/diary" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2c1d17] dark:text-[#c5a059] hover:underline">
+            <Link href="/teacher/diary" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
               Open Dedicated Voice Diary Studio <ArrowRight className="size-3" />
             </Link>
           </div>
-          <div className="mt-5 flex flex-wrap gap-1 rounded-xl bg-[#faf9f5] dark:bg-slate-950 p-1.5 border border-[#e7e2da] dark:border-slate-800">
+          <div className="mt-5 flex flex-wrap gap-1 rounded-xl bg-slate-100 dark:bg-slate-950 p-1.5 border border-slate-200 dark:border-slate-800">
             {subjects.map((item) => (
               <button
                 type="button"
                 key={item}
                 onClick={() => setSubject(item)}
                 className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                  subject === item ? 'bg-[#2c1d17] text-white shadow-xs font-bold dark:bg-slate-800 dark:text-slate-100' : 'text-slate-500 hover:text-slate-900'
+                  subject === item ? 'bg-blue-600 text-white shadow-xs font-bold dark:bg-blue-600 dark:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 {item}
@@ -296,14 +296,14 @@ export function TeacherPortal() {
             type="button"
             onClick={() => setRecording((value) => !value)}
             className={`mt-5 flex min-h-32 w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed transition-all duration-200 ${
-              recording ? 'border-[#880e4f] bg-[#fce4ec] dark:bg-rose-950/20' : 'border-[#e7e2da] bg-[#faf9f5] hover:border-[#c5a059] dark:border-slate-800 dark:bg-slate-950/20'
+              recording ? 'border-rose-400 bg-rose-50 dark:bg-rose-950/20' : 'border-slate-200 bg-slate-50 hover:border-blue-400 dark:border-slate-800 dark:bg-slate-950/20'
             }`}
             aria-label="Hold or click to record voice note"
           >
-            <span className={`flex size-12 items-center justify-center rounded-full shadow-sm ${recording ? 'bg-[#880e4f] text-white' : 'bg-[#2c1d17] text-[#c5a059]'}`}>
+            <span className={`flex size-12 items-center justify-center rounded-full shadow-sm ${recording ? 'bg-rose-600 text-white' : 'bg-blue-600 text-white'}`}>
               {recording ? <Pause aria-hidden="true" /> : <Mic aria-hidden="true" />}
             </span>
-            <span className="text-center text-sm font-bold text-[#1e1b18] dark:text-slate-100">{recording ? 'Recording voice note...' : 'Click to Record Voice Note'}</span>
+            <span className="text-center text-sm font-bold text-slate-900 dark:text-slate-100">{recording ? 'Recording voice note...' : 'Click to Record Voice Note'}</span>
             <span className="text-xs text-slate-500">{recording ? 'Recording in progress' : 'Audio note broadcasts to parents'}</span>
           </button>
           <label className="mt-5 flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -313,42 +313,42 @@ export function TeacherPortal() {
               onChange={(event) => setDiary(event.target.value)}
               placeholder="Type homework instructions for today..."
               rows={4}
-              className="resize-none rounded-xl border border-[#e7e2da] dark:border-slate-700 bg-background px-3 py-2 text-sm font-normal outline-none focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 py-2 text-sm font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
           <Button
-            className="mt-4 w-full bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs"
+            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs"
             disabled={!diary.trim() && !recording}
             onClick={handlePublishDiary}
           >
             <Send data-icon="inline-start" className="mr-1.5 size-4" />Publish Diary Entry
           </Button>
           {published && (
-            <p role="status" className="mt-3 flex items-center gap-2 text-xs font-semibold text-[#166534] dark:text-emerald-400">
+            <p role="status" className="mt-3 flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
               <CircleCheck className="size-4" />Diary entry published successfully!
             </p>
           )}
         </aside>
       </div>
 
-      <section id="gradebook" className="rounded-2xl border border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
+      <section id="gradebook" className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#c5a059]">Term Evaluation</span>
-            <h3 className="mt-1 text-lg font-bold text-[#1e1b18] dark:text-slate-100">Gradebook &amp; Marks Entry</h3>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Term Evaluation</span>
+            <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Gradebook &amp; Marks Entry</h3>
             <p className="text-xs text-slate-500">Record midterm and final term examination scores and generate student report cards.</p>
           </div>
           <Link
             href="/teacher/gradebook"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2c1d17] hover:bg-[#1e130f] px-4 py-2 text-xs font-semibold text-white shadow-xs transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-colors"
           >
             <Award className="size-4" /> Open Gradebook Register <ArrowRight className="size-3.5" />
           </Link>
         </div>
-        <div className="mt-4 flex items-center justify-between rounded-xl bg-[#faf9f5] dark:bg-slate-950 p-4 border border-[#e7e2da] dark:border-slate-800">
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-950 p-4 border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-[#2c1d17] text-[#c5a059]">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-600 text-white">
               <BookOpen className="size-5" />
             </div>
             <div className="text-xs">
@@ -356,16 +356,16 @@ export function TeacherPortal() {
               <p className="text-slate-500">Enter marks for Mathematics, English, General Science, and Urdu.</p>
             </div>
           </div>
-          <Link href="/teacher/gradebook" className="text-xs font-semibold text-[#2c1d17] dark:text-[#c5a059] hover:underline">
+          <Link href="/teacher/gradebook" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
             Score Entry →
           </Link>
         </div>
       </section>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#e7e2da] bg-white/95 px-5 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 md:px-8">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 px-5 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 md:px-8">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <p className="hidden text-sm text-slate-500 sm:block">Review all student entries before saving today&apos;s register.</p>
-          <Button onClick={handleSaveAttendance} disabled={saving || students.length === 0} className="ml-auto bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs">
+          <Button onClick={handleSaveAttendance} disabled={saving || students.length === 0} className="ml-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs">
             <Save data-icon="inline-start" className="mr-1.5 size-4" />
             {saving ? 'Saving...' : "Save & Finalize Today's Attendance"}
           </Button>
@@ -374,13 +374,13 @@ export function TeacherPortal() {
 
       {finalized && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="presentation">
-          <div role="dialog" aria-modal="true" aria-labelledby="summary-title" className="w-full max-w-md rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div role="dialog" aria-modal="true" aria-labelledby="summary-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex size-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                   <CircleCheck className="size-6" />
                 </div>
-                <h3 id="summary-title" className="mt-4 text-xl font-bold text-[#1e1b18] dark:text-slate-100">Attendance Saved</h3>
+                <h3 id="summary-title" className="mt-4 text-xl font-bold text-slate-900 dark:text-slate-100">Attendance Saved</h3>
                 <p className="mt-1 text-sm text-slate-500">Academic Register · Session 2026–27</p>
               </div>
               <button type="button" onClick={() => setFinalized(false)} aria-label="Close summary" className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -388,20 +388,20 @@ export function TeacherPortal() {
               </button>
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-[#e8f5e9] p-3 text-center border border-[#c8e6c9]">
-                <p className="text-xl font-bold text-[#166534]">{counts.Present}</p>
+              <div className="rounded-xl bg-emerald-50 p-3 text-center border border-emerald-200">
+                <p className="text-xl font-bold text-emerald-700">{counts.Present}</p>
                 <p className="text-xs text-slate-500 font-medium">Present</p>
               </div>
-              <div className="rounded-xl bg-[#fce4ec] p-3 text-center border border-[#f8bbd0]">
-                <p className="text-xl font-bold text-[#880e4f]">{counts.Absent}</p>
+              <div className="rounded-xl bg-rose-50 p-3 text-center border border-rose-200">
+                <p className="text-xl font-bold text-rose-700">{counts.Absent}</p>
                 <p className="text-xs text-slate-500 font-medium">Absent</p>
               </div>
-              <div className="rounded-xl bg-[#efebe9] p-3 text-center border border-[#d7ccc8]">
-                <p className="text-xl font-bold text-[#8d6e63]">{counts.Leave}</p>
+              <div className="rounded-xl bg-amber-50 p-3 text-center border border-amber-200">
+                <p className="text-xl font-bold text-amber-700">{counts.Leave}</p>
                 <p className="text-xs text-slate-500 font-medium">Leave</p>
               </div>
             </div>
-            <Button className="mt-5 w-full bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs" onClick={() => setFinalized(false)}>Done</Button>
+            <Button className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs" onClick={() => setFinalized(false)}>Done</Button>
           </div>
         </div>
       )}

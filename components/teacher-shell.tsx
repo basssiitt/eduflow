@@ -54,13 +54,13 @@ const teacherNavItems: NavItem[] = [
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/teacher" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2c1d17] border border-[#c5a059]/40 shadow-xs">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
         <AcademicCrest className="size-6" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-bold tracking-tight text-[#1e1b18] dark:text-slate-100">EduFlow OS</p>
-          <p className="truncate text-xs font-semibold text-[#c5a059]">Teacher Console</p>
+          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-blue-600 dark:text-blue-400">Teacher Console</p>
         </div>
       )}
     </Link>
@@ -91,12 +91,12 @@ function TeacherNavigation({
             title={collapsed ? item.label : undefined}
             className={cn(
               'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
-              'text-slate-600 hover:bg-[#f7f5f0] hover:text-[#1e1b18] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-[#f7f5f0] text-[#2c1d17] font-bold border border-[#e7e2da] dark:bg-slate-900 dark:text-[#c5a059] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-[#c5a059]',
+              'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+              active && 'bg-blue-50 text-blue-600 font-bold border border-blue-100 dark:bg-blue-950/60 dark:text-blue-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-blue-600',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-[#2c1d17] dark:text-[#c5a059]" : "text-slate-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-blue-600 dark:text-blue-400" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -113,23 +113,23 @@ function TeacherSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+    <aside className={cn('hidden shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
       <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator className="bg-[#e7e2da] dark:bg-slate-800" />
+      <Separator className="bg-slate-200 dark:bg-slate-800" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <TeacherNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-[#e7e2da] bg-[#faf9f5] dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <p className="text-xs font-bold text-[#1e1b18] dark:text-slate-100">Offline Haziri Ready</p>
-              <p className="mt-1 text-xs leading-relaxed text-[#786c62] dark:text-slate-400">Mark attendance offline with automated cloud sync.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Offline Haziri Ready</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Mark attendance offline with automated cloud sync.</p>
             </>
           )}
         </div>
       </div>
-      <Separator className="bg-[#e7e2da] dark:bg-slate-800" />
+      <Separator className="bg-slate-200 dark:bg-slate-800" />
       <div className="flex items-center justify-between p-4">
         {!collapsed && <span className="text-[11px] font-medium text-slate-400">Session 2026–27</span>}
         <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
@@ -175,7 +175,7 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <TeacherSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-[#e7e2da] bg-white/95 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200 bg-white/95 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
@@ -187,71 +187,71 @@ export function TeacherShell({ children }: { children: React.ReactNode }) {
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c5a059]">Classroom Management</p>
-              <h1 className="text-lg font-bold tracking-tight text-[#1e1b18] dark:text-slate-100">Teacher Console</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Classroom Management</p>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">Teacher Console</h1>
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3">
             <OfflineStatusBar compact />
-            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#c8e6c9] bg-[#e8f5e9] px-3 py-1 text-xs font-semibold text-[#166534] dark:bg-emerald-950/40 dark:text-emerald-300">
-              <span className="size-2 rounded-full bg-[#166534] animate-pulse" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               Cloud Synced
             </div>
-            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-[#e7e2da] bg-[#faf9f5] px-3 py-1 text-xs font-semibold text-[#2c1d17] dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300 shadow-2xs">
               Academic Session 2026–2027
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2 hover:bg-[#f7f5f0] dark:hover:bg-slate-800" aria-label="Open profile menu">
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-[#2c1d17] text-[#c5a059] font-bold text-xs border border-[#c5a059]/30">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
                   <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-60 border-[#e7e2da] bg-white dark:border-slate-800 dark:bg-slate-900">
+              <DropdownMenuContent align="end" className="w-60 border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
                     <p className="text-xs font-normal text-muted-foreground">Signed in as Teacher</p>
-                    <p className="truncate font-semibold text-[#1e1b18] dark:text-slate-100">{userEmail || 'teacher@school.edu.pk'}</p>
+                    <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{userEmail || 'teacher@school.edu.pk'}</p>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
+                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-800" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer hover:bg-[#f7f5f0]">
-                    <CalendarCheck className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                    <CalendarCheck className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Daily Haziri Register</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/diary'} className="cursor-pointer hover:bg-[#f7f5f0]">
-                    <Mic className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/diary'} className="cursor-pointer">
+                    <Mic className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Audio Voice Diary</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/gradebook'} className="cursor-pointer hover:bg-[#f7f5f0]">
-                    <BookOpen className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/teacher/gradebook'} className="cursor-pointer">
+                    <BookOpen className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Gradebook &amp; Marks</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium hover:bg-[#f7f5f0]">
-                    <Settings className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
+                    <Settings className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
+                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-800" />
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer hover:bg-[#f7f5f0]">
-                    <GraduationCap className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                    <GraduationCap className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer hover:bg-[#f7f5f0]">
-                    <Users className="mr-2 size-4 text-[#2c1d17] dark:text-[#c5a059]" />
+                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
+                    <Users className="mr-2 size-4 text-blue-600 dark:text-blue-400" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da] dark:bg-slate-800" />
+                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-800" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer hover:bg-[#f7f5f0]">
+                  <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
                     <ShieldCheck className="mr-2 size-4 text-slate-500" />
                     <span>Switch Account</span>
                   </DropdownMenuItem>

@@ -123,11 +123,11 @@ function AddTeacherModal({
       aria-modal="true"
       aria-labelledby="add-teacher-title"
     >
-      <div className="w-full max-w-xl rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-2xl my-8">
-        <div className="flex items-start justify-between border-b border-[#e7e2da] pb-4">
+      <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl my-8">
+        <div className="flex items-start justify-between border-b border-slate-200 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
                 <UserPlus className="size-4" />
               </div>
               <h2
@@ -164,7 +164,7 @@ function AddTeacherModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Prof. Tariq Mahmood"
               required
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -176,7 +176,7 @@ function AddTeacherModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tariq@school.edu.pk"
               required
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -187,7 +187,7 @@ function AddTeacherModal({
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+92 300 1234567"
               required
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -197,7 +197,7 @@ function AddTeacherModal({
               value={employeeCode}
               onChange={(e) => setEmployeeCode(e.target.value)}
               placeholder="TCH-2026-008"
-              className="mt-1 font-mono text-xs border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 font-mono text-xs border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -207,7 +207,7 @@ function AddTeacherModal({
               value={qualification}
               onChange={(e) => setQualification(e.target.value)}
               placeholder="e.g. M.Phil Mathematics (QAU)"
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -216,7 +216,7 @@ function AddTeacherModal({
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="mt-1 flex h-9 w-full rounded-md border border-[#e7e2da] bg-white px-3 py-1 text-sm shadow-xs focus:border-[#c5a059] focus:outline-none text-[#2c1d17]"
+              className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-xs focus:border-blue-600 focus:outline-hidden text-slate-900"
             >
               {departments.map((d) => (
                 <option key={d} value={d}>
@@ -232,7 +232,7 @@ function AddTeacherModal({
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Mathematics & Calculus"
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -242,7 +242,7 @@ function AddTeacherModal({
               value={classesInput}
               onChange={(e) => setClassesInput(e.target.value)}
               placeholder="Class 9-A, Class 10-A, FSc-I"
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
             <span className="text-[11px] text-slate-400 font-normal">
               Separate each class section with a comma (e.g. Class 5-A, Class 6-B)
@@ -256,7 +256,7 @@ function AddTeacherModal({
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
               placeholder="75000"
-              className="mt-1 font-mono border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 font-mono border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -266,7 +266,7 @@ function AddTeacherModal({
               type="date"
               value={joiningDate}
               onChange={(e) => setJoiningDate(e.target.value)}
-              className="mt-1 border-[#e7e2da] focus:border-[#c5a059]"
+              className="mt-1 border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -280,7 +280,7 @@ function AddTeacherModal({
                     name="teacher-status"
                     checked={status === s}
                     onChange={() => setStatus(s)}
-                    className="accent-[#2c1d17]"
+                    className="accent-blue-600"
                   />
                   <span>{s}</span>
                 </label>
@@ -288,19 +288,19 @@ function AddTeacherModal({
             </div>
           </label>
 
-          <div className="mt-4 flex items-center justify-end gap-2 sm:col-span-2 border-t border-[#e7e2da] pt-4">
+          <div className="mt-4 flex items-center justify-end gap-2 sm:col-span-2 border-t border-slate-200 pt-4">
             <Button
               variant="outline"
               type="button"
               onClick={onClose}
-              className="rounded-xl border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]"
+              className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs"
             >
               {saving ? 'Onboarding…' : 'Confirm & Onboard Teacher'}
             </Button>
@@ -493,12 +493,12 @@ export default function TeachersPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/admin"
-              className="text-xs text-slate-500 hover:text-[#2c1d17] transition flex items-center gap-1 font-medium"
+              className="text-xs text-slate-500 hover:text-blue-600 transition flex items-center gap-1 font-medium"
             >
               <ArrowLeft className="size-3.5" /> Campus Admin
             </Link>
             <span className="text-xs text-slate-400">/</span>
-            <Badge className="bg-[#faf9f5] text-[#2c1d17] hover:bg-[#faf9f5] border border-[#e7e2da]">
+            <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60 font-medium">
               Session 2026–2027
             </Badge>
           </div>
@@ -516,14 +516,14 @@ export default function TeachersPage() {
             size="sm"
             onClick={exportCsv}
             disabled={teachers.length === 0}
-            className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17] text-xs"
+            className="rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs"
           >
-            <Download className="mr-1.5 size-3.5 text-[#c5a059]" /> Export Faculty CSV
+            <Download className="mr-1.5 size-3.5 text-blue-600" /> Export Faculty CSV
           </Button>
           <Button
             size="sm"
             onClick={() => setAddOpen(true)}
-            className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs text-xs"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
           >
             <UserPlus className="mr-1.5 size-4" /> Onboard Teacher
           </Button>
@@ -541,10 +541,10 @@ export default function TeachersPage() {
           </>
         ) : (
           <>
-            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+            <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#5c4a3e]">Total Faculty Members</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+                <p className="text-sm font-medium text-slate-500">Total Faculty Members</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                   <GraduationCap className="size-5" />
                 </div>
               </div>
@@ -554,10 +554,10 @@ export default function TeachersPage() {
               <p className="mt-1 text-xs text-slate-500">Registered academic educators</p>
             </article>
 
-            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+            <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#5c4a3e]">Active in Classroom</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <p className="text-sm font-medium text-slate-500">Active in Classroom</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
                   <UserCheck className="size-5" />
                 </div>
               </div>
@@ -571,10 +571,10 @@ export default function TeachersPage() {
               </div>
             </article>
 
-            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+            <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#5c4a3e]">Avg Subject Load</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+                <p className="text-sm font-medium text-slate-500">Avg Subject Load</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                   <BookOpen className="size-5" />
                 </div>
               </div>
@@ -584,10 +584,10 @@ export default function TeachersPage() {
               <p className="mt-1 text-xs text-slate-500">Classes per faculty member</p>
             </article>
 
-            <article className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+            <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all duration-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#5c4a3e]">Monthly Faculty Payroll</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                <p className="text-sm font-medium text-slate-500">Monthly Faculty Payroll</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
                   <Wallet className="size-5" />
                 </div>
               </div>
@@ -626,8 +626,8 @@ export default function TeachersPage() {
                   className={cn(
                     'rounded-lg px-2.5 py-1 text-xs font-semibold transition-all',
                     statusFilter === s
-                      ? 'bg-[#2c1d17] text-white shadow-xs'
-                      : 'text-[#5c4a3e] hover:text-[#2c1d17]'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   )}
                 >
                   {s}
@@ -645,14 +645,14 @@ export default function TeachersPage() {
                   setQuery(e.target.value)
                   setPage(1)
                 }}
-                className="h-9 w-full sm:w-64 pl-9 text-xs rounded-xl bg-white border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+                className="h-9 w-full sm:w-64 pl-9 text-xs rounded-xl bg-white border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
           </div>
         </div>
 
         {/* Department Quick Filter Sub-bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[#e7e2da] px-5 py-2.5 bg-[#faf9f5] text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200 px-5 py-2.5 bg-slate-50/70 text-xs">
           <span className="font-semibold text-slate-500 mr-2 shrink-0">Department:</span>
           {['All', 'Science & Math', 'Languages', 'Humanities', 'Arts & Sports', 'IT'].map((d) => (
             <button
@@ -664,8 +664,8 @@ export default function TeachersPage() {
               className={cn(
                 'rounded-lg px-2.5 py-1 font-medium transition shrink-0',
                 deptFilter === d
-                  ? 'bg-[#2c1d17] text-white font-semibold shadow-xs'
-                  : 'bg-white text-[#5c4a3e] border border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#f7f5f0]'
+                  ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
               )}
             >
               {d}
@@ -675,7 +675,7 @@ export default function TeachersPage() {
 
         {/* Table Body */}
         {loading ? (
-          <div className="p-4 divide-y divide-[#e7e2da]">
+          <div className="p-4 divide-y divide-slate-100">
             <table className="w-full">
               <tbody>
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -707,7 +707,7 @@ export default function TeachersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px] text-left text-sm">
-              <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-semibold uppercase tracking-wider text-[#5c4a3e]">
+              <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
                 <tr>
                   <th className="px-5 py-3.5">Code</th>
                   <th className="px-5 py-3.5">Teacher Name &amp; Degree</th>
@@ -718,7 +718,7 @@ export default function TeachersPage() {
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e7e2da]">
+              <tbody className="divide-y divide-slate-100">
                 {paginated.map((teacher) => {
                   const statusTone = {
                     Active:
@@ -738,11 +738,11 @@ export default function TeachersPage() {
                   return (
                     <tr
                       key={teacher.id}
-                      className="hover:bg-[#faf9f5] transition-colors"
+                      className="hover:bg-slate-50/60 transition-colors"
                     >
                       {/* Employee Code */}
                       <td className="px-5 py-4">
-                        <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#faf9f5] rounded px-1.5 py-0.5 border border-[#e7e2da]">
+                        <span className="font-mono text-xs font-bold text-slate-700 bg-slate-50 rounded px-1.5 py-0.5 border border-slate-200">
                           {teacher.employee_code}
                         </span>
                       </td>
@@ -750,7 +750,7 @@ export default function TeachersPage() {
                       {/* Teacher Profile */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f7f5f0] border border-[#e7e2da] text-xs font-bold text-[#2c1d17]">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700">
                             {teacher.name
                               .split(' ')
                               .map((n) => n[0])
@@ -782,7 +782,7 @@ export default function TeachersPage() {
                           {teacher.classes.map((cls) => (
                             <span
                               key={cls}
-                              className="rounded-md bg-[#f7f5f0] border border-[#e7e2da] px-2 py-0.5 text-[11px] font-medium text-[#2c1d17]"
+                              className="rounded-md bg-slate-100 border border-slate-200/80 px-2 py-0.5 text-[11px] font-medium text-slate-700"
                             >
                               {cls}
                             </span>
@@ -820,7 +820,7 @@ export default function TeachersPage() {
                               target="_blank"
                               rel="noreferrer"
                               title="Message teacher on WhatsApp"
-                              className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition"
                             >
                               <MessageCircle className="size-3.5" />
                             </a>
@@ -831,7 +831,7 @@ export default function TeachersPage() {
                             <a
                               href={`mailto:${teacher.email}?subject=EduFlow Campus Notification`}
                               title="Email teacher"
-                              className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-500 hover:border-[#c5a059] hover:text-[#2c1d17] transition"
+                              className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-blue-300 hover:text-blue-600 transition"
                             >
                               <Mail className="size-3.5" />
                             </a>
@@ -841,7 +841,7 @@ export default function TeachersPage() {
                           <button
                             onClick={() => setTeacherToDelete(teacher)}
                             title="Offboard / Remove teacher"
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-[#e7e2da] bg-white text-slate-400 hover:border-rose-300 hover:text-rose-600 hover:bg-rose-50 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-rose-300 hover:text-rose-600 hover:bg-rose-50 transition"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -856,7 +856,7 @@ export default function TeachersPage() {
         )}
 
         {/* Pagination Footer */}
-        <div className="flex items-center justify-between border-t border-[#e7e2da] px-5 py-3 text-xs text-slate-500">
+        <div className="flex items-center justify-between border-t border-slate-200 px-5 py-3 text-xs text-slate-500">
           <span>
             Showing {paginated.length} of {filtered.length} faculty members
           </span>

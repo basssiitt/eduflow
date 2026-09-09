@@ -35,7 +35,7 @@ export default function StudentDiaryPage() {
     <div className="flex flex-col gap-6">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/student" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-slate-600">
+          <Link href="/student" className="hover:text-blue-600 transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Student Workspace
           </Link>
           <span>/</span>
@@ -57,11 +57,11 @@ export default function StudentDiaryPage() {
           diaries.map((item: any, idx: number) => (
             <article
               key={item.id || idx}
-              className="rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xs"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs"
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-[#e7e2da] pb-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                     <Headphones className="size-5" />
                   </div>
                   <div>
@@ -77,7 +77,7 @@ export default function StudentDiaryPage() {
                 {item.audio_url && (
                   <Button
                     onClick={() => setPlayingId(playingId === item.id ? null : item.id)}
-                    className="gap-2 bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold shadow-xs"
+                    className="gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs"
                   >
                     {playingId === item.id ? <Pause className="size-4" /> : <Play className="size-4" />}
                     <span>{playingId === item.id ? 'Pause Voice Note' : 'Play Voice Recording'}</span>

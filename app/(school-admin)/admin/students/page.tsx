@@ -84,11 +84,11 @@ function AddStudentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true" aria-labelledby="add-student-title">
-      <div className="w-full max-w-lg rounded-2xl border border-[#e7e2da] bg-white p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <UserPlus className="size-5 text-[#2c1d17]" />
+              <UserPlus className="size-5 text-blue-600" />
               <h2 id="add-student-title" className="text-xl font-bold text-slate-900">Admit New Student</h2>
             </div>
             <p className="mt-1 text-xs text-slate-500">Enter student details to add them to the active academic register.</p>
@@ -108,7 +108,7 @@ function AddStudentModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Muhammad Ali"
               required
-              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="text-sm rounded-xl border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -119,7 +119,7 @@ function AddStudentModal({
               onChange={(e) => setFatherName(e.target.value)}
               placeholder="e.g. Tariq Mehmood"
               required
-              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="text-sm rounded-xl border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -128,7 +128,7 @@ function AddStudentModal({
             <select
               value={className}
               onChange={(e) => setClassName(e.target.value)}
-              className="h-10 rounded-xl border border-[#e7e2da] bg-background px-3 text-sm font-medium text-[#2c1d17]"
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-hidden"
             >
               {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((c) => (
                 <option key={c}>{c}</option>
@@ -141,7 +141,7 @@ function AddStudentModal({
             <select
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="h-10 rounded-xl border border-[#e7e2da] bg-background px-3 text-sm font-medium text-[#2c1d17]"
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-hidden"
             >
               <option>A</option>
               <option>B</option>
@@ -155,7 +155,7 @@ function AddStudentModal({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+92 3XX XXXXXXX"
-              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="text-sm rounded-xl border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
@@ -166,13 +166,13 @@ function AddStudentModal({
               value={fee}
               onChange={(e) => setFee(e.target.value)}
               placeholder="15000"
-              className="text-sm rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="text-sm rounded-xl border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </label>
 
           <div className="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
-            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]">Cancel</Button>
-            <Button type="submit" disabled={saving} className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs">
+            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium">Cancel</Button>
+            <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs">
               {saving ? 'Admitting…' : 'Admit Student'}
             </Button>
           </div>
@@ -278,18 +278,18 @@ export default function StudentsPage() {
     <div className="flex flex-col gap-6">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-slate-600">
+          <Link href="/admin" className="hover:text-blue-600 transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
           <span className="text-slate-900 font-semibold">Student Register</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/attendance" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
+          <Link href="/admin/attendance" className="hover:text-blue-600 transition font-medium text-slate-500">
             Attendance Register →
           </Link>
           <span className="text-slate-300">|</span>
-          <Link href="/admin/fees" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
+          <Link href="/admin/fees" className="hover:text-blue-600 transition font-medium text-slate-500">
             Fee Challans →
           </Link>
         </div>
@@ -298,7 +298,7 @@ export default function StudentsPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#e7e2da] font-semibold">
+            <Badge className="bg-blue-50 text-blue-700 border-blue-200/60 font-medium">
               Academic Directory
             </Badge>
             <span className="text-sm text-slate-500">Session 2026–2027</span>
@@ -310,14 +310,14 @@ export default function StudentsPage() {
           <Button
             variant="outline"
             onClick={() => setImportOpen(true)}
-            className="border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17]"
+            className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium"
           >
-            <Upload className="mr-2 size-4 text-[#c5a059]" />
+            <Upload className="mr-2 size-4 text-blue-600" />
             Bulk CSV Import
           </Button>
           <Button
             onClick={() => setAddOpen(true)}
-            className="bg-[#2c1d17] hover:bg-[#1e130f] text-white shadow-xs font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs font-semibold"
           >
             <Plus className="mr-2 size-4" />
             Admit Student
@@ -325,7 +325,7 @@ export default function StudentsPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-1.5">
             {['All', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
@@ -335,8 +335,8 @@ export default function StudentsPage() {
                 className={cn(
                   'rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all',
                   classFilter === cls
-                    ? 'bg-[#2c1d17] text-white shadow-xs'
-                    : 'bg-[#faf9f5] text-[#5c4a3e] border border-[#e7e2da] hover:bg-[#f7f5f0]'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
                 )}
               >
                 {cls}
@@ -349,13 +349,13 @@ export default function StudentsPage() {
               placeholder="Search by name, roll no..."
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
-              className="pl-9 text-xs rounded-xl border-[#e7e2da] bg-white focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="pl-9 text-xs rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="mt-5 divide-y divide-[#e7e2da]">
+          <div className="mt-5 divide-y divide-slate-100">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="py-4 flex items-center justify-between animate-pulse">
                 <div className="h-4 w-20 bg-slate-200 rounded-md" />
@@ -379,10 +379,10 @@ export default function StudentsPage() {
           </div>
         ) : (
           <>
-            <div className="mt-5 overflow-hidden rounded-xl border border-[#e7e2da]">
+            <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-bold uppercase tracking-wider text-[#5c4a3e]">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
                     <tr>
                       <th className="px-5 py-3.5">Roll No</th>
                       <th className="px-5 py-3.5">Student Name</th>
@@ -393,17 +393,17 @@ export default function StudentsPage() {
                       <th className="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e7e2da]">
+                  <tbody className="divide-y divide-slate-100">
                     {paginated.map((s) => (
-                      <tr key={s.id} className="transition-colors hover:bg-[#faf9f5]">
+                      <tr key={s.id} className="transition-colors hover:bg-slate-50/60">
                         <td className="px-5 py-4">
-                          <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#faf9f5] border border-[#e7e2da] rounded px-2 py-0.5">
+                          <span className="font-mono text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded px-2 py-0.5">
                             {s.roll_no}
                           </span>
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#f7f5f0] border border-[#e7e2da] text-xs font-bold text-[#2c1d17]">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700">
                               {s.name.split(" ").map((x) => x[0]).join("")}
                             </div>
                             <span className="font-semibold text-slate-900">{s.name}</span>
@@ -411,7 +411,7 @@ export default function StudentsPage() {
                         </td>
                         <td className="px-5 py-4 text-slate-600">{s.father_name || '—'}</td>
                         <td className="px-5 py-4">
-                          <span className="rounded-lg bg-[#f7f5f0] border border-[#e7e2da] px-2.5 py-1 text-xs font-semibold text-[#2c1d17]">
+                          <span className="rounded-lg bg-slate-100 border border-slate-200/80 px-2.5 py-1 text-xs font-medium text-slate-700">
                             {s.class} · Section {s.section}
                           </span>
                         </td>
@@ -448,7 +448,7 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
+                  className="size-8 p-0 border-slate-200 hover:bg-slate-50"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
@@ -458,14 +458,14 @@ export default function StudentsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
+                  className="size-8 p-0 border-slate-200 hover:bg-slate-50"
                 >
                   <ChevronRight className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2 hover:text-[#2c1d17]">
+                <Button variant="ghost" size="sm" onClick={exportCsv} disabled={students.length === 0} className="ml-2 hover:text-slate-900">
                   <Download className="mr-1.5 size-3.5" /> Export CSV
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="hover:text-[#2c1d17]">
+                <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={students.length === 0} className="hover:text-slate-900">
                   <Download className="mr-1.5 size-3.5" /> Print Roster
                 </Button>
               </div>

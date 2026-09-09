@@ -58,11 +58,13 @@ const parentNavItems: NavItem[] = [
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link href="/parent" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <AcademicCrest size={28} className="shrink-0" />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
+        <AcademicCrest className="size-6" />
+      </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-bold tracking-tight text-[#2c1d17]">EduFlow OS</p>
-          <p className="truncate text-xs font-semibold text-[#c5a059]">Parent Portal</p>
+          <p className="truncate font-bold tracking-tight text-slate-900">EduFlow OS</p>
+          <p className="truncate text-xs font-semibold text-blue-600">Parent Portal</p>
         </div>
       )}
     </Link>
@@ -93,12 +95,12 @@ function ParentNavigation({
             title={collapsed ? item.label : undefined}
             className={cn(
               'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
-              'text-stone-600 hover:bg-[#faf9f5] hover:text-[#2c1d17]',
-              active && 'bg-[#faf9f5] text-[#2c1d17] font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-[#c5a059]',
+              'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+              active && 'bg-blue-50 text-blue-600 font-bold border border-blue-100 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-blue-600',
               collapsed && 'justify-center px-2'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-[#c5a059]" : "text-stone-500")} />
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-blue-600" : "text-slate-500")} />
             {!collapsed && <span>{item.label}</span>}
           </Link>
         )
@@ -115,28 +117,28 @@ function ParentSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r border-[#e7e2da] bg-white md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+    <aside className={cn('hidden shrink-0 border-r border-slate-200 bg-white md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
       <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator className="bg-[#e7e2da]" />
+      <Separator className="bg-slate-200" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <ParentNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-[#e7e2da] bg-[#faf9f5] p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-slate-200 bg-slate-50/70 p-4', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#2c1d17]">
-                <Sparkles className="size-4 text-[#c5a059]" /> 24/7 AI Companion
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                <Sparkles className="size-4 text-blue-600" /> 24/7 AI Companion
               </div>
-              <p className="mt-1 text-xs leading-5 text-stone-600">Ask questions in Roman Urdu about your child&apos;s routine.</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">Ask questions in Roman Urdu about your child&apos;s routine.</p>
             </>
           )}
         </div>
       </div>
-      <Separator className="bg-[#e7e2da]" />
+      <Separator className="bg-slate-200" />
       <div className="flex items-center justify-between p-4">
-        {!collapsed && <span className="text-[11px] font-medium text-stone-400">Session 2026–27</span>}
-        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-stone-500 hover:text-[#2c1d17]">
+        {!collapsed && <span className="text-[11px] font-medium text-slate-400">Session 2026–27</span>}
+        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
           {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-4" /> : <PanelLeftClose aria-hidden="true" className="size-4" />}
         </Button>
       </div>
@@ -176,87 +178,87 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
   const userInitials = (userEmail ? userEmail.slice(0, 2) : 'PT').toUpperCase()
 
   return (
-    <div className="flex min-h-screen bg-[#faf9f5] text-[#2c1d17]">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900">
       <ParentSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-[#e7e2da] bg-white/95 px-5 backdrop-blur-md md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200 bg-white/95 px-5 backdrop-blur-md md:px-8">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-stone-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
+              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
               <SheetContent side="left" className="w-72 p-0 bg-white">
                 <SheetTitle className="sr-only">Parent navigation</SheetTitle>
                 <div className="flex h-20 items-center px-5"><Brand /></div>
-                <Separator className="bg-[#e7e2da]" />
+                <Separator className="bg-slate-200" />
                 <div className="p-4"><ParentNavigation onNavigate={() => setMobileOpen(false)} /></div>
               </SheetContent>
             </Sheet>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c5a059]">Parent Access</p>
-              <h1 className="text-lg font-bold tracking-tight text-[#2c1d17]">Family Workspace</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Parent Access</p>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900">Family Workspace</h1>
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3">
             <OfflineStatusBar compact />
-            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-              <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               Cloud Synced
             </div>
-            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-[#e7e2da] bg-[#faf9f5] px-3 py-1 text-xs font-semibold text-stone-700 shadow-2xs">
+            <div className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-2xs">
               Academic Session 2026–2027
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2 hover:bg-[#faf9f5]" aria-label="Open profile menu">
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100" aria-label="Open profile menu">
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-[#2c1d17] text-[#c5a059] font-bold text-xs">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
                   </Avatar>
-                  <ChevronDown aria-hidden="true" className="hidden size-4 text-stone-400 sm:block" />
+                  <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>
               } />
-              <DropdownMenuContent align="end" className="w-60 border-[#e7e2da] bg-white">
+              <DropdownMenuContent align="end" className="w-60 border-slate-200 bg-white">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
-                    <p className="text-xs font-normal text-stone-500">Signed in as Parent</p>
-                    <p className="truncate font-semibold text-[#2c1d17]">{userEmail || 'parent@school.edu.pk'}</p>
+                    <p className="text-xs font-normal text-slate-500">Signed in as Parent</p>
+                    <p className="truncate font-semibold text-slate-900">{userEmail || 'parent@school.edu.pk'}</p>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da]" />
+                <DropdownMenuSeparator className="bg-slate-200" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#attendance'} className="cursor-pointer">
-                    <CalendarCheck className="mr-2 size-4 text-[#2c1d17]" />
+                    <CalendarCheck className="mr-2 size-4 text-blue-600" />
                     <span>Attendance Status</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#fees'} className="cursor-pointer">
-                    <ReceiptText className="mr-2 size-4 text-[#2c1d17]" />
+                    <ReceiptText className="mr-2 size-4 text-blue-600" />
                     <span>Fee Invoices &amp; Receipts</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/parent#ai'} className="cursor-pointer">
-                    <Bot className="mr-2 size-4 text-[#2c1d17]" />
+                    <Bot className="mr-2 size-4 text-blue-600" />
                     <span>AI Learning Companion</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer font-medium">
-                    <Settings className="mr-2 size-4 text-[#2c1d17]" />
+                    <Settings className="mr-2 size-4 text-blue-600" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da]" />
+                <DropdownMenuSeparator className="bg-slate-200" />
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
-                    <GraduationCap className="mr-2 size-4 text-[#2c1d17]" />
+                    <GraduationCap className="mr-2 size-4 text-blue-600" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
-                    <User className="mr-2 size-4 text-[#2c1d17]" />
+                    <User className="mr-2 size-4 text-blue-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-[#e7e2da]" />
+                <DropdownMenuSeparator className="bg-slate-200" />
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => window.location.href = '/login?force=1'} className="cursor-pointer">
-                    <ShieldCheck className="mr-2 size-4 text-stone-500" />
+                    <ShieldCheck className="mr-2 size-4 text-slate-500" />
                     <span>Switch Account</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50">

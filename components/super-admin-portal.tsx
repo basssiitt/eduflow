@@ -207,8 +207,8 @@ export function SuperAdminPortal() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#e7e2da] font-semibold">
-              <ShieldCheck className="mr-1 size-3.5 text-[#c5a059]" />Platform Governance
+            <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-semibold">
+              <ShieldCheck className="mr-1 size-3.5 text-blue-600" />Platform Governance
             </Badge>
             <span className="text-sm text-slate-500">Multi-Campus Management · Academic Session 2026–27</span>
           </div>
@@ -218,7 +218,7 @@ export function SuperAdminPortal() {
         <Button
           data-testid="btn-add-campus"
           onClick={() => setOpen(true)}
-          className="bg-[#2c1d17] hover:bg-[#1e130f] text-white shadow-xs font-semibold"
+          className="bg-blue-600 hover:bg-blue-700 text-white shadow-xs font-semibold"
         >
           <Plus data-icon="inline-start" className="mr-1.5 size-4" />Onboard New School Campus
         </Button>
@@ -232,10 +232,10 @@ export function SuperAdminPortal() {
           { label: 'Active subscriptions', value: String(activeCount), detail: `${campuses.filter(c => c.plan === 'Starter').length} Starter · ${campuses.filter(c => c.plan === 'Pro').length} Pro · ${campuses.filter(c => c.plan === 'Enterprise').length} Ent`, trend: '100% active', icon: Activity, href: '/super-admin/subscriptions' },
         ].map(({ label, value, detail, trend, icon: Icon, href }) => (
           <Link key={label} href={href} className="group block no-underline">
-            <article className="h-full rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs transition-all duration-200 hover:border-[#c5a059] hover:bg-[#faf9f5]">
+            <article className="h-full rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-[#5c4a3e] font-medium group-hover:text-[#2c1d17] transition-colors">{label}</p>
-                <div className="flex size-10 items-center justify-center rounded-xl bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da] group-hover:bg-[#f7f5f0] group-hover:border-[#c5a059] transition-colors">
+                <p className="text-sm text-slate-500 font-medium group-hover:text-slate-900 transition-colors">{label}</p>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-slate-50 text-blue-600 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 transition-colors">
                   <Icon className="size-5" aria-hidden="true" />
                 </div>
               </div>
@@ -297,21 +297,21 @@ export function SuperAdminPortal() {
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => triggerGodMode('School Admin', '/admin')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#e7e2da] hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
               >
-                <Building2 className="size-4 mb-1 text-[#2c1d17]" />
+                <Building2 className="size-4 mb-1 text-slate-700" />
                 <span>School Admin</span>
               </button>
               <button
                 onClick={() => triggerGodMode('Teacher', '/teacher')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#e7e2da] hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
               >
                 <GraduationCap className="size-4 mb-1 text-emerald-600" />
                 <span>Teacher</span>
               </button>
               <button
                 onClick={() => triggerGodMode('Parent', '/parent')}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-[#e7e2da] hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/60 transition text-xs font-bold text-slate-800"
               >
                 <Users className="size-4 mb-1 text-amber-600" />
                 <span>Parent</span>
@@ -326,7 +326,7 @@ export function SuperAdminPortal() {
             </span>
             <p className="text-xs text-slate-500 mb-3">Live switches applying across all tenant schools:</p>
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#faf9f5] border border-[#e7e2da]">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
                 <div>
                   <span className="font-bold text-slate-800 block">Emergency Maintenance Lockdown</span>
                   <span className="text-[10px] text-slate-400">Lock campus portals for all regular non-root users</span>
@@ -339,7 +339,7 @@ export function SuperAdminPortal() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#faf9f5] border border-[#e7e2da]">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
                 <div>
                   <span className="font-bold text-slate-800 block">Universal Enterprise License Bypass</span>
                   <span className="text-[10px] text-slate-400">Force Enterprise features across all Starter/Trial schools</span>
@@ -357,8 +357,8 @@ export function SuperAdminPortal() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div id="campuses" className="overflow-hidden rounded-2xl border border-[#e7e2da] bg-white shadow-xs">
-          <div className="flex flex-col justify-between gap-3 border-b border-[#e7e2da] p-5 sm:flex-row sm:items-center">
+        <div id="campuses" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
+          <div className="flex flex-col justify-between gap-3 border-b border-slate-200 p-5 sm:flex-row sm:items-center">
             <div>
               <h3 className="font-bold text-slate-900">Campus Provisioning &amp; Management</h3>
               <p className="mt-1 text-sm text-slate-500">Manage tenant access, subscription tiers, and campus administrators.</p>
@@ -370,10 +370,10 @@ export function SuperAdminPortal() {
                   placeholder="Search campus..."
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-                  className="pl-9 h-9 text-xs rounded-xl border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+                  className="pl-9 h-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 />
               </div>
-              <Badge variant="outline" className="font-mono text-xs border-[#e7e2da] text-[#5c4a3e]">{campuses.length} tenants</Badge>
+              <Badge variant="outline" className="font-mono text-xs border-slate-200 text-slate-600">{campuses.length} tenants</Badge>
             </div>
           </div>
 
@@ -393,7 +393,7 @@ export function SuperAdminPortal() {
           ) : campuses.length === 0 ? (
             <div className="p-6">
               <ZeroDataEmptyState
-                icon={Building2}
+                 icon={Building2}
                 title="No campus tenants onboarded yet"
                 description="Get started by onboarding your first school branch into EduFlow OS."
                 actionLabel="Onboard School Campus"
@@ -404,7 +404,7 @@ export function SuperAdminPortal() {
             <>
               <div className="overflow-x-auto">
                 <table data-testid="campus-table" className="w-full min-w-[930px] text-left text-sm">
-                  <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-bold uppercase tracking-wider text-[#5c4a3e]">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
                     <tr>
                       <th className="px-5 py-3.5">School / Campus</th>
                       <th className="px-5 py-3.5">City</th>
@@ -415,12 +415,12 @@ export function SuperAdminPortal() {
                       <th className="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e7e2da]">
+                  <tbody className="divide-y divide-slate-200">
                     {paginated.map((campus) => (
-                      <tr key={campus.id} className="hover:bg-[#faf9f5] transition-colors">
+                      <tr key={campus.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-5 py-4">
                           <p className="font-bold text-slate-900">{campus.name}</p>
-                          <p className="mt-0.5 font-mono text-[11px] text-[#8c6d3b]">{campus.slug || campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 22)}</p>
+                          <p className="mt-0.5 font-mono text-[11px] text-slate-400">{campus.slug || campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 22)}</p>
                         </td>
                         <td className="px-5 py-4 text-slate-600 font-medium">{campus.city}</td>
                         <td className="px-5 py-4">
@@ -432,7 +432,7 @@ export function SuperAdminPortal() {
                             aria-label={`Change plan for ${campus.name}`}
                             value={campus.plan}
                             onChange={(event) => changePlan(campus.id, event.target.value as Plan)}
-                            className="h-8 rounded-lg border border-[#e7e2da] bg-white px-2.5 text-xs font-semibold text-[#2c1d17]"
+                            className="h-8 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-900"
                           >
                             <option>Starter</option>
                             <option>Pro</option>
@@ -459,7 +459,7 @@ export function SuperAdminPortal() {
                             </Button>
                             <Link
                               href="/admin"
-                              className="inline-flex items-center gap-1 rounded-lg border border-[#e7e2da] bg-white px-2.5 py-1 text-xs font-semibold text-[#2c1d17] hover:border-[#c5a059] hover:bg-[#faf9f5] transition"
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:bg-slate-50 transition"
                               title="Open this campus admin dashboard"
                             >
                               <span>Manage</span>
@@ -481,7 +481,7 @@ export function SuperAdminPortal() {
                 </table>
               </div>
 
-              <div className="p-4 border-t border-[#e7e2da] flex items-center justify-between text-xs text-slate-500">
+              <div className="p-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
                 <span>Showing {paginated.length} of {filtered.length} campuses</span>
                 <div className="flex items-center gap-2">
                   <Button
@@ -489,7 +489,7 @@ export function SuperAdminPortal() {
                     size="sm"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
+                    className="size-8 p-0 border-slate-200 hover:border-blue-400"
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
@@ -499,7 +499,7 @@ export function SuperAdminPortal() {
                     size="sm"
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="size-8 p-0 border-[#e7e2da] hover:border-[#c5a059]"
+                    className="size-8 p-0 border-slate-200 hover:border-blue-400"
                   >
                     <ChevronRight className="size-4" />
                   </Button>
@@ -510,13 +510,13 @@ export function SuperAdminPortal() {
         </div>
 
         <aside id="health" className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#8c6d3b]">System Telemetry</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">System Telemetry</p>
                 <h3 className="mt-1 text-base font-bold text-slate-900">Live Health</h3>
               </div>
-              <Gauge className="size-5 text-[#2c1d17]" />
+              <Gauge className="size-5 text-slate-700" />
             </div>
             <div className="mt-5 flex flex-col gap-3">
               {[
@@ -524,22 +524,22 @@ export function SuperAdminPortal() {
                 { label: 'Gemini AI API', value: 'Operational', detail: 'Parent Companion active', icon: Sparkles, tone: 'text-emerald-600' },
                 { label: 'Edge RBAC Guard', value: 'Active', detail: 'SSR cookie validation enforced', icon: ShieldCheck, tone: 'text-emerald-600' },
               ].map(({ label, value, detail, icon: Icon, tone }) => (
-                <div key={label} className="flex items-center gap-3 rounded-xl border border-[#e7e2da] bg-[#faf9f5] p-3.5">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-white text-[#2c1d17] border border-[#e7e2da] shadow-2xs">
+                <div key={label} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-white text-blue-600 border border-slate-200 shadow-2xs">
                     <Icon className="size-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-[#5c4a3e] font-medium">{label}</p>
+                    <p className="text-xs text-slate-600 font-medium">{label}</p>
                     <p className={`font-semibold text-xs ${tone}`}>{value}</p>
                     <p className="truncate text-[11px] text-slate-400">{detail}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 pt-4 border-t border-[#e7e2da]">
+            <div className="mt-4 pt-4 border-t border-slate-200">
               <Link
                 href="/super-admin/telemetry"
-                className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-[#faf9f5] hover:bg-[#f7f5f0] hover:text-[#2c1d17] border border-[#e7e2da] text-xs font-semibold text-[#2c1d17] transition-all shadow-2xs group"
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 text-xs font-semibold text-slate-700 transition-all shadow-2xs group"
               >
                 <span>Open Full Platform Telemetry Console</span>
                 <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -550,8 +550,8 @@ export function SuperAdminPortal() {
       </div>
 
       {created && (
-        <div role="status" className="fixed bottom-5 right-5 z-30 flex max-w-sm items-center gap-3 rounded-2xl border border-[#c5a059]/40 bg-white p-4 shadow-xl">
-          <div className="flex size-9 items-center justify-center rounded-full bg-[#faf9f5] text-[#2c1d17] border border-[#e7e2da]">
+        <div role="status" className="fixed bottom-5 right-5 z-30 flex max-w-sm items-center gap-3 rounded-2xl border border-emerald-200 bg-white p-4 shadow-xl">
+          <div className="flex size-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
             <Check className="size-4" />
           </div>
           <div>
@@ -569,7 +569,7 @@ export function SuperAdminPortal() {
           <div role="dialog" aria-modal="true" aria-labelledby="onboard-title" className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#8c6d3b]">New Tenant Provisioning</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">New Tenant Provisioning</p>
                 <h3 id="onboard-title" className="mt-1 text-xl font-bold text-slate-900">Onboard New Campus</h3>
                 <p className="mt-1 text-sm text-slate-500">Create the school workspace and configure access details.</p>
               </div>
@@ -580,17 +580,17 @@ export function SuperAdminPortal() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-2">
                 School name
-                <Input value={school} onChange={(e) => setSchool(e.target.value)} placeholder="e.g. Beacon Scholars Academy" required className="rounded-xl border-[#e7e2da] focus:border-[#c5a059]" />
+                <Input value={school} onChange={(e) => setSchool(e.target.value)} placeholder="e.g. Beacon Scholars Academy" required className="rounded-xl border-slate-200 focus:border-blue-500" />
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Campus slug
-                <div className="flex h-10 items-center rounded-xl border border-[#e7e2da] bg-[#faf9f5] px-3 font-mono text-xs text-slate-500">
+                <div className="flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 font-mono text-xs text-slate-500">
                   eduflow.pk/{slug}
                 </div>
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 City
-                <select value={city} onChange={(e) => setCity(e.target.value)} className="h-10 rounded-xl border border-[#e7e2da] bg-white px-3 text-sm text-[#2c1d17]">
+                <select value={city} onChange={(e) => setCity(e.target.value)} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900">
                   <option>Karachi</option>
                   <option>Lahore</option>
                   <option>Islamabad</option>
@@ -603,11 +603,11 @@ export function SuperAdminPortal() {
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Principal / Owner name
-                <Input value={owner} onChange={(e) => setOwner(e.target.value)} placeholder="Principal Name" required className="rounded-xl border-[#e7e2da] focus:border-[#c5a059]" />
+                <Input value={owner} onChange={(e) => setOwner(e.target.value)} placeholder="Principal Name" required className="rounded-xl border-slate-200 focus:border-blue-500" />
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Phone Number
-                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 3XX XXXXXXX" className="rounded-xl border-[#e7e2da] focus:border-[#c5a059]" />
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 3XX XXXXXXX" className="rounded-xl border-slate-200 focus:border-blue-500" />
               </label>
               <fieldset className="flex flex-col gap-2 sm:col-span-2">
                 <legend className="text-sm font-medium">Plan selection</legend>
@@ -618,7 +618,7 @@ export function SuperAdminPortal() {
                       key={item}
                       onClick={() => setPlan(item)}
                       // ubs:ignore - UI subscription plan selection check
-                      className={`rounded-xl border p-3 text-left transition-colors ${plan === item ? 'border-[#2c1d17] bg-[#faf9f5] ring-1 ring-[#2c1d17]' : 'border-[#e7e2da] hover:bg-[#faf9f5]'}`}
+                      className={`rounded-xl border p-3 text-left transition-colors ${plan === item ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:bg-slate-50'}`}
                     >
                       <p className="text-sm font-bold text-slate-900">{item}</p>
                       <p className="mt-1 text-xs text-slate-500 font-medium">{planPrice[item]} / month</p>
@@ -628,16 +628,16 @@ export function SuperAdminPortal() {
               </fieldset>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Admin email
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@school.edu.pk" required className="rounded-xl border-[#e7e2da] focus:border-[#c5a059]" />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@school.edu.pk" required className="rounded-xl border-slate-200 focus:border-blue-500" />
               </label>
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Temporary password
-                <Input type="password" value={initialAccessPass} onChange={(e) => setInitialAccessPass(e.target.value)} placeholder="Set initial password" className="rounded-xl border-[#e7e2da] focus:border-[#c5a059]" />
+                <Input type="password" value={initialAccessPass} onChange={(e) => setInitialAccessPass(e.target.value)} placeholder="Set initial password" className="rounded-xl border-slate-200 focus:border-blue-500" />
               </label>
             </div>
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl border-[#e7e2da] text-[#2c1d17] hover:bg-[#faf9f5]">Cancel</Button>
-              <Button onClick={addCampus} className="bg-[#2c1d17] hover:bg-[#1e130f] text-white font-semibold rounded-xl shadow-xs">
+              <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50">Cancel</Button>
+              <Button onClick={addCampus} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs">
                 <Check data-icon="inline-start" className="mr-1.5 size-4" />Create Campus Tenant
               </Button>
             </div>

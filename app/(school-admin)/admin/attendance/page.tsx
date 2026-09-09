@@ -95,18 +95,18 @@ export default function AdminAttendancePage() {
     <div className="flex flex-col gap-6">
       <nav className="flex items-center justify-between text-xs text-slate-500">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-slate-600">
+          <Link href="/admin" className="hover:text-blue-600 transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
           <span className="text-slate-900 font-semibold">Attendance Register</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <Link href="/admin/students" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
+          <Link href="/admin/students" className="hover:text-blue-600 transition font-medium text-slate-500">
             Student Register →
           </Link>
           <span className="text-slate-300">|</span>
-          <Link href="/teacher" className="hover:text-[#2c1d17] transition font-semibold text-[#2c1d17]">
+          <Link href="/teacher" className="hover:text-blue-600 transition font-semibold text-slate-700">
             Teacher Haziri Console →
           </Link>
         </div>
@@ -115,7 +115,7 @@ export default function AdminAttendancePage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-[#faf9f5] text-[#2c1d17] border-[#e7e2da] font-semibold">
+            <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-semibold">
               Academic Register
             </Badge>
             <span className="text-sm text-slate-500">Session 2026–2027</span>
@@ -131,16 +131,16 @@ export default function AdminAttendancePage() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="h-10 text-xs rounded-xl w-40 border-[#e7e2da] focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="h-10 text-xs rounded-xl w-40 border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
             />
           </label>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-blue-500 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#5c4a3e] font-medium">Present Today</span>
+            <span className="text-sm text-slate-500 font-medium">Present Today</span>
             <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <CheckCircle2 className="size-5" />
             </div>
@@ -153,9 +153,9 @@ export default function AdminAttendancePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-blue-500 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#5c4a3e] font-medium">Absent</span>
+            <span className="text-sm text-slate-500 font-medium">Absent</span>
             <div className="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
               <UserX className="size-5" />
             </div>
@@ -168,9 +168,9 @@ export default function AdminAttendancePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs hover:border-[#c5a059] transition-all duration-200">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-blue-500 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#5c4a3e] font-medium">On Sanctioned Leave</span>
+            <span className="text-sm text-slate-500 font-medium">On Sanctioned Leave</span>
             <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
               <Clock className="size-5" />
             </div>
@@ -184,7 +184,7 @@ export default function AdminAttendancePage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#e7e2da] bg-white p-5 shadow-xs">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-1.5">
             {['All', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'].map((cls) => (
@@ -194,8 +194,8 @@ export default function AdminAttendancePage() {
                 className={cn(
                   'rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all',
                   classFilter === cls
-                    ? 'bg-[#2c1d17] text-white shadow-xs'
-                    : 'bg-[#faf9f5] text-[#5c4a3e] border border-[#e7e2da] hover:bg-[#f7f5f0]'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
                 )}
               >
                 {cls}
@@ -209,13 +209,13 @@ export default function AdminAttendancePage() {
               placeholder="Search student or roll no..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-9 text-xs rounded-xl border-[#e7e2da] bg-white focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+              className="pl-9 text-xs rounded-xl border-slate-200 bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="mt-5 divide-y divide-[#e7e2da]">
+          <div className="mt-5 divide-y divide-slate-200">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="py-4 flex items-center justify-between animate-pulse">
                 <div className="h-4 w-20 bg-slate-200 rounded-md" />
@@ -235,10 +235,10 @@ export default function AdminAttendancePage() {
           </div>
         ) : (
           <>
-            <div className="mt-5 overflow-hidden rounded-xl border border-[#e7e2da]">
+            <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-[#e7e2da] bg-[#faf9f5] text-xs font-bold uppercase tracking-wider text-[#5c4a3e]">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
                     <tr>
                       <th className="px-5 py-3.5">Roll No</th>
                       <th className="px-5 py-3.5">Student Name</th>
@@ -248,17 +248,17 @@ export default function AdminAttendancePage() {
                       <th className="px-5 py-3.5 text-right">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e7e2da]">
+                  <tbody className="divide-y divide-slate-200">
                     {filtered.map((r) => (
-                      <tr key={r.id} className="transition-colors hover:bg-[#faf9f5]">
+                      <tr key={r.id} className="transition-colors hover:bg-slate-50/70">
                         <td className="px-5 py-4">
-                          <span className="font-mono text-xs font-bold text-[#2c1d17] bg-[#faf9f5] border border-[#e7e2da] rounded px-2 py-0.5">
+                          <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 border border-slate-200 rounded px-2 py-0.5">
                             {r.roll_no}
                           </span>
                         </td>
                         <td className="px-5 py-4 font-semibold text-slate-900">{r.student_name}</td>
                         <td className="px-5 py-4">
-                          <span className="rounded-lg bg-[#f7f5f0] border border-[#e7e2da] px-2.5 py-1 text-xs font-semibold text-[#2c1d17]">
+                          <span className="rounded-lg bg-slate-100 border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-900">
                             {r.class} · Section {r.section}
                           </span>
                         </td>
@@ -289,7 +289,7 @@ export default function AdminAttendancePage() {
 
             <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
               <span>Showing {filtered.length} of {attendance.length} attendance entries</span>
-              <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={attendance.length === 0} className="hover:text-[#2c1d17]">
+              <Button variant="ghost" size="sm" onClick={() => window.print()} disabled={attendance.length === 0} className="hover:text-blue-600">
                 <Download className="mr-1.5 size-3.5" /> Print Attendance Sheet
               </Button>
             </div>

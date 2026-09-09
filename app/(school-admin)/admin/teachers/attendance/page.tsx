@@ -78,18 +78,18 @@ export default function FacultyAttendancePage() {
     <div className="space-y-6">
       <nav className="flex items-center justify-between text-xs text-slate-500 no-print">
         <div className="flex items-center gap-1.5 font-medium">
-          <Link href="/admin" className="hover:text-[#2c1d17] transition flex items-center gap-1 text-slate-600">
+          <Link href="/admin" className="hover:text-blue-600 transition flex items-center gap-1 text-slate-600">
             <ArrowLeft className="size-3.5" /> Overview
           </Link>
           <span>/</span>
-          <Link href="/admin/teachers" className="hover:text-[#2c1d17] transition text-slate-600">
+          <Link href="/admin/teachers" className="hover:text-blue-600 transition text-slate-600">
             Faculty
           </Link>
           <span>/</span>
           <span className="text-slate-900 font-semibold">Faculty Attendance</span>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/attendance" className="hover:text-[#2c1d17] transition font-medium text-slate-500">
+          <Link href="/admin/attendance" className="hover:text-blue-600 transition font-medium text-slate-500">
             Student Attendance →
           </Link>
         </div>
@@ -97,16 +97,16 @@ export default function FacultyAttendancePage() {
 
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end no-print">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#8c6d3b]">Staff Haziri Register</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Staff Haziri Register</span>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">Faculty Daily Attendance</h1>
           <p className="text-slate-500">Record daily staff check-in timestamps and sync with monthly payroll deductions.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => window.print()} className="rounded-xl border-[#e7e2da] hover:border-[#c5a059] hover:bg-[#faf9f5] hover:text-[#2c1d17]">
-            <Printer className="mr-1.5 size-4 text-[#c5a059]" /> Print Haziri Sheet
+          <Button variant="outline" onClick={() => window.print()} className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium">
+            <Printer className="mr-1.5 size-4 text-slate-500" /> Print Haziri Sheet
           </Button>
-          <Button onClick={markAllPresent} className="bg-[#2c1d17] hover:bg-[#1e130f] text-white rounded-xl shadow-xs">
-            <UserCheck className="mr-1.5 size-4 text-[#c5a059]" /> Mark All Present
+          <Button onClick={markAllPresent} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs font-semibold">
+            <UserCheck className="mr-1.5 size-4 text-white" /> Mark All Present
           </Button>
         </div>
       </header>
@@ -120,42 +120,42 @@ export default function FacultyAttendancePage() {
 
       {/* KPI Metric Cards */}
       <section className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-        <article className="rounded-2xl border border-[#e7e2da] bg-white p-4 shadow-xs hover:border-[#c5a059] transition-all">
-          <span className="text-xs font-semibold text-[#5c4a3e]">Present Today</span>
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition-all">
+          <span className="text-xs font-semibold text-slate-500">Present Today</span>
           <p className="mt-2 text-2xl font-black text-emerald-600">{presentCount}</p>
           <span className="text-[10px] text-slate-400">On duty in classrooms</span>
         </article>
-        <article className="rounded-2xl border border-[#e7e2da] bg-white p-4 shadow-xs hover:border-[#c5a059] transition-all">
-          <span className="text-xs font-semibold text-[#5c4a3e]">Late Arrivals</span>
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition-all">
+          <span className="text-xs font-semibold text-slate-500">Late Arrivals</span>
           <p className="mt-2 text-2xl font-black text-amber-600">{lateCount}</p>
           <span className="text-[10px] text-slate-400">Arrived after 08:00 AM</span>
         </article>
-        <article className="rounded-2xl border border-[#e7e2da] bg-white p-4 shadow-xs hover:border-[#c5a059] transition-all">
-          <span className="text-xs font-semibold text-[#5c4a3e]">Excused Leave</span>
-          <p className="mt-2 text-2xl font-black text-[#2c1d17]">{leaveCount}</p>
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition-all">
+          <span className="text-xs font-semibold text-slate-500">Excused Leave</span>
+          <p className="mt-2 text-2xl font-black text-slate-800">{leaveCount}</p>
           <span className="text-[10px] text-slate-400">Casual / Sick leave</span>
         </article>
-        <article className="rounded-2xl border border-[#e7e2da] bg-white p-4 shadow-xs hover:border-[#c5a059] transition-all">
-          <span className="text-xs font-semibold text-[#5c4a3e]">Unexcused Absent</span>
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition-all">
+          <span className="text-xs font-semibold text-slate-500">Unexcused Absent</span>
           <p className="mt-2 text-2xl font-black text-rose-600">{absentCount}</p>
           <span className="text-[10px] text-slate-400">Auto salary penalty synced</span>
         </article>
       </section>
 
       {/* Roster & Controls */}
-      <section className="rounded-2xl border border-[#e7e2da] bg-white shadow-xs dark:border-[#3d2e24] dark:bg-[#1f1612] overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-b border-[#e7e2da] dark:border-[#3d2e24] bg-[#faf9f5] dark:bg-[#261c16]">
+      <section className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-b border-slate-200 bg-slate-50/70">
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <Input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="h-9 w-auto rounded-xl border-[#e7e2da] bg-white text-xs font-medium text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
+              className="h-9 w-auto rounded-xl border-slate-200 bg-white text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
             />
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="h-9 rounded-xl border border-[#e7e2da] dark:border-[#3d2e24] bg-white dark:bg-[#1f1612] px-3 text-xs font-medium text-[#2c1d17] dark:text-[#f7f5f0] focus:border-[#c5a059] focus:outline-none"
+              className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 focus:border-blue-600 focus:outline-hidden"
             >
               <option>All</option>
               <option>Sciences</option>
@@ -170,7 +170,7 @@ export default function FacultyAttendancePage() {
               placeholder="Search faculty name or code..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-9 rounded-xl border-[#e7e2da] bg-white text-xs text-[#2c1d17] focus:border-[#c5a059] focus:ring-[#c5a059]/20"
+              className="h-9 rounded-xl border-slate-200 bg-white text-xs text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
             />
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function FacultyAttendancePage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[#e7e2da] dark:border-[#3d2e24] text-[#8c7a6b] text-[10px] uppercase tracking-wider bg-[#faf9f5] dark:bg-[#261c16]">
+              <tr className="border-b border-slate-200 text-slate-600 text-[10px] uppercase tracking-wider bg-slate-50 font-semibold">
                 <th className="px-5 py-3 font-semibold">Teacher Code</th>
                 <th className="px-5 py-3 font-semibold">Faculty Name</th>
                 <th className="px-5 py-3 font-semibold">Department</th>
@@ -188,50 +188,50 @@ export default function FacultyAttendancePage() {
                 <th className="px-5 py-3 font-semibold text-right">Quick Mark</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e7e2da] dark:divide-[#3d2e24]">
+            <tbody className="divide-y divide-slate-100">
               {filtered.map((teacher) => (
-                <tr key={teacher.id} className="hover:bg-[#faf9f5] dark:hover:bg-[#261c16] transition">
-                  <td className="px-5 py-3.5 font-mono text-[#8c7a6b] font-semibold">{teacher.code}</td>
-                  <td className="px-5 py-3.5 font-bold text-[#2c1d17] dark:text-[#f7f5f0]">{teacher.name}</td>
-                  <td className="px-5 py-3.5 text-[#5c4a3e] dark:text-[#c4b5a5]">{teacher.department}</td>
-                  <td className="px-5 py-3.5 font-mono text-[#2c1d17] dark:text-[#f7f5f0]">{teacher.timeIn}</td>
+                <tr key={teacher.id} className="hover:bg-slate-50/60 transition">
+                  <td className="px-5 py-3.5 font-mono text-slate-500 font-semibold">{teacher.code}</td>
+                  <td className="px-5 py-3.5 font-bold text-slate-900">{teacher.name}</td>
+                  <td className="px-5 py-3.5 text-slate-600">{teacher.department}</td>
+                  <td className="px-5 py-3.5 font-mono text-slate-800">{teacher.timeIn}</td>
                   <td className="px-5 py-3.5">
                     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                       teacher.status === 'Present' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20' :
                       teacher.status === 'Late' ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20' :
-                      teacher.status === 'Leave' ? 'bg-[#faf9f5] text-[#2c1d17] ring-1 ring-[#e7e2da]' :
+                      teacher.status === 'Leave' ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' :
                       'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
                     }`}>
                       {teacher.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-[#8c7a6b] italic text-[11px]">{teacher.note || '—'}</td>
+                  <td className="px-5 py-3.5 text-slate-500 italic text-[11px]">{teacher.note || '—'}</td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => updateStatus(teacher.id, 'Present')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Present' ? 'bg-[#166534] text-white' : 'bg-[#faf9f5] text-[#5c4a3e] hover:bg-emerald-50 border border-[#e7e2da]'}`}
+                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Present' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 hover:bg-emerald-50 border border-slate-200'}`}
                         title="Mark Present"
                       >
                         P
                       </button>
                       <button
                         onClick={() => updateStatus(teacher.id, 'Late')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Late' ? 'bg-[#b45309] text-white' : 'bg-[#faf9f5] text-[#5c4a3e] hover:bg-amber-50 border border-[#e7e2da]'}`}
+                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Late' ? 'bg-amber-600 text-white' : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'}`}
                         title="Mark Late"
                       >
                         L
                       </button>
                       <button
                         onClick={() => updateStatus(teacher.id, 'Leave')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Leave' ? 'bg-[#2c1d17] text-white' : 'bg-[#faf9f5] text-[#5c4a3e] hover:bg-[#f2efe9] border border-[#e7e2da]'}`}
+                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Leave' ? 'bg-slate-700 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
                         title="Mark Leave"
                       >
                         LV
                       </button>
                       <button
                         onClick={() => updateStatus(teacher.id, 'Absent')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Absent' ? 'bg-[#991b1b] text-white' : 'bg-[#faf9f5] text-[#5c4a3e] hover:bg-rose-50 border border-[#e7e2da]'}`}
+                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Absent' ? 'bg-rose-600 text-white' : 'bg-white text-slate-600 hover:bg-rose-50 border border-slate-200'}`}
                         title="Mark Absent"
                       >
                         A
