@@ -59,19 +59,33 @@ export default function SignUpPage() {
         if (oauthError) throw oauthError
         return
       } catch (err: any) {
-        setError(err?.message || 'Google sign-in could not be initiated.')
+        setError(err?.message || 'Google sign-in could not be initiated. You can register using the form below.')
         setGoogleLoading(false)
         return
       }
     }
 
-    // Demo Mode Google Simulator
+    // Demo Mode Google Simulator - set both cookie and sessionStorage
+    document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
     sessionStorage.setItem('eduflow-demo-user', 'true')
+    sessionStorage.setItem('eduflow-demo-role', 'school_admin')
     sessionStorage.setItem('eduflow-demo-email', 'admin.google@school.edu.pk')
     sessionStorage.setItem('eduflow-demo-school', schoolName || 'Beacon Scholars Academy')
     sessionStorage.setItem('eduflow-demo-plan', 'Pro')
     sessionStorage.setItem('eduflow-trial-days', '30')
-    router.push('/admin')
+    window.location.href = '/admin'
+  }
+
+  const enterDemoWorkspace = (cleanEmail: string, cleanSchool: string, cleanName: string) => {
+    document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
+    sessionStorage.setItem('eduflow-demo-user', 'true')
+    sessionStorage.setItem('eduflow-demo-role', 'school_admin')
+    sessionStorage.setItem('eduflow-demo-email', cleanEmail)
+    sessionStorage.setItem('eduflow-demo-school', cleanSchool)
+    sessionStorage.setItem('eduflow-demo-owner', cleanName)
+    sessionStorage.setItem('eduflow-demo-plan', 'Pro')
+    sessionStorage.setItem('eduflow-trial-days', '30')
+    window.location.replace('/admin')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,21 +126,48 @@ export default function SignUpPage() {
         })
 
         if (signUpError) {
-          setError(signUpError.message)
+          const msg = signUpError.message.toLowerCase()
+          if (msg.includes('already registered') || msg.includes('user already exists')) {
+            setError('An account with this email address already exists. Please sign in instead.')
+          } else {
+            setError(signUpError.message)
+          }
+          setLoading(false)
+          return
+        }
+
+        // Check for duplicate account where Supabase doesn't return an error but identities is empty
+        if (data?.user && data.user.identities && data.user.identities.length === 0) {
+          setError('An account with this email address already exists. Please sign in instead.')
           setLoading(false)
           return
         }
 
         // If email confirmation is required by Supabase settings:
-        if (data.user && !data.session) {
+        if (data?.user && !data?.session) {
           setEmailSent(true)
           setLoading(false)
           return
         }
 
         // If session created immediately (auto-confirm enabled):
-        if (data.session) {
-          // Provision campus in database
+        if (data?.session) {
+          // 1. Provision profile in database
+          try {
+            await supabaseClient.from('profiles').upsert([
+              {
+                id: data.user.id,
+                email: cleanEmail,
+                full_name: cleanName,
+                role: 'school_admin',
+                onboarding_completed: true,
+                school_id: cleanSchool,
+                updated_at: new Date().toISOString(),
+              },
+            ])
+          } catch {}
+
+          // 2. Provision campus in database
           try {
             await supabaseClient.from('campuses').insert([
               {
@@ -137,14 +178,17 @@ export default function SignUpPage() {
                 students: 0,
                 status: 'Active',
                 admin_email: cleanEmail,
+                slug: cleanSchool.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 24),
               },
             ])
           } catch {}
 
-          window.location.replace('/admin')
+          // 3. Set cookie and session storage for smooth hydration
+          enterDemoWorkspace(cleanEmail, cleanSchool, cleanName)
           return
         }
       } catch (err: any) {
+        console.warn('Supabase sign-up failed, offering local workspace entry:', err)
         setError(err?.message || 'Registration failed. Please try again.')
         setLoading(false)
         return
@@ -153,13 +197,7 @@ export default function SignUpPage() {
 
     // 2. Demo / Standalone Mode
     try {
-      sessionStorage.setItem('eduflow-demo-user', 'true')
-      sessionStorage.setItem('eduflow-demo-email', cleanEmail)
-      sessionStorage.setItem('eduflow-demo-school', cleanSchool)
-      sessionStorage.setItem('eduflow-demo-owner', cleanName)
-      sessionStorage.setItem('eduflow-demo-plan', 'Pro')
-      sessionStorage.setItem('eduflow-trial-days', '30')
-      window.location.replace('/admin')
+      enterDemoWorkspace(cleanEmail, cleanSchool, cleanName)
     } catch {
       setError('Unable to initialize demo workspace.')
       setLoading(false)
@@ -358,9 +396,30 @@ export default function SignUpPage() {
                 </div>
 
                 {error && (
-                  <p className="login-error text-red-500 font-medium text-xs mt-2" role="alert">
-                    {error}
-                  </p>
+                  <div className="mt-2 rounded-lg bg-red-50 p-3 border border-red-200 text-xs">
+                    <p className="login-error text-red-600 font-semibold" role="alert">
+                      {error}
+                    </p>
+                    {error.toLowerCase().includes('already exists') ? (
+                      <Link href="/login" className="mt-1.5 inline-block font-bold text-blue-600 hover:underline">
+                        Go to Sign In Page →
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          enterDemoWorkspace(
+                            email || 'admin@school.edu.pk',
+                            schoolName || 'Beacon Scholars Academy',
+                            fullName || 'School Administrator'
+                          )
+                        }
+                        className="mt-1.5 block text-[11px] font-bold text-blue-700 hover:underline"
+                      >
+                        ⚡ Open School Workspace in Instant Preview Mode →
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">

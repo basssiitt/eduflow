@@ -187,7 +187,11 @@ export default function LoginPage() {
       })
 
       if (authError || !data?.user) {
-        setError('Invalid email or password')
+        if (authError?.message?.toLowerCase().includes('email not confirmed')) {
+          setError('Your email has not been verified yet. Please check your inbox and click the confirmation link to activate your account.')
+        } else {
+          setError('Invalid email or password. Please verify your credentials or use the 1-Click Interactive Demo below.')
+        }
         setLoading(false)
         return
       }
@@ -220,6 +224,9 @@ export default function LoginPage() {
       if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
         normalizedRole = 'super_admin'
       }
+
+      // Sync fallback cookie for middleware and role gate insurance
+      document.cookie = `eduflow-demo-role=${normalizedRole}; path=/; max-age=86400; SameSite=Lax`
 
       const destination = getHomeRoute(normalizedRole, userEmail)
 

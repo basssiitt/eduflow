@@ -24,14 +24,6 @@ export async function GET(request: Request) {
           .maybeSingle()
 
         if (existingByEmail) {
-          // Profile found — link auth user id if it drifted
-          if (existingByEmail.id !== user.id) {
-            await supabase
-              .from('profiles')
-              .update({ id: user.id, updated_at: new Date().toISOString() })
-              .eq('email', userEmail)
-          }
-
           const role = existingByEmail.role as string
           let normalizedRole = normalizeRole(role)
           if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
@@ -40,12 +32,16 @@ export async function GET(request: Request) {
 
           // School admins who haven't finished onboarding → wizard
           if (normalizedRole === 'school_admin' && !existingByEmail.onboarding_completed) {
-            return NextResponse.redirect(new URL('/onboarding', request.url))
+            const redirectRes = NextResponse.redirect(new URL('/onboarding', request.url))
+            redirectRes.cookies.set('eduflow-demo-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+            return redirectRes
           }
 
           // Route to the dedicated portal
           const destination = resolveDestination(normalizedRole, userEmail, next)
-          return NextResponse.redirect(new URL(destination, request.url))
+          const redirectRes = NextResponse.redirect(new URL(destination, request.url))
+          redirectRes.cookies.set('eduflow-demo-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+          return redirectRes
         }
 
         // ── Step 2: Brand-new signup — create pending school_admin profile ───
@@ -59,7 +55,7 @@ export async function GET(request: Request) {
         ).trim()
 
         try {
-          await supabase.from('profiles').insert({
+          await supabase.from('profiles').upsert({
             id: user.id,
             email: userEmail,
             full_name: fullName,
@@ -70,12 +66,41 @@ export async function GET(request: Request) {
           })
         } catch {}
 
+        // Auto-provision campus tenant for school admin if missing
+        if (initialRole === 'school_admin') {
+          try {
+            const { data: campusExists } = await supabase
+              .from('campuses')
+              .select('id')
+              .eq('admin_email', userEmail)
+              .maybeSingle()
+
+            if (!campusExists) {
+              const schoolName = user.user_metadata?.school_name || 'My Campus'
+              await supabase.from('campuses').insert({
+                name: schoolName,
+                city: user.user_metadata?.city || 'Karachi',
+                owner: fullName,
+                plan: 'Pro',
+                students: 0,
+                status: 'Active',
+                admin_email: userEmail,
+                slug: schoolName.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24),
+              })
+            }
+          } catch {}
+        }
+
         if (initialRole === 'super_admin') {
-          return NextResponse.redirect(new URL('/super-admin/dashboard', request.url))
+          const redirectRes = NextResponse.redirect(new URL('/super-admin/dashboard', request.url))
+          redirectRes.cookies.set('eduflow-demo-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
+          return redirectRes
         }
 
         // New school admin → onboarding wizard
-        return NextResponse.redirect(new URL('/onboarding', request.url))
+        const redirectRes = NextResponse.redirect(new URL('/onboarding', request.url))
+        redirectRes.cookies.set('eduflow-demo-role', 'school_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
+        return redirectRes
       }
     } catch {}
   }

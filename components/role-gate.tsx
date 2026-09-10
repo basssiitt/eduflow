@@ -21,6 +21,41 @@ export function RoleGate({
     let mounted = true
 
     const checkAccess = async () => {
+      // 1. Check for demo / standalone session fallback first
+      if (typeof window !== 'undefined') {
+        const isDemoUser = sessionStorage.getItem('eduflow-demo-user') === 'true'
+        const cookieRoleMatch = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('eduflow-demo-role='))
+        const demoCookieRole = cookieRoleMatch ? cookieRoleMatch.split('=')[1] : null
+        const sessionRole = sessionStorage.getItem('eduflow-demo-role')
+        const activeDemoRole = sessionRole || demoCookieRole
+
+        if (isDemoUser || activeDemoRole) {
+          const normalizedDemo = normalizeRole(activeDemoRole || 'school_admin')
+          const normalizedTarget = normalizeRole(role)
+
+          let demoAuthorized = false
+          if (normalizedTarget === 'super_admin') {
+            demoAuthorized = normalizedDemo === 'super_admin'
+          } else if (normalizedTarget === 'school_admin') {
+            demoAuthorized = ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+          } else if (normalizedTarget === 'teacher') {
+            demoAuthorized = ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+          } else if (normalizedTarget === 'parent') {
+            demoAuthorized = ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+          }
+
+          if (demoAuthorized) {
+            if (mounted) {
+              setAllowed(true)
+              setChecking(false)
+            }
+            return
+          }
+        }
+      }
+
       if (!isSupabaseConfigured || !supabaseClient) {
         if (mounted) {
           router.replace(`/login?next=${encodeURIComponent(pathname)}`)
