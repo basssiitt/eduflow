@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Payload too large. Max 32KB allowed.' }, { status: 413 })
   }
 
-  const body = await request.json().catch(() => ({}))
+  const body = (await request.json().catch(() => ({}))) as { prompt?: string; context?: any }
   const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : ''
   if (!prompt) return NextResponse.json({ error: 'A message is required.' }, { status: 400 })
   if (prompt.length > 2000) {

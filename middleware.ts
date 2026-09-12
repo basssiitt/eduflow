@@ -72,6 +72,7 @@ export async function middleware(request: NextRequest) {
         (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/student') && ['student', 'school_admin', 'admin'].includes(normalizedDemo)) ||
+        (pathname.startsWith('/super-admin') && ['super_admin'].includes(normalizedDemo)) ||
         pathname.startsWith('/onboarding')
       ) {
         return response
@@ -142,9 +143,12 @@ export async function middleware(request: NextRequest) {
     return safeRedirect(user ? homeUrl : '/login')
   }
 
-  // Redirect /student to /parent (4-portal architecture)
+  // Guard /student
   if (pathname === '/student' || pathname.startsWith('/student/')) {
-    return safeRedirect(new URL('/parent', request.url))
+    if (!isSuperAdmin && !['student', 'school_admin', 'admin'].includes(normalizedRole)) {
+      return safeRedirect(homeUrl)
+    }
+    return response
   }
 
   // Guard /admin

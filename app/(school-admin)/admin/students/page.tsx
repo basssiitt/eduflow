@@ -47,9 +47,14 @@ function AddStudentModal({
     }
 
     setSaving(true)
-    setError('')
-
-    const rollNo = `2026-${String(Math.floor(100 + Math.random() * 900))}`
+    const randomArray = new Uint16Array(1)
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(randomArray)
+    } else {
+      randomArray[0] = Date.now() & 0xffff
+    }
+    const randomSuffix = (randomArray[0] % 900) + 100
+    const rollNo = `2026-${String(randomSuffix)}`
 
     if (isSupabaseConfigured && supabaseClient) {
       try {

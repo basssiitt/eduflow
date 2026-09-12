@@ -4,9 +4,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  ...(process.env.NODE_ENV === 'development' && process.env.ENABLE_ONLOOK === 'true'
+    ? {
+        experimental: {
+          swcPlugins: [['@onlook/nextjs', { root: '.' }]],
+        },
+      }
+    : {}),
 }
 
 export default nextConfig

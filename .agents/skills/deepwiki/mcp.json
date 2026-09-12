@@ -1,0 +1,11 @@
+{
+  "deepwiki": {
+    "type": "http",
+    "url": "https://mcp.deepwiki.com/mcp",
+    "includeTools": [
+      "read_wiki_structure",
+      "read_wiki_contents",
+      "ask_question"
+    ]
+  }
+}

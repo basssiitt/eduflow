@@ -88,7 +88,7 @@ const faqs = [
 ]
 
 export function PublicLanding() {
-  const [activePortalTab, setActivePortalTab] = useState<'parent' | 'admin' | 'teacher' | 'superadmin'>('parent')
+  const [activePortalTab, setActivePortalTab] = useState<'parent' | 'admin' | 'teacher' | 'student' | 'superadmin'>('parent')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   return (
@@ -106,12 +106,18 @@ export function PublicLanding() {
         <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
           <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
           <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimonials</a>
-          <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-          <a href="#portals" className="hover:text-blue-600 transition-colors">Requests</a>
+          <Link href="/pricing" className="hover:text-blue-600 transition-colors">Pricing &amp; ROI</Link>
+          <Link href="/apply" className="text-blue-600 font-bold hover:text-blue-700 transition-colors">Apply Online</Link>
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 sm:gap-4">
+          <Link
+            href="/apply"
+            className="hidden sm:inline-flex items-center justify-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100 transition"
+          >
+            Admissions 2026-27
+          </Link>
           <Link
             href="/login?force=1"
             className="text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition-colors"
@@ -162,6 +168,12 @@ export function PublicLanding() {
                       className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'teacher' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
                     >
                       Teacher
+                    </button>
+                    <button
+                      onClick={() => setActivePortalTab('student')}
+                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'student' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+                    >
+                      Student
                     </button>
                     <button
                       onClick={() => setActivePortalTab('superadmin')}
@@ -355,7 +367,49 @@ export function PublicLanding() {
                   </div>
                 )}
 
-                {/* Tab Content 4: Super Admin Preview (Screen 1) */}
+                {/* Tab Content 4: Student Portal Preview */}
+                {activePortalTab === 'student' && (
+                  <div className="pt-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Student Space</span>
+                        <h4 className="text-base font-black text-slate-900">Liam Miller</h4>
+                        <span className="text-xs text-slate-500 font-medium">Class 10-A · Roll # 24</span>
+                      </div>
+                      <Link href="/student" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+                        Open Portal <ArrowRight className="size-3" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Attendance</span>
+                        <span className="text-xs font-black text-emerald-600">96.4%</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Term GPA</span>
+                        <span className="text-xs font-black text-blue-600">3.88 / A+</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Class Rank</span>
+                        <span className="text-xs font-black text-purple-600">2nd of 42</span>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-white border border-slate-200 p-3 space-y-2 text-xs">
+                      <div className="flex items-center justify-between font-bold text-slate-800 pb-1 border-b border-slate-100">
+                        <span>Today&apos;s Homework &amp; Bell Schedule</span>
+                        <span className="text-blue-600 text-[10px]">Period 4 Next</span>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-600">
+                        <span>Physics: Numerical Problems Chapter 6</span>
+                        <span className="font-semibold text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Due Tomorrow</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab Content 5: Super Admin Preview (Screen 1) */}
                 {activePortalTab === 'superadmin' && (
                   <div className="pt-5 space-y-4">
                     <div className="flex items-center justify-between">
@@ -710,20 +764,24 @@ export function PublicLanding() {
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Administrative</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/super-admin" className="hover:text-blue-600">Super Admin (Screen 1)</Link></li>
-                <li><Link href="/admin" className="hover:text-blue-600">Admin Portal (Screen 3)</Link></li>
+                <li><Link href="/super-admin" className="hover:text-blue-600">Super Admin Desk</Link></li>
+                <li><Link href="/admin" className="hover:text-blue-600">Campus Admin Portal</Link></li>
+                <li><Link href="/admin/admissions" className="hover:text-blue-600">Admissions Desk</Link></li>
                 <li><Link href="/admin/students" className="hover:text-blue-600">Student Directory</Link></li>
-                <li><Link href="/admin/fees" className="hover:text-blue-600">Fee Challans</Link></li>
+                <li><Link href="/admin/timetable" className="hover:text-blue-600">Master Timetable</Link></li>
+                <li><Link href="/admin/exams" className="hover:text-blue-600">Examinations &amp; Reports</Link></li>
+                <li><Link href="/admin/fees" className="hover:text-blue-600">Fee Challans (3-Copy)</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Classroom &amp; Home</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Classroom &amp; Students</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Console (Screen 2)</Link></li>
-                <li><Link href="/teacher/diary" className="hover:text-blue-600">Voice Diary</Link></li>
-                <li><Link href="/parent" className="hover:text-blue-600">Parents Portal (Screen 4)</Link></li>
-                <li><Link href="/parent#ai" className="hover:text-blue-600">AI Companion</Link></li>
+                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Console</Link></li>
+                <li><Link href="/student" className="hover:text-blue-600">Student Portal</Link></li>
+                <li><Link href="/parent" className="hover:text-blue-600">Parent Companion Portal</Link></li>
+                <li><Link href="/apply" className="hover:text-blue-600 text-blue-600 font-semibold">Online Admissions 2026-27</Link></li>
+                <li><Link href="/pricing" className="hover:text-blue-600">Commercial Pricing &amp; ROI</Link></li>
               </ul>
             </div>
 
@@ -743,7 +801,9 @@ export function PublicLanding() {
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-400">
             <p>© 2026 EduFlow Systems. All rights reserved.</p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6">
+              <Link href="/apply" className="hover:text-blue-600">Apply Online</Link>
+              <Link href="/pricing" className="hover:text-blue-600">Pricing &amp; Calculator</Link>
               <Link href="/login?force=1" className="hover:text-blue-600">Portal Login</Link>
               <Link href="/signup" className="hover:text-blue-600">Register Campus</Link>
             </div>

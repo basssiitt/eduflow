@@ -1,0 +1,100 @@
+// Prisma schema for EduFlow School OS
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Campus {
+  id        String    @id @default(uuid())
+  name      String
+  city      String
+  phone     String?
+  address   String?
+  students  Student[]
+  teachers  Teacher[]
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("campuses")
+}
+
+model Profile {
+  id                  String   @id
+  email               String   @unique
+  fullName            String   @map("full_name")
+  role                String   @default("parent")
+  schoolId            String?  @map("school_id")
+  onboardingCompleted Boolean  @default(false) @map("onboarding_completed")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Student {
+  id            String       @id @default(uuid())
+  campusId      String?      @map("campus_id")
+  campus        Campus?      @relation(fields: [campusId], references: [id])
+  fullName      String       @map("full_name")
+  rollNumber    String       @map("roll_number")
+  grade         String
+  section       String
+  gender        String?
+  guardianName  String?      @map("guardian_name")
+  guardianPhone String?      @map("guardian_phone")
+  monthlyFee    Decimal      @default(0.0) @map("monthly_fee")
+  status        String       @default("active")
+  attendance    Attendance[]
+  feeVouchers   FeeVoucher[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  @@map("students")
+}
+
+model Teacher {
+  id             String   @id @default(uuid())
+  campusId       String?  @map("campus_id")
+  campus         Campus?  @relation(fields: [campusId], references: [id])
+  fullName       String   @map("full_name")
+  employeeCode   String   @unique @map("employee_code")
+  email          String?
+  phone          String?
+  department     String?
+  specialization String?
+  monthlySalary  Decimal  @default(0.0) @map("monthly_salary")
+  status         String   @default("active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("teachers")
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String   @map("student_id")
+  student   Student  @relation(fields: [studentId], references: [id])
+  date      String   // YYYY-MM-DD
+  status    String   // present, absent, leave, late
+  remarks   String?
+  markedAt  DateTime @default(now()) @map("marked_at")
+
+  @@map("attendance")
+}
+
+model FeeVoucher {
+  id            String    @id @default(uuid())
+  studentId     String    @map("student_id")
+  student       Student   @relation(fields: [studentId], references: [id])
+  challanNumber String    @unique @map("challan_number")
+  monthYear     String    @map("month_year")
+  amount        Decimal
+  dueDate       String    @map("due_date")
+  status        String    @default("unpaid") // unpaid, paid, overdue
+  paidAt        DateTime? @map("paid_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("fee_vouchers")
+}

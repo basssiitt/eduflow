@@ -126,7 +126,7 @@ function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
         setMessages((m) => [...m, { role: 'ai', text: 'School records verified. Ali Khan ki attendance 94% hai aur aglay papers Monday se start ho rahe hain.', time: now }])
         return
       }
-      const result = await response.json()
+      const result = (await response.json()) as { text?: string }
       setMessages((m) => [
         ...m,
         { role: 'ai', text: result.text || 'Records check ho chuke hain. Koi aur madad chahiye?', time: now },

@@ -1,12 +1,12 @@
 {
   "schemaVersion": "ecc.install.v1",
-  "installedAt": "2026-09-08T10:02:39.000Z",
+  "installedAt": "2026-09-12T23:13:52.959Z",
   "target": {
     "id": "antigravity-project",
     "target": "antigravity",
     "kind": "project",
-    "root": "/home/basssiitt/eduflow/.agents",
-    "installStatePath": "/home/basssiitt/eduflow/.agents/ecc-install-state.json"
+    "root": "/workspaces/eduflow/.agents",
+    "installStatePath": "/workspaces/eduflow/.agents/ecc-install-state.json"
   },
   "request": {
     "profile": "full",
@@ -15,7 +15,7 @@
     "excludeComponents": [],
     "legacyLanguages": [],
     "legacyMode": false,
-    "hookConsent": "declined"
+    "hookConsent": null
   },
   "resolution": {
     "selectedModules": [
@@ -51,7 +51,7 @@
   },
   "source": {
     "repoVersion": "2.2.1",
-    "repoCommit": "5064474d4d762dc9640234a41617cccb79185cec",
+    "repoCommit": "f0b0c6bb0b281ceeb106c8cf9ab8fde141215092",
     "manifestVersion": 1
   },
   "operations": [

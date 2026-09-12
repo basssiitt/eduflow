@@ -151,7 +151,7 @@ export default function SignUpPage() {
         }
 
         // If session created immediately (auto-confirm enabled):
-        if (data?.session) {
+        if (data?.session && data.user) {
           // 1. Provision profile in database
           try {
             await supabaseClient.from('profiles').upsert([

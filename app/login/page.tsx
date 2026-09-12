@@ -13,8 +13,8 @@ function isSafeRedirectUrl(url: string | null | undefined): boolean {
   if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.startsWith('/\\')) return false
   if (/[\r\n]/.test(trimmed)) return false
   try {
-    const parsed = new URL(trimmed, 'http://localhost')
-    return parsed.origin === 'http://localhost' && parsed.pathname.startsWith('/')
+    const parsed = new URL(trimmed, 'https://localhost')
+    return parsed.origin === 'https://localhost' && parsed.pathname.startsWith('/')
   } catch {
     return false
   }
@@ -392,9 +392,9 @@ export default function LoginPage() {
               </span>
             </div>
             <p className="text-xs text-slate-600 mb-3">
-              Explore and test EduFlow OS across the 3 user portals without needing manual login:
+              Explore and test EduFlow OS across all 5 dedicated role portals without needing manual login:
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleInstantDemo('school_admin', '/admin')}
@@ -415,11 +415,29 @@ export default function LoginPage() {
 
               <button
                 type="button"
+                onClick={() => handleInstantDemo('student', '/student')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
+              >
+                <BookOpen className="size-4 text-indigo-600 shrink-0" />
+                <span className="truncate">Student Space</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => handleInstantDemo('parent', '/parent')}
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
               >
-                <Users className="size-4 text-blue-600 shrink-0" />
+                <Users className="size-4 text-emerald-600 shrink-0" />
                 <span className="truncate">Parent</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleInstantDemo('super_admin', '/super-admin')}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left sm:col-span-2"
+              >
+                <ShieldCheck className="size-4 text-purple-600 shrink-0" />
+                <span className="truncate">Super Admin (Multi-Campus)</span>
               </button>
             </div>
           </div>
@@ -435,14 +453,18 @@ export default function LoginPage() {
         </section>
 
         <footer className="login-footer flex flex-col gap-3 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-blue-600 transition">← Back to EduFlow Homepage</Link>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-medium text-slate-500">
+            <Link href="/" className="hover:text-blue-600 transition">← Homepage</Link>
             <span>•</span>
             <Link href="/admin" className="hover:text-blue-600 transition">Campus Admin</Link>
             <span>•</span>
-            <Link href="/teacher" className="hover:text-blue-600 transition">Teacher Console</Link>
+            <Link href="/teacher" className="hover:text-blue-600 transition">Teacher</Link>
             <span>•</span>
-            <Link href="/parent" className="hover:text-blue-600 transition">Parent Portal</Link>
+            <Link href="/student" className="hover:text-blue-600 transition">Student</Link>
+            <span>•</span>
+            <Link href="/parent" className="hover:text-blue-600 transition">Parent</Link>
+            <span>•</span>
+            <Link href="/super-admin" className="hover:text-blue-600 transition">Super Admin</Link>
           </div>
           <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
             <span>Need help signing in?</span>

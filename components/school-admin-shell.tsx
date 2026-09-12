@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  Award,
   Bell,
   CalendarCheck,
   Check,
   ChevronDown,
+  Clock,
   CreditCard,
   Eye,
   EyeOff,
@@ -24,6 +26,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  UserPlus,
   Users,
   WalletCards,
   X,
@@ -58,10 +61,13 @@ type NavItem = {
 // Dedicated School Admin Navigation - strictly campus admin pages
 const adminNavItems: NavItem[] = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, testId: 'nav-overview' },
+  { label: 'Admissions Desk', href: '/admin/admissions', icon: UserPlus, testId: 'nav-admissions' },
   { label: 'Students', href: '/admin/students', icon: Users, testId: 'nav-students' },
   { label: 'Faculty & Teachers', href: '/admin/teachers', icon: GraduationCap, testId: 'nav-teachers' },
   { label: 'Faculty Attendance', href: '/admin/teachers/attendance', icon: CalendarCheck, testId: 'nav-faculty-attendance' },
   { label: 'Student Haziri', href: '/admin/attendance', icon: CalendarCheck, testId: 'nav-attendance' },
+  { label: 'Master Timetable', href: '/admin/timetable', icon: Clock, testId: 'nav-timetable' },
+  { label: 'Examinations', href: '/admin/exams', icon: Award, testId: 'nav-exams' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
   { label: 'Finance & P&L', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
   { label: 'WhatsApp Broadcast', href: '/admin/broadcast', icon: MessageCircle, testId: 'nav-broadcast' },
