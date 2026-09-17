@@ -29,7 +29,7 @@ export function LandingWithParentMockup() {
             min-height: 520px;
           }
         }
-      ` }}
+      ` }}></style>
     </>
   )
 }
