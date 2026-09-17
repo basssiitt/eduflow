@@ -7,7 +7,7 @@ export function LandingWithParentMockup() {
       <style dangerouslySetInnerHTML={{ __html: `
         main > section:first-of-type > div > div > div:first-child {
           position: relative;
-          min-height: 620px;
+          min-height: 760px;
         }
         main > section:first-of-type > div > div > div:first-child > div:first-child {
           visibility: hidden;
@@ -21,12 +21,12 @@ export function LandingWithParentMockup() {
         }
         @media (max-width: 1023px) {
           main > section:first-of-type > div > div > div:first-child {
-            min-height: 590px;
+            min-height: 700px;
           }
         }
         @media (max-width: 640px) {
           main > section:first-of-type > div > div > div:first-child {
-            min-height: 520px;
+            min-height: 590px;
           }
         }
       ` }}></style>
