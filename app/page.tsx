@@ -1,5 +1,5 @@
-import { PublicLanding } from '@/components/public-landing'
+import { LandingWithParentMockup } from '@/components/landing-with-parent-mockup'
 
 export default function Page() {
-  return <PublicLanding />
+  return <LandingWithParentMockup />
 }
