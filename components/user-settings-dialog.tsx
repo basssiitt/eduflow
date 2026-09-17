@@ -276,18 +276,7 @@ export function UserSettingsDialog({
                   Administrators have exclusive permissions to manage school subscription plans and view billing history.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {role === 'school_admin' ? (
-                    <Button
-                      onClick={() => {
-                        onClose()
-                        window.location.href = '/admin/billing'
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-                    >
-                      <CreditCard className="mr-1.5 size-3.5 text-white" />
-                      Manage Subscription &amp; Billing
-                    </Button>
-                  ) : (
+                  {role === 'super_admin' && userEmail?.toLowerCase() === 'basithunyawrr@gmail.com' ? (
                     <Button
                       onClick={() => {
                         onClose()
@@ -297,6 +286,17 @@ export function UserSettingsDialog({
                     >
                       <CreditCard className="mr-1.5 size-3.5 text-white" />
                       Platform Subscriptions &amp; Revenue
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        onClose()
+                        window.location.href = '/admin/billing'
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                    >
+                      <CreditCard className="mr-1.5 size-3.5 text-white" />
+                      Manage Subscription &amp; Billing
                     </Button>
                   )}
                   <Button

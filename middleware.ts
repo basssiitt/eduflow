@@ -72,7 +72,6 @@ export async function middleware(request: NextRequest) {
         (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/student') && ['student', 'school_admin', 'admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/super-admin') && ['super_admin'].includes(normalizedDemo)) ||
         pathname.startsWith('/onboarding')
       ) {
         return response

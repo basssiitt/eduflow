@@ -20,6 +20,9 @@ import {
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { fetchParentStudents } from '@/lib/live-data'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { useEffect } from 'react'
 
 type ChildProfile = {
   id: string
@@ -36,39 +39,36 @@ type ChildProfile = {
   lastDiaryNote: string
 }
 
-const registeredChildren: ChildProfile[] = [
-  {
-    id: 'child-01',
-    name: 'Zain Ahmed',
-    rollNo: '2026-012',
-    class: 'Class 5',
-    section: 'A',
-    classTeacher: 'Ms. Ayesha Siddiqa',
-    attendanceRate: 95,
-    termGrade: 'A+',
-    gpa: '3.85',
-    feeStatus: 'Paid',
-    monthlyFee: 15000,
-    lastDiaryNote: 'Completed Mathematics exercise 4.2 fractions. Please ensure revision for tomorrow’s quiz.',
-  },
-  {
-    id: 'child-02',
-    name: 'Fatima Ahmed',
-    rollNo: '2026-018',
-    class: 'Class 3',
-    section: 'B',
-    classTeacher: 'Ms. Zainab Fatima',
-    attendanceRate: 98,
-    termGrade: 'A+',
-    gpa: '3.95',
-    feeStatus: 'Paid',
-    monthlyFee: 14000,
-    lastDiaryNote: 'Urdu handwriting practice chapter 6 page 42. Excellent classroom participation today!',
-  },
-]
-
 export default function ParentChildrenPage() {
-  const [selectedChild, setSelectedChild] = useState<string>(registeredChildren[0].id)
+  const [children, setChildren] = useState<ChildProfile[]>([])
+  const [selectedChild, setSelectedChild] = useState<string>('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchParentStudents().then(({ data }) => {
+      if (data && data.length > 0) {
+        const mapped: ChildProfile[] = data.map((s, idx) => ({
+          id: String(s.id),
+          name: s.name,
+          rollNo: s.roll || `2026-${String(idx + 1).padStart(3, '0')}`,
+          class: s.class.split(' · ')[0] || 'Class 5',
+          section: s.class.includes('Sec ') ? s.class.split('Sec ')[1] : 'A',
+          classTeacher: 'Class Faculty',
+          attendanceRate: 0,
+          termGrade: '—',
+          gpa: '—',
+          feeStatus: 'Paid',
+          monthlyFee: s.feeAmount || 0,
+          lastDiaryNote: 'Check daily audio homework notes from classroom teacher.',
+        }))
+        setChildren(mapped)
+        setSelectedChild(mapped[0].id)
+      } else {
+        setChildren([])
+      }
+      setLoading(false)
+    })
+  }, [])
 
   const handleSelectChild = (id: string) => {
     setSelectedChild(id)
@@ -87,7 +87,7 @@ export default function ParentChildrenPage() {
               href="/parent"
               className="text-xs text-slate-500 hover:text-blue-600 transition flex items-center gap-1 font-medium"
             >
-              <ArrowLeft className="size-3.5" /> Learning Space
+              <ArrowLeft className="size-3.5" /> Parents Portal
             </Link>
             <span className="text-xs text-slate-400">/</span>
             <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 border border-blue-200">
@@ -119,7 +119,7 @@ export default function ParentChildrenPage() {
             </div>
           </div>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
-            {registeredChildren.length} Siblings
+            {children.length} {children.length === 1 ? 'Student' : 'Students'}
           </p>
           <p className="mt-1 text-xs text-slate-500">Linked to this parent guardian account</p>
         </article>
@@ -132,11 +132,11 @@ export default function ParentChildrenPage() {
             </div>
           </div>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
-            96.5%
+            {children.length > 0 ? 'Active' : '0%'}
           </p>
           <div className="mt-1 flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-              Regular in classrooms
+              {children.length > 0 ? 'Enrolled in academic term' : 'No attendance recorded'}
             </span>
           </div>
         </article>
@@ -149,16 +149,29 @@ export default function ParentChildrenPage() {
             </div>
           </div>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-emerald-600">
-            100% Cleared
+            {children.length > 0 ? 'Active' : '0 Vouchers'}
           </p>
-          <p className="mt-1 text-xs text-slate-500">All student vouchers verified</p>
+          <p className="mt-1 text-xs text-slate-500">{children.length > 0 ? 'Account active' : 'No active invoices'}</p>
         </article>
       </section>
 
       {/* Children Cards List */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {registeredChildren.map((child) => {
-          const isSelected = selectedChild === child.id
+      {loading ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-xs text-slate-400">
+          Loading student profiles…
+        </div>
+      ) : children.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-8">
+          <ZeroDataEmptyState
+            icon={Users}
+            title="No enrolled children linked"
+            description="No student records are currently registered under this guardian profile. When school administration registers your child, they will appear here."
+          />
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2">
+          {children.map((child) => {
+            const isSelected = selectedChild === child.id
 
           return (
             <article
@@ -259,6 +272,7 @@ export default function ParentChildrenPage() {
           )
         })}
       </div>
+    )}
     </div>
   )
 }

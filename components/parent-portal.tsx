@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { fetchCurrentParentData } from '@/lib/live-data'
+import { fetchCurrentParentData, fetchParentData, fetchParentStudents } from '@/lib/live-data'
 import { OfflineStatusBar } from '@/components/eduflow-provider'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { ThreeFaceChallanSlip } from '@/components/challan-slip'
@@ -102,7 +102,7 @@ function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
-      text: 'Assalam-o-Alaikum! Main EduFlow AI Parent Companion hoon. Aap Ali Khan ki attendance, term grades, upcoming exam date sheet, ya fee challan ke baray mein sawal pooch sakte hain.',
+      text: `Assalam-o-Alaikum! Main EduFlow AI Parent Companion hoon. Aap ${studentContext.name && studentContext.name !== 'No Child Selected' ? studentContext.name : 'apnay bachay'} ki attendance, term grades, ya fee challan ke baray mein sawal pooch sakte hain.`,
       time: 'Today',
     },
   ])
@@ -123,7 +123,14 @@ function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
         signal: AbortSignal.timeout(15000),
       })
       if (!response.ok) {
-        setMessages((m) => [...m, { role: 'ai', text: 'School records verified. Ali Khan ki attendance 94% hai aur aglay papers Monday se start ho rahe hain.', time: now }])
+        setMessages((m) => [
+          ...m,
+          {
+            role: 'ai',
+            text: `School records verified. ${studentContext.name || 'Student'} ki attendance ${studentContext.attendance || '0%'} hai.`,
+            time: now,
+          },
+        ])
         return
       }
       const result = (await response.json()) as { text?: string }
@@ -134,7 +141,11 @@ function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
     } catch {
       setMessages((m) => [
         ...m,
-        { role: 'ai', text: 'Ali Khan ki attendance 94% hai aur overall grade A* (88.3%) hai. Fees PKR 4,500 due 10-Oct hai.', time: now },
+        {
+          role: 'ai',
+          text: `Records verified for ${studentContext.name}. Attendance: ${studentContext.attendance || '0%'}, Fees: PKR ${studentContext.feeAmount?.toLocaleString() || 0}.`,
+          time: now,
+        },
       ])
     } finally {
       setTyping(false)
@@ -226,84 +237,67 @@ function AiAssistant({ studentContext }: { studentContext: StudentContext }) {
   )
 }
 
+type ParentChild = {
+  id: string | number
+  name: string
+  class: string
+  status: number
+  grades: string
+  total: number
+  fee: string
+  enrolled: boolean
+  avatar: string
+  roll: string
+  feeAmount: number
+  challanNo: string
+  dueDate: string
+  attendance: string
+}
+
 export function ParentPortal() {
   const [live, setLive] = useState<{ attendance: unknown[]; fees: unknown[]; diary: { audio_url?: string; note?: string } | null } | null>(null)
   const [parentEmail, setParentEmail] = useState('')
+  const [parentName, setParentName] = useState('')
   const [payModalOpen, setPayModalOpen] = useState(false)
   const [challanModalOpen, setChallanModalOpen] = useState(false)
   const [academicTab, setAcademicTab] = useState<'grades' | 'exams'>('grades')
   const [feeStatus, setFeeStatus] = useState<'Pending' | 'Paid'>('Paid')
   const [loading, setLoading] = useState(true)
 
-  // Dynamic children enrolled under this parent account
-  const [children, setChildren] = useState([
-    {
-      id: 1,
-      name: 'Liam Miller',
-      class: 'Grade 8 · Sec A',
-      status: 23,
-      grades: '76%',
-      total: 10,
-      fee: '100%',
-      enrolled: true,
-      avatar: 'LM',
-      roll: '2026-001',
-      feeAmount: 4500,
-      challanNo: 'CH-2026-101',
-      dueDate: '10-Oct-2026',
-      attendance: '94%',
-    },
-    {
-      id: 2,
-      name: 'Ava Miller',
-      class: 'Grade 5 · Sec B',
-      status: 23,
-      grades: '78%',
-      total: 10,
-      fee: '100%',
-      enrolled: true,
-      avatar: 'AM',
-      roll: '2026-002',
-      feeAmount: 4000,
-      challanNo: 'CH-2026-102',
-      dueDate: '10-Oct-2026',
-      attendance: '96%',
-    },
-  ])
+  // Real children enrolled under this parent account
+  const [children, setChildren] = useState<ParentChild[]>([])
   const [selectedChildIndex, setSelectedChildIndex] = useState(0)
-  const activeStudent = children[selectedChildIndex] || children[0]
 
-  const studentProfile = {
-    name: activeStudent.name,
-    roll: activeStudent.roll,
-    class: activeStudent.class,
-    guardian: 'Sarah Miller',
-    attendance: activeStudent.attendance,
-    feeAmount: activeStudent.feeAmount,
-    challanNo: activeStudent.challanNo,
-    dueDate: activeStudent.dueDate,
-    bankName: 'Meezan Bank Ltd.',
-    accountTitle: 'EduFlow School Main Campus',
-    iban: 'PK92 MEZN 0001 2345 6789 0101',
-    psid: '1004928019382',
-  }
+  const activeStudent = children.length > 0 ? (children[selectedChildIndex] || children[0]) : null
 
-  const subjects = [
-    { name: 'Mathematics', marks: 88, total: 100, grade: 'A', teacher: 'Sir Tariq' },
-    { name: 'General Science', marks: 92, total: 100, grade: 'A*', teacher: 'Sir Asad' },
-    { name: 'English Language', marks: 81, total: 100, grade: 'A', teacher: 'Miss Fatima' },
-    { name: 'Urdu Literature', marks: 85, total: 100, grade: 'A', teacher: 'Miss Ayesha' },
-    { name: 'Islamiat & Nazra', marks: 94, total: 100, grade: 'A*', teacher: 'Miss Ayesha' },
-    { name: 'Computer Studies', marks: 90, total: 100, grade: 'A*', teacher: 'Sir Bilal' },
-  ]
+  const studentProfile: StudentContext = activeStudent
+    ? {
+        name: activeStudent.name,
+        roll: activeStudent.roll,
+        class: activeStudent.class,
+        guardian: parentName || (parentEmail ? parentEmail.split('@')[0] : 'Parent'),
+        attendance: activeStudent.attendance,
+        feeAmount: activeStudent.feeAmount,
+        challanNo: activeStudent.challanNo,
+        dueDate: activeStudent.dueDate,
+        bankName: 'Meezan Bank Ltd.',
+        accountTitle: 'EduFlow School Main Campus',
+        iban: 'PK92 MEZN 0001 2345 6789 0101',
+        psid: '1004928019382',
+      }
+    : {
+        name: 'No Child Selected',
+        roll: '—',
+        class: '—',
+        guardian: parentName || (parentEmail ? parentEmail.split('@')[0] : 'Parent'),
+        attendance: '0%',
+        feeAmount: 0,
+        challanNo: '—',
+        dueDate: '—',
+      }
 
-  const examDateSheet = [
-    { date: 'Monday, 12-Oct-2026', subject: 'Mathematics', timing: '08:30 AM – 11:00 AM', room: 'Room 102', syllabus: 'Chapters 1-5 (Fractions, Decimals, Geometry)' },
-    { date: 'Tuesday, 13-Oct-2026', subject: 'English Language', timing: '08:30 AM – 11:00 AM', room: 'Room 102', syllabus: 'Grammar, Essay Writing, Unit 1 to 4 Comprehension' },
-    { date: 'Wednesday, 14-Oct-2026', subject: 'General Science', timing: '08:30 AM – 11:00 AM', room: 'Science Lab 2', syllabus: 'Living Systems, Matter, Sound & Light Energy' },
-    { date: 'Thursday, 15-Oct-2026', subject: 'Urdu Literature', timing: '08:30 AM – 11:00 AM', room: 'Room 102', syllabus: 'Nazm, Sabaq 1 to 6, Mazmoon, Qawaid' },
-    { date: 'Friday, 16-Oct-2026', subject: 'Computer & Islamiat', timing: '08:30 AM – 10:30 AM', room: 'Computer Lab 1', syllabus: 'Scratch Coding, Algorithms & Surah Al-Baqarah Verses' },
-  ]
+  const subjects: Array<{ name: string; marks: number; total: number; grade: string; teacher: string }> = []
+  const examDateSheet: Array<{ date: string; subject: string; timing: string; room: string; syllabus: string }> = []
 
   useEffect(() => {
     let active = true
@@ -311,16 +305,61 @@ export function ParentPortal() {
     if (demoEmail && active) setParentEmail(demoEmail)
 
     if (isSupabaseConfigured && supabaseClient) {
-      supabaseClient.auth.getUser().then(({ data }) => {
-        if (active && data.user?.email) setParentEmail(data.user.email)
+      const client = supabaseClient
+      client.auth.getUser().then(async ({ data }) => {
+        if (!active) return
+        if (data.user?.email) setParentEmail(data.user.email)
+        if (data.user?.id) {
+          const { data: profile } = await client
+            .from('profiles')
+            .select('full_name')
+            .eq('id', data.user.id)
+            .maybeSingle()
+          if (active && profile?.full_name) {
+            setParentName(profile.full_name)
+          } else if (active && data.user.user_metadata?.full_name) {
+            setParentName(data.user.user_metadata.full_name)
+          }
+        }
       })
     }
 
-    fetchCurrentParentData().then(({ data }) => {
-      if (active) {
-        if (data) setLive(data)
-        setLoading(false)
+    fetchParentStudents().then(async ({ data: studentList }) => {
+      if (!active) return
+      if (studentList && studentList.length > 0) {
+        const mappedChildren: ParentChild[] = studentList.map((s, idx) => ({
+          id: s.id,
+          name: s.name,
+          class: s.class,
+          status: 0,
+          grades: '—',
+          total: 0,
+          fee: '100%',
+          enrolled: true,
+          roll: s.roll || `2026-${String(idx + 1).padStart(3, '0')}`,
+          feeAmount: s.feeAmount || 0,
+          challanNo: `CH-2026-${String(idx + 101).padStart(3, '0')}`,
+          dueDate: '10-Oct-2026',
+          attendance: '0%',
+          avatar: s.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'ST',
+        }))
+        setChildren(mappedChildren)
+
+        if (mappedChildren[0]?.id) {
+          const { data: liveData } = await fetchParentData(mappedChildren[0].id)
+          if (active && liveData) {
+            setLive(liveData)
+            if (liveData.attendance && liveData.attendance.length > 0) {
+              const present = liveData.attendance.filter((a: any) => a.status === 'Present' || a.status === 'present').length
+              const rate = `${Math.round((present / liveData.attendance.length) * 100)}%`
+              setChildren((prev) => prev.map((c, i) => i === 0 ? { ...c, attendance: rate } : c))
+            }
+          }
+        }
+      } else {
+        setChildren([])
       }
+      setLoading(false)
     })
 
     return () => {
@@ -328,14 +367,32 @@ export function ParentPortal() {
     }
   }, [])
 
+  const handleSelectChild = async (idx: number) => {
+    setSelectedChildIndex(idx)
+    const child = children[idx]
+    if (child?.id) {
+      const { data: liveData } = await fetchParentData(child.id)
+      if (liveData) {
+        setLive(liveData)
+        if (liveData.attendance && liveData.attendance.length > 0) {
+          const present = liveData.attendance.filter((a: any) => a.status === 'Present' || a.status === 'present').length
+          const rate = `${Math.round((present / liveData.attendance.length) * 100)}%`
+          setChildren((prev) => prev.map((c, i) => i === idx ? { ...c, attendance: rate } : c))
+        }
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header matching Screen 4 */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">Welcome, Sarah Miller</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+            Welcome, {parentName || (parentEmail ? parentEmail.split('@')[0] : 'Parent')}
+          </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">
-            {children.length === 1 ? '1 Student Enrolled' : children.length === 2 ? 'Two Students Enrolled' : `${children.length} Students Enrolled`} · Academic Session 2026–2027
+            {children.length === 0 ? 'No Enrolled Students' : children.length === 1 ? '1 Student Enrolled' : `${children.length} Students Enrolled`} · Academic Session 2026–2027
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
@@ -347,21 +404,8 @@ export function ParentPortal() {
               className="h-9 w-52 xl:w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
-          <Button
-            variant="outline"
-            className="rounded-full border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-300"
-            onClick={() => setChallanModalOpen(true)}
-          >
-            Need Status
-          </Button>
-          <Button
-            onClick={() => setChallanModalOpen(true)}
-            className="rounded-full bg-blue-600 px-4 text-xs font-bold text-white hover:bg-blue-700 shadow-xs"
-          >
-            Edit Password
-          </Button>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold text-xs">
-            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee: Paid
+            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee: {feeStatus}
           </span>
           <Button
             variant="outline"
@@ -391,101 +435,86 @@ export function ParentPortal() {
           <span className="text-[11px] text-slate-400">Click a card to select active child context</span>
         </div>
 
-        <div className={`grid gap-4 ${
-          children.length === 1
-            ? 'grid-cols-1 max-w-xl'
-            : children.length === 2
-            ? 'grid-cols-1 md:grid-cols-2'
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-        }`}>
-          {children.map((child, idx) => {
-            const isSelected = selectedChildIndex === idx
-            return (
-              <div
-                key={child.id}
-                onClick={() => setSelectedChildIndex(idx)}
-                className={`rounded-2xl bg-white p-5 border shadow-2xs transition cursor-pointer ${
-                  isSelected
-                    ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300'
-                }`}
-              >
-                {/* Card Top: Avatar, Name, Grade, Enrolled Chip */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="size-11 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center shadow-2xs">
-                      {child.avatar}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black text-slate-900">{child.name}</h3>
-                        {isSelected && (
-                          <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded-md">
-                            Selected
-                          </span>
-                        )}
+        {children.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-8">
+            <ZeroDataEmptyState
+              icon={User}
+              title="No children enrolled yet"
+              description="No student records are currently linked to your parent account. When school administration admits your child, their profiles will appear here."
+            />
+          </div>
+        ) : (
+          <div className={`grid gap-4 ${
+            children.length === 1
+              ? 'grid-cols-1 max-w-xl'
+              : children.length === 2
+              ? 'grid-cols-1 md:grid-cols-2'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}>
+            {children.map((child, idx) => {
+              const isSelected = selectedChildIndex === idx
+              return (
+                <div
+                  key={child.id}
+                  onClick={() => handleSelectChild(idx)}
+                  className={`rounded-2xl bg-white p-5 border shadow-2xs transition cursor-pointer ${
+                    isSelected
+                      ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-xs'
+                      : 'border-slate-200/90 hover:border-slate-300'
+                  }`}
+                >
+                  {/* Card Top: Avatar, Name, Grade, Enrolled Chip */}
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className="size-11 rounded-full bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center shadow-2xs">
+                        {child.avatar}
                       </div>
-                      <p className="text-xs text-slate-500 font-medium">{child.class}</p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black text-slate-900">{child.name}</h3>
+                          {isSelected && (
+                            <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded-md">
+                              Selected
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">{child.class}</p>
+                      </div>
                     </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Enrolled
+                    </span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Enrolled
-                  </span>
-                </div>
 
-                {/* Card Metric Grid Row 1 (Screen 4) */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    <span>Status</span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 text-center bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Rest</div>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">{child.status}</div>
+                  {/* Card Metric Grid Row 1 (Screen 4) */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                      <span>Status</span>
                     </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Status</div>
-                      <div className="text-sm font-black text-blue-600 mt-0.5">7%</div>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Total</div>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">10%</div>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Fee</div>
-                      <div className="text-sm font-black text-emerald-600 mt-0.5">100%</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Metric Grid Row 2 (Screen 4: Attendance / Class Notes) */}
-                <div className="mt-3">
-                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                    <span>{child.id === 1 ? 'Attendance' : 'Class Notes'}</span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 text-center bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Grades</div>
-                      <div className="text-sm font-black text-blue-600 mt-0.5">{child.grades}</div>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Status</div>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">7%</div>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Total</div>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">{child.id === 1 ? '10%' : '6%'}</div>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase font-bold text-slate-400">Attendance</div>
-                      <div className="text-sm font-black text-emerald-600 mt-0.5">{child.attendance}</div>
+                    <div className="grid grid-cols-4 gap-2 text-center bg-slate-50/80 rounded-xl p-2.5 border border-slate-100">
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-slate-400">Roll</div>
+                        <div className="text-xs font-black text-slate-900 mt-0.5 truncate">{child.roll}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-slate-400">Status</div>
+                        <div className="text-xs font-black text-blue-600 mt-0.5">Active</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-slate-400">Fee Due</div>
+                        <div className="text-xs font-black text-slate-900 mt-0.5">PKR {child.feeAmount}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-slate-400">Attendance</div>
+                        <div className="text-xs font-black text-emerald-600 mt-0.5">{child.attendance}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       {/* Split Cards: Recent Assignments & Class Events (Screen 4 Bottom Row) */}
@@ -501,25 +530,11 @@ export function ParentPortal() {
           </div>
 
           <div className="space-y-3">
-            {[
-              { title: `${activeStudent.name} Math Algebra Chapter 5 Test`, time: '10:00 AM', status: 'Submitted' },
-              { title: 'Class Science Lab Activity - Photosynthesis', time: '12:00 PM', status: 'Due Tomorrow' },
-              { title: 'English Grammar Essay Writing Task', time: 'Yesterday', status: 'Completed' },
-            ].map((asg, idx) => (
-              <div key={idx} className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100 last:border-0 last:pb-0">
-                <div className="min-w-0 pr-3">
-                  <div className="font-bold text-slate-800 truncate">{asg.title}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">{asg.time}</div>
-                </div>
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 ${
-                  asg.status === 'Submitted' || asg.status === 'Completed'
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-amber-50 text-amber-700'
-                }`}>
-                  {asg.status}
-                </span>
-              </div>
-            ))}
+            {!activeStudent ? (
+              <div className="py-6 text-center text-xs text-slate-400">No enrolled child selected.</div>
+            ) : (
+              <div className="py-6 text-center text-xs text-slate-400">No active homework assignments for this section.</div>
+            )}
           </div>
         </div>
 
@@ -534,21 +549,7 @@ export function ParentPortal() {
           </div>
 
           <div className="space-y-3">
-            {[
-              { title: 'Class Events - Term Orientation', time: '12:30 AM', date: 'Fri, 23 Oct' },
-              { title: 'Sports Gala Prep & Selection Trials', time: '02:00 AM', date: 'Mon, 26 Oct' },
-              { title: 'Parent Teacher Meeting (PTM)', time: '09:00 AM', date: 'Sat, 31 Oct' },
-            ].map((evt, idx) => (
-              <div key={idx} className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100 last:border-0 last:pb-0">
-                <div className="min-w-0 pr-3">
-                  <div className="font-bold text-slate-800 truncate">{evt.title}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">{evt.date}</div>
-                </div>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 shrink-0">
-                  {evt.time}
-                </span>
-              </div>
-            ))}
+            <div className="py-6 text-center text-xs text-slate-400">No upcoming school events scheduled.</div>
           </div>
         </div>
       </div>
@@ -562,7 +563,7 @@ export function ParentPortal() {
           </div>
           <AudioDiary
             audioUrl={live?.diary?.audio_url}
-            note={live?.diary?.note || 'Math: Complete exercise 3.4 page 48. Science: Prepare for Lab quiz on photosynthesis on Wednesday.'}
+            note={live?.diary?.note || ''}
           />
         </section>
         <AiAssistant studentContext={studentProfile} />
@@ -601,103 +602,83 @@ export function ParentPortal() {
 
         {academicTab === 'grades' && (
           <div className="mt-5 space-y-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-emerald-50/50 dark:bg-emerald-950/30 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/40">
-              <div>
-                <h3 className="font-bold text-sm text-emerald-900 dark:text-emerald-300">Official Term Report Card · Session 2026-27</h3>
-                <p className="text-xs text-slate-500">Marks certified by Academic Examination Controller.</p>
-              </div>
-              <Button size="sm" onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
-                <Printer className="size-3.5 mr-1" /> Print Report Card Slip
-              </Button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-[10px] uppercase tracking-wider bg-slate-50/70 dark:bg-slate-950/70">
-                    <th className="px-4 py-3">Subject</th>
-                    <th className="px-4 py-3">Subject Teacher</th>
-                    <th className="px-4 py-3 text-right">Marks Scored</th>
-                    <th className="px-4 py-3 text-right">Total Marks</th>
-                    <th className="px-4 py-3 text-center">Grade</th>
-                    <th className="px-4 py-3 text-center">Outcome</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {subjects.map((sub) => (
-                    <tr key={sub.name} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-slate-100">{sub.name}</td>
-                      <td className="px-4 py-3 text-slate-500">{sub.teacher}</td>
-                      <td className="px-4 py-3 text-right font-black text-slate-900 dark:text-slate-100">{sub.marks}</td>
-                      <td className="px-4 py-3 text-right text-slate-500">{sub.total}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="px-2 py-0.5 rounded-md font-bold text-[11px] bg-emerald-50 text-emerald-700">
-                          {sub.grade}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="font-semibold text-emerald-600 text-[11px]">Passed</span>
-                      </td>
+            {subjects.length === 0 ? (
+              <ZeroDataEmptyState
+                icon={Award}
+                title="No report card released yet"
+                description="Academic report cards and term assessments have not been finalized by the school examination controller."
+              />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-[10px] uppercase tracking-wider bg-slate-50/70 dark:bg-slate-950/70">
+                      <th className="px-4 py-3">Subject</th>
+                      <th className="px-4 py-3">Subject Teacher</th>
+                      <th className="px-4 py-3 text-right">Marks Scored</th>
+                      <th className="px-4 py-3 text-right">Total Marks</th>
+                      <th className="px-4 py-3 text-center">Grade</th>
+                      <th className="px-4 py-3 text-center">Outcome</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot className="border-t-2 border-slate-800">
-                  <tr>
-                    <th className="px-4 py-3 text-slate-900 dark:text-slate-100" colSpan={2}>Aggregate Term Total</th>
-                    <th className="px-4 py-3 text-right text-sm font-black text-emerald-700">530</th>
-                    <th className="px-4 py-3 text-right text-slate-600 font-bold">600</th>
-                    <th className="px-4 py-3 text-center text-sm font-black text-emerald-700">A* (88.3%)</th>
-                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-800">3rd Position</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-
-            <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
-              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Class Teacher Remarks:</span>
-              <p className="text-slate-600 dark:text-slate-400 italic">
-                &ldquo;Ali exhibits remarkable cognitive curiosity and active engagement in science and mathematics. He is encouraged to dedicate daily revision time to Urdu creative writing to maintain his top-three standing.&rdquo;
-              </p>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {subjects.map((sub) => (
+                      <tr key={sub.name} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                        <td className="px-4 py-3 font-bold text-slate-900 dark:text-slate-100">{sub.name}</td>
+                        <td className="px-4 py-3 text-slate-500">{sub.teacher}</td>
+                        <td className="px-4 py-3 text-right font-black text-slate-900 dark:text-slate-100">{sub.marks}</td>
+                        <td className="px-4 py-3 text-right text-slate-500">{sub.total}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-md font-bold text-[11px] bg-emerald-50 text-emerald-700">
+                            {sub.grade}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="font-semibold text-emerald-600 text-[11px]">Passed</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
         {academicTab === 'exams' && (
           <div className="mt-5 space-y-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-purple-50/50 dark:bg-purple-950/30 p-4 rounded-xl border border-purple-100 dark:border-purple-900/40">
-              <div>
-                <h3 className="font-bold text-sm text-purple-900 dark:text-purple-300">Mid-Term Examination Date Sheet · October 2026</h3>
-                <p className="text-xs text-slate-500">Students must bring their own stationery kits and arrive 15 minutes before paper start time.</p>
-              </div>
-              <Button size="sm" onClick={() => window.print()} className="bg-purple-700 hover:bg-purple-800 text-white rounded-xl">
-                <Printer className="size-3.5 mr-1" /> Print Date Sheet
-              </Button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-[10px] uppercase tracking-wider bg-slate-50/70 dark:bg-slate-950/70">
-                    <th className="px-4 py-3">Day &amp; Date</th>
-                    <th className="px-4 py-3">Subject</th>
-                    <th className="px-4 py-3">Timing</th>
-                    <th className="px-4 py-3">Examination Venue</th>
-                    <th className="px-4 py-3">Syllabus Scope</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {examDateSheet.map((item) => (
-                    <tr key={item.date} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-slate-100">{item.date}</td>
-                      <td className="px-4 py-3.5 font-semibold text-emerald-700">{item.subject}</td>
-                      <td className="px-4 py-3.5 font-mono text-slate-600">{item.timing}</td>
-                      <td className="px-4 py-3.5 text-slate-600">{item.room}</td>
-                      <td className="px-4 py-3.5 text-slate-500 text-[11px]">{item.syllabus}</td>
+            {examDateSheet.length === 0 ? (
+              <ZeroDataEmptyState
+                icon={Calendar}
+                title="No upcoming exam schedule"
+                description="The examination controller has not announced date sheets for this term yet."
+              />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-[10px] uppercase tracking-wider bg-slate-50/70 dark:bg-slate-950/70">
+                      <th className="px-4 py-3">Day &amp; Date</th>
+                      <th className="px-4 py-3">Subject</th>
+                      <th className="px-4 py-3">Timing</th>
+                      <th className="px-4 py-3">Examination Venue</th>
+                      <th className="px-4 py-3">Syllabus Scope</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {examDateSheet.map((item) => (
+                      <tr key={item.date} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                        <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-slate-100">{item.date}</td>
+                        <td className="px-4 py-3.5 font-semibold text-emerald-700">{item.subject}</td>
+                        <td className="px-4 py-3.5 font-mono text-slate-600">{item.timing}</td>
+                        <td className="px-4 py-3.5 text-slate-600">{item.room}</td>
+                        <td className="px-4 py-3.5 text-slate-500 text-[11px]">{item.syllabus}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -706,12 +687,12 @@ export function ParentPortal() {
       {payModalOpen && (
         <PaymentGatewayModal
           details={{
-            challanNo: studentProfile.challanNo,
-            studentName: studentProfile.name,
-            rollNo: studentProfile.roll,
-            className: studentProfile.class,
-            amount: studentProfile.feeAmount,
-            dueDate: studentProfile.dueDate,
+            challanNo: studentProfile.challanNo || 'CH-2026-001',
+            studentName: studentProfile.name || 'Student',
+            rollNo: studentProfile.roll || '—',
+            className: studentProfile.class || 'Class 5',
+            amount: studentProfile.feeAmount || 0,
+            dueDate: studentProfile.dueDate || '10-Oct-2026',
             bankName: studentProfile.bankName,
             accountTitle: studentProfile.accountTitle,
             iban: studentProfile.iban,
@@ -728,14 +709,14 @@ export function ParentPortal() {
       {challanModalOpen && (
         <ThreeFaceChallanSlip
           data={{
-            challanNo: studentProfile.challanNo,
-            studentName: studentProfile.name,
+            challanNo: studentProfile.challanNo || 'CH-2026-001',
+            studentName: studentProfile.name || 'Student',
             fatherName: studentProfile.guardian,
-            rollNo: studentProfile.roll,
-            className: studentProfile.class,
-            tuitionFee: studentProfile.feeAmount,
+            rollNo: studentProfile.roll || '—',
+            className: studentProfile.class || 'Class 5',
+            tuitionFee: studentProfile.feeAmount || 0,
             arrears: 0,
-            dueDate: studentProfile.dueDate,
+            dueDate: studentProfile.dueDate || '10-Oct-2026',
             issueDate: '01 Oct 2026',
             bankName: studentProfile.bankName,
             accountTitle: studentProfile.accountTitle,

@@ -35,7 +35,7 @@ const PLANS = [
     popular: false,
     cta: 'Start 30-Day Free Trial',
     features: [
-      '1-Click Haziri Attendance Register',
+      '1-Click Attendance Register',
       'Audio & Text Homework Diaries',
       'Student Directory & Roll Numbers',
       'Faculty Profiles & Duty Roster',
@@ -56,7 +56,7 @@ const PLANS = [
       'Everything in Starter Campus',
       '3-Copy Automated Fee Challans (Bank/School/Student)',
       '1-Click WhatsApp Fee & Absent Broadcasts',
-      'Online Admissions Portal (/apply)',
+      'Digital Admissions & Inquiries Management',
       'Master Timetable Builder & Conflict Guard',
       'Board-Compliant Marks (BISE & Cambridge)',
       'Staff Payroll & Operational P&L Ledger',
@@ -74,7 +74,7 @@ const PLANS = [
     cta: 'Contact Network Sales',
     features: [
       'Everything in Pro Campus',
-      'Super Admin Multi-Tenant Governance Dashboard',
+      'Centralized Multi-Campus Governance & Consolidated Reports',
       'Consolidated Fee Recovery & Arrears Audit',
       'Inter-Branch Student Transfer Registry',
       '24/7 Gemini AI Bilingual Parent Companion',
@@ -310,31 +310,19 @@ export default function PricingPage() {
               href="/admin"
               className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition shadow-xs"
             >
-              School Admin Portal →
+              Campus Admin Portal →
             </Link>
             <Link
               href="/teacher"
               className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
             >
-              Teacher Console →
-            </Link>
-            <Link
-              href="/student"
-              className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
-            >
-              Student Space →
+              Teacher Portal →
             </Link>
             <Link
               href="/parent"
               className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
             >
-              Parent Portal →
-            </Link>
-            <Link
-              href="/super-admin"
-              className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
-            >
-              Super Admin Multi-Tenant →
+              Parents Portal →
             </Link>
           </div>
         </div>

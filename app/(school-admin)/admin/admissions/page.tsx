@@ -221,13 +221,6 @@ export default function AdminAdmissionsPage() {
           >
             <Download className="size-3.5" /> Export CSV
           </button>
-          <Link
-            href="/apply"
-            target="_blank"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-blue-700 transition shadow-xs"
-          >
-            <UserPlus className="size-3.5" /> Public /apply Page ↗
-          </Link>
         </div>
       </div>
 

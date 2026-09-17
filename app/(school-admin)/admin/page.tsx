@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, CalendarCheck, CreditCard, FileText, GraduationCap, ReceiptText, Settings, Users, WalletCards, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { fetchAdminStats, fetchTeachers } from '@/lib/live-data'
+import { fetchAdminStats, fetchTeachers, fetchStudents } from '@/lib/live-data'
 
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState<{
@@ -20,18 +20,23 @@ export default function AdminOverviewPage() {
     expenses: [],
   })
   const [teacherCount, setTeacherCount] = useState(0)
+  const [studentsList, setStudentsList] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       fetchAdminStats(),
       fetchTeachers(),
-    ]).then(([adminRes, teacherRes]) => {
+      fetchStudents(),
+    ]).then(([adminRes, teacherRes, studentsRes]) => {
       if (adminRes.data) {
         setStats(adminRes.data)
       }
       if (teacherRes.data) {
         setTeacherCount(teacherRes.data.length)
+      }
+      if (studentsRes.data) {
+        setStudentsList(studentsRes.data)
       }
       setLoading(false)
     })
@@ -40,7 +45,31 @@ export default function AdminOverviewPage() {
   const paidInvoices = stats.invoices.filter((inv) => inv.status === 'Paid')
   const totalCollected = paidInvoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0)
   const totalInvoiced = stats.invoices.reduce((acc, inv) => acc + (Number(inv.amount) || 0), 0)
-  const presentToday = stats.attendance.filter((att) => att.status === 'Present').length
+  const presentToday = stats.attendance.filter((att) => att.status === 'Present' || att.status === 'present').length
+
+  const attendanceRate = useMemo(() => {
+    if (!stats.attendance || stats.attendance.length === 0) return 0
+    return Math.round((presentToday / stats.attendance.length) * 100)
+  }, [stats.attendance, presentToday])
+
+  const uniqueClasses = useMemo(() => {
+    const set = new Set(studentsList.map((s: any) => s.class).filter(Boolean))
+    return Array.from(set)
+  }, [studentsList])
+
+  const classBreakdown = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const s of studentsList) {
+      const cls = s.class || 'General'
+      counts[cls] = (counts[cls] || 0) + 1
+    }
+    const total = studentsList.length || 1
+    return Object.entries(counts).map(([name, count]) => ({
+      name,
+      count,
+      progress: Math.min(100, Math.round((count / total) * 100)),
+    }))
+  }, [studentsList])
 
   const [activeGrowthTab, setActiveGrowthTab] = useState<'performance' | 'annual'>('performance')
 
@@ -80,7 +109,7 @@ export default function AdminOverviewPage() {
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900">
-              {loading ? '—' : stats.students > 0 ? stats.students.toLocaleString() : '25,500'}
+              {loading ? '—' : stats.students.toLocaleString()}
             </p>
             {/* Blue Wave Sparkline */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
@@ -97,10 +126,12 @@ export default function AdminOverviewPage() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Active Classes</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Optimal</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Live</span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <p className="text-2xl font-black tracking-tight text-slate-900">650</p>
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {loading ? '—' : uniqueClasses.length.toLocaleString()}
+            </p>
             {/* Wave Sparkline */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
               <path d="M0 22 Q 30 25, 55 10 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -115,30 +146,34 @@ export default function AdminOverviewPage() {
         {/* Metric 3: Average Metrics / Pass */}
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Average Metrics</span>
-            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">84%</span>
+            <span className="text-xs font-semibold text-slate-500">Attendance Rate</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Today</span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <p className="text-2xl font-black tracking-tight text-slate-900">84%</p>
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {loading ? '—' : `${attendanceRate}%`}
+            </p>
             {/* Wave Sparkline */}
             <svg className="h-7 w-20 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
               <path d="M0 18 Q 20 8, 50 15 T 100 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
           <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Term Examination</span>
+            <span>Campus Register</span>
             <Link href="/admin/attendance" className="text-blue-600 hover:underline font-semibold">Reports →</Link>
           </div>
         </div>
 
-        {/* Metric 4: Performance */}
+        {/* Metric 4: Faculty & Teachers */}
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Performance</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">High</span>
+            <span className="text-xs font-semibold text-slate-500">Faculty Staff</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Active</span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <p className="text-2xl font-black tracking-tight text-slate-900">85%</p>
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {loading ? '—' : teacherCount.toLocaleString()}
+            </p>
             {/* Wave Sparkline */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
               <path d="M0 25 Q 35 15, 65 8 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -188,7 +223,7 @@ export default function AdminOverviewPage() {
         <div className="mt-6 relative">
           {/* Floating Data Badge Indicator */}
           <div className="absolute top-8 left-[45%] -translate-x-1/2 z-10 hidden sm:flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white shadow-md">
-            <span>Assumed Growth: 94.2%</span>
+            <span>Active Enrollment: {loading ? '—' : stats.students}</span>
           </div>
 
           <svg className="w-full h-48 sm:h-64 overflow-visible" viewBox="0 0 800 240" preserveAspectRatio="none">
@@ -264,29 +299,31 @@ export default function AdminOverviewPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {[
-                { name: 'Class 10 Matric', count: 39, progress: 55 },
-                { name: 'Class 9 Science', count: 57, progress: 74 },
-                { name: 'Class 8 General', count: 13, progress: 54 },
-                { name: 'Class 7 Prep', count: 42, progress: 68 },
-                { name: 'Class 6 Primary', count: 28, progress: 82 },
-              ].map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/80 transition">
-                  <td className="py-3 font-bold text-slate-800">{row.name}</td>
-                  <td className="py-3 text-center font-semibold text-slate-700">{row.count}</td>
-                  <td className="py-3 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <span className="font-bold text-slate-900">{row.progress}%</span>
-                      <div className="h-2 w-28 rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                          className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                          style={{ width: `${row.progress}%` }}
-                        />
-                      </div>
-                    </div>
+              {classBreakdown.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="py-8 text-center text-slate-400">
+                    No enrolled students or active classes found for this campus.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                classBreakdown.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/80 transition">
+                    <td className="py-3 font-bold text-slate-800">{row.name}</td>
+                    <td className="py-3 text-center font-semibold text-slate-700">{row.count}</td>
+                    <td className="py-3 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <span className="font-bold text-slate-900">{row.progress}%</span>
+                        <div className="h-2 w-28 rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                            style={{ width: `${row.progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

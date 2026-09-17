@@ -37,7 +37,7 @@ export function RoleGate({
 
           let demoAuthorized = false
           if (normalizedTarget === 'super_admin') {
-            demoAuthorized = normalizedDemo === 'super_admin'
+            demoAuthorized = false
           } else if (normalizedTarget === 'school_admin') {
             demoAuthorized = ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
           } else if (normalizedTarget === 'teacher') {
@@ -103,9 +103,9 @@ export function RoleGate({
 
         let isAuthorized = false
 
-        // Super Admin route is strictly guarded: only super_admin role or authorized superadmin email
+        // Super Admin route is strictly guarded: exclusive to basithunyawrr@gmail.com
         if (normalizedTargetRole === 'super_admin') {
-          isAuthorized = normalizedUserRole === 'super_admin' || isSuper
+          isAuthorized = isSuper
         } else if (normalizedTargetRole === 'school_admin') {
           isAuthorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'teacher') {

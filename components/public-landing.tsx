@@ -26,6 +26,7 @@ import {
   Sparkles,
   TrendingUp,
   Users,
+  X,
   Zap,
 } from 'lucide-react'
 import { AcademicCrest } from '@/components/academic-crest'
@@ -64,10 +65,10 @@ const plans = [
     features: [
       'Everything in Pro',
       '24/7 Gemini AI Parent Companion',
-      'Multi-Campus Tenant Control Plane',
       'Universal Cloud Sync & Offline Mode',
       'Online Debit/Credit Fee Gateway',
       'Custom Campus Branded Domain',
+      'Priority Implementation & Training',
     ],
   },
 ]
@@ -88,12 +89,13 @@ const faqs = [
 ]
 
 export function PublicLanding() {
-  const [activePortalTab, setActivePortalTab] = useState<'parent' | 'admin' | 'teacher' | 'student' | 'superadmin'>('parent')
+  const [activePortalTab, setActivePortalTab] = useState<'admin' | 'teacher' | 'parent'>('admin')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
-      {/* Top Navigation Bar matching Mockup Screen 5 */}
+      {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-slate-200/90 bg-white/95 px-6 backdrop-blur-md lg:px-12">
         <Link href="/" className="flex items-center gap-3 no-underline">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
@@ -102,34 +104,28 @@ export function PublicLanding() {
           <span className="text-xl font-black tracking-tight text-slate-900">EduFlow</span>
         </Link>
 
-        {/* Center Navigation Links from Mockup */}
+        {/* Center Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
           <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
           <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimonials</a>
           <Link href="/pricing" className="hover:text-blue-600 transition-colors">Pricing &amp; ROI</Link>
-          <Link href="/apply" className="text-blue-600 font-bold hover:text-blue-700 transition-colors">Apply Online</Link>
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link
-            href="/apply"
-            className="hidden sm:inline-flex items-center justify-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100 transition"
-          >
-            Admissions 2026-27
-          </Link>
           <Link
             href="/login?force=1"
             className="text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition-colors"
           >
             Log In
           </Link>
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition"
+          <button
+            type="button"
+            onClick={() => setIsDemoModalOpen(true)}
+            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
           >
             Request a Demo
-          </Link>
+          </button>
         </div>
       </nav>
 
@@ -138,80 +134,218 @@ export function PublicLanding() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Column: Interactive Product Showcase Card (SaaS Preview - NO FAKE PHONE FRAME) */}
+            {/* Left Column: Interactive Product Showcase Inside iPhone Mockup */}
             <div className="lg:col-span-6 flex justify-center order-2 lg:order-1">
-              <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xl shadow-slate-900/5 ring-1 ring-slate-200/60">
-                {/* Showcase Header with Window Dots & Portal Tabs */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-1.5">
-                    <span className="size-2.5 rounded-full bg-rose-400" />
-                    <span className="size-2.5 rounded-full bg-amber-400" />
-                    <span className="size-2.5 rounded-full bg-emerald-400" />
+              <div className="relative mx-auto w-full max-w-[390px] rounded-[50px] border-[10px] border-slate-900 bg-slate-900 p-2.5 shadow-2xl shadow-slate-950/25 ring-1 ring-slate-800">
+                {/* Dynamic Island Notch & iOS Status Bar */}
+                <div className="flex items-center justify-between px-3 pt-1 pb-2 text-[11px] font-bold text-white">
+                  <span>9:41</span>
+                  <div className="flex h-5 w-24 items-center justify-between rounded-full bg-black px-2">
+                    <span className="size-2 rounded-full bg-slate-800" />
+                    <span className="size-1.5 rounded-full bg-blue-950 ring-1 ring-emerald-500/40" />
                   </div>
-
-                  {/* Portal Switcher Tabs */}
-                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-[11px] font-bold">
-                    <button
-                      onClick={() => setActivePortalTab('parent')}
-                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'parent' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                    >
-                      Parent
-                    </button>
-                    <button
-                      onClick={() => setActivePortalTab('admin')}
-                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'admin' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                    >
-                      Admin
-                    </button>
-                    <button
-                      onClick={() => setActivePortalTab('teacher')}
-                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'teacher' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                    >
-                      Teacher
-                    </button>
-                    <button
-                      onClick={() => setActivePortalTab('student')}
-                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'student' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                    >
-                      Student
-                    </button>
-                    <button
-                      onClick={() => setActivePortalTab('superadmin')}
-                      className={`px-2.5 py-1 rounded-lg transition ${activePortalTab === 'superadmin' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                    >
-                      Super Admin
-                    </button>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <span>5G</span>
+                    <span className="inline-block size-2 rounded-full bg-white" />
                   </div>
                 </div>
 
-                {/* Tab Content 1: Parent Portal Preview (Screen 4 / 5) */}
-                {activePortalTab === 'parent' && (
-                  <div className="pt-5 space-y-4">
+                {/* iPhone Screen Content */}
+                <div className="rounded-[38px] bg-white p-4 shadow-inner">
+                  {/* Institutional Header & Portal Switcher */}
+                  <div className="flex flex-col gap-2.5 pb-3 border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[11px] font-bold text-slate-800">EduFlow Mobile OS</span>
+                      </div>
+                      <span className="text-[10px] font-semibold text-slate-400">Beaconhouse Scholars</span>
+                    </div>
+
+                    {/* Portal Switcher Tabs */}
+                    <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-bold text-center">
+                      <button
+                        type="button"
+                        onClick={() => setActivePortalTab('admin')}
+                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'admin' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+                      >
+                        Admin
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePortalTab('teacher')}
+                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'teacher' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+                      >
+                        Teacher
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePortalTab('parent')}
+                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'parent' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+                      >
+                        Parent
+                      </button>
+                    </div>
+                  </div>
+
+                {/* Tab Content 1: Campus Admin Dashboard Preview */}
+                {activePortalTab === 'admin' && (
+                  <div className="pt-4 space-y-3.5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Welcome,</span>
-                        <h4 className="text-base font-black text-slate-900">Sarah Miller</h4>
-                        <span className="text-xs text-slate-500 font-medium">Two Students Enrolled</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Campus Control Console</span>
+                        </div>
+                        <h4 className="text-base font-black text-slate-900">Term 2 Operations &amp; Fee Recovery</h4>
+                      </div>
+                      <Link href="/admin" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+                        Explore Portal <ArrowRight className="size-3" />
+                      </Link>
+                    </div>
+
+                    {/* 4 Live Metric Pills */}
+                    <div className="grid grid-cols-4 gap-2 text-center">
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Enrolled</span>
+                        <span className="text-xs font-black text-slate-900">1,240</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Collected</span>
+                        <span className="text-xs font-black text-emerald-600">PKR 1.45M</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Recovery</span>
+                        <span className="text-xs font-black text-blue-600">96.2%</span>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
+                        <span className="text-[9px] text-slate-400 block font-bold">Faculty</span>
+                        <span className="text-xs font-black text-purple-600">48 / 50</span>
+                      </div>
+                    </div>
+
+                    {/* Visual Growth & Fee Curve */}
+                    <div className="rounded-xl bg-gradient-to-br from-blue-50/50 to-slate-50 p-3 border border-blue-100/70 relative">
+                      <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold mb-1">
+                        <span>Monthly Fee Realization Trend</span>
+                        <span className="text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold text-[9px]">● Auto-Bank Challans Dispatched</span>
+                      </div>
+                      <svg className="w-full h-20 overflow-visible" viewBox="0 0 400 90" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="landingWave" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.35" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M 0 75 Q 100 20, 200 45 T 400 12 L 400 90 L 0 90 Z" fill="url(#landingWave)" />
+                        <path d="M 0 75 Q 100 20, 200 45 T 400 12" fill="none" stroke="#2563eb" strokeWidth="2.5" />
+                        <circle cx="200" cy="45" r="4" fill="#2563eb" stroke="#fff" strokeWidth="2" />
+                      </svg>
+                    </div>
+
+                    {/* Real-time Challan & WhatsApp Automation Badge */}
+                    <div className="flex items-center justify-between text-xs bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/70">
+                      <div className="flex items-center gap-2">
+                        <ReceiptText className="size-4 text-blue-600" />
+                        <span className="font-semibold text-slate-800">3-Copy Bank Challan Batch</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                        100% Synced
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab Content 2: Teacher Portal Preview */}
+                {activePortalTab === 'teacher' && (
+                  <div className="pt-4 space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-blue-500" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Teacher Portal</span>
+                        </div>
+                        <h4 className="text-base font-black text-slate-900">Class 4-A · Morning Attendance</h4>
+                      </div>
+                      <Link href="/teacher" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+                        Explore Portal <ArrowRight className="size-3" />
+                      </Link>
+                    </div>
+
+                    {/* 1-Click Attendance Student Register Simulation */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 text-xs">
+                      <div className="flex items-center justify-between font-bold text-slate-700 pb-1.5 border-b border-slate-100 text-[11px]">
+                        <span>Student Roll Call</span>
+                        <span className="text-slate-400 font-normal">28 Present · 1 Absent</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
+                          <span className="font-semibold text-slate-800">01. Ahmed Raza</span>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
+                        </div>
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
+                          <span className="font-semibold text-slate-800">02. Fatima Noor</span>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
+                        </div>
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-rose-50/60 border border-rose-200">
+                          <span className="font-semibold text-slate-800">03. Bilal Hassan</span>
+                          <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded">Absent ✉</span>
+                        </div>
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
+                          <span className="font-semibold text-slate-800">04. Zainab Ali</span>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Audio Voice Diary Strip */}
+                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60 text-xs flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="size-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                          <Mic className="size-3.5" />
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-900 block text-xs">Urdu &amp; English Voice Diary</span>
+                          <span className="text-[10px] text-slate-500">Auto-dispatches homework to WhatsApp</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-200/60">
+                        0:38 Voice Note
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab Content 3: Parents Portal Preview */}
+                {activePortalTab === 'parent' && (
+                  <div className="pt-4 space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-emerald-500" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Parents Portal</span>
+                        </div>
+                        <h4 className="text-base font-black text-slate-900">Welcome, Parents Portal</h4>
                       </div>
                       <Link
                         href="/parent"
                         className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"
                       >
-                        Open Portal <ArrowRight className="size-3" />
+                        Explore Portal <ArrowRight className="size-3" />
                       </Link>
                     </div>
 
-                    {/* Dual Student Cards Preview (Liam & Ava Miller) */}
+                    {/* Dual Student Cards Preview */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Child 1: Liam Miller */}
+                      {/* Child 1: Ali Khan */}
                       <div className="rounded-xl border border-blue-200/80 bg-blue-50/30 p-3 shadow-2xs">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center">
-                              LM
+                              AK
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-slate-900">Liam Miller</div>
+                              <div className="text-xs font-bold text-slate-900">Ali Khan</div>
                               <div className="text-[10px] text-slate-500">Grade 4 · Sec A</div>
                             </div>
                           </div>
@@ -219,23 +353,22 @@ export function PublicLanding() {
                             Active
                           </span>
                         </div>
-                        <div className="mt-3 grid grid-cols-4 gap-1 border-t border-blue-100 pt-2 text-center">
-                          <div><span className="text-[9px] text-slate-400">Status</span><div className="text-xs font-black text-slate-900">23</div></div>
-                          <div><span className="text-[9px] text-slate-400">Grades</span><div className="text-xs font-black text-blue-600">76%</div></div>
-                          <div><span className="text-[9px] text-slate-400">Total</span><div className="text-xs font-black text-slate-900">10</div></div>
-                          <div><span className="text-[9px] text-slate-400">Fee</span><div className="text-xs font-black text-emerald-600">100%</div></div>
+                        <div className="mt-3 grid grid-cols-3 gap-1 border-t border-blue-100 pt-2 text-center">
+                          <div><span className="text-[9px] text-slate-400">Attendance</span><div className="text-xs font-black text-slate-900">96%</div></div>
+                          <div><span className="text-[9px] text-slate-400">Exam Grade</span><div className="text-xs font-black text-blue-600">88% (A)</div></div>
+                          <div><span className="text-[9px] text-slate-400">Fee Slip</span><div className="text-xs font-black text-emerald-600">Paid ✓</div></div>
                         </div>
                       </div>
 
-                      {/* Child 2: Ava Miller */}
+                      {/* Child 2: Fatima Khan */}
                       <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">
-                              AM
+                              FK
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-slate-900">Ava Miller</div>
+                              <div className="text-xs font-bold text-slate-900">Fatima Khan</div>
                               <div className="text-[10px] text-slate-500">Grade 2 · Sec B</div>
                             </div>
                           </div>
@@ -243,212 +376,29 @@ export function PublicLanding() {
                             Active
                           </span>
                         </div>
-                        <div className="mt-3 grid grid-cols-4 gap-1 border-t border-slate-100 pt-2 text-center">
-                          <div><span className="text-[9px] text-slate-400">Status</span><div className="text-xs font-black text-slate-900">23</div></div>
-                          <div><span className="text-[9px] text-slate-400">Grades</span><div className="text-xs font-black text-blue-600">76%</div></div>
-                          <div><span className="text-[9px] text-slate-400">Total</span><div className="text-xs font-black text-slate-900">10</div></div>
-                          <div><span className="text-[9px] text-slate-400">Fee</span><div className="text-xs font-black text-emerald-600">100%</div></div>
+                        <div className="mt-3 grid grid-cols-3 gap-1 border-t border-slate-100 pt-2 text-center">
+                          <div><span className="text-[9px] text-slate-400">Attendance</span><div className="text-xs font-black text-slate-900">98%</div></div>
+                          <div><span className="text-[9px] text-slate-400">Exam Grade</span><div className="text-xs font-black text-blue-600">92% (A+)</div></div>
+                          <div><span className="text-[9px] text-slate-400">Fee Slip</span><div className="text-xs font-black text-emerald-600">Paid ✓</div></div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Recent Assignments Strip */}
+                    {/* Instant Fee Challan & WhatsApp Diary Pill */}
                     <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60">
-                      <div className="flex items-center justify-between mb-1.5 text-xs font-bold text-slate-700">
-                        <span>Recent Assignments</span>
-                        <span className="text-slate-400 font-medium text-[11px]">Due Today</span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-slate-600">
-                        <span>Liam Math Algebra Chapter 4 Homework</span>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Submitted</span>
+                      <div className="flex items-center justify-between text-xs text-slate-700">
+                        <span className="font-semibold">September 3-Copy Bank Challan</span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Paid via Meezan Bank</span>
                       </div>
                     </div>
                   </div>
                 )}
+                </div>
 
-                {/* Tab Content 2: Admin Dashboard Preview (Screen 3) */}
-                {activePortalTab === 'admin' && (
-                  <div className="pt-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Campus Admin</span>
-                        <h4 className="text-base font-black text-slate-900">Annual Platform Growth</h4>
-                      </div>
-                      <Link href="/admin" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Open Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    {/* 4 Stats */}
-                    <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Students</span>
-                        <span className="text-xs font-black text-slate-900">25,500</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Classes</span>
-                        <span className="text-xs font-black text-slate-900">650</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Average</span>
-                        <span className="text-xs font-black text-blue-600">84%</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Performance</span>
-                        <span className="text-xs font-black text-emerald-600">85%</span>
-                      </div>
-                    </div>
-
-                    {/* Blue Wave Chart */}
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60 relative">
-                      <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold mb-1">
-                        <span>Platform Growth Curve</span>
-                        <span className="text-blue-600 font-black">15,442 Active Students</span>
-                      </div>
-                      <svg className="w-full h-24 overflow-visible" viewBox="0 0 400 100" preserveAspectRatio="none">
-                        <defs>
-                          <linearGradient id="landingWave" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.4" />
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
-                          </linearGradient>
-                        </defs>
-                        <path d="M 0 80 Q 100 20, 200 50 T 400 15 L 400 100 L 0 100 Z" fill="url(#landingWave)" />
-                        <path d="M 0 80 Q 100 20, 200 50 T 400 15" fill="none" stroke="#2563eb" strokeWidth="2.5" />
-                        <circle cx="200" cy="50" r="4" fill="#2563eb" stroke="#fff" strokeWidth="2" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Content 3: Teacher Portal Preview (Screen 2) */}
-                {activePortalTab === 'teacher' && (
-                  <div className="pt-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Teacher Console</span>
-                        <h4 className="text-base font-black text-slate-900">Welcome, Professor Carter</h4>
-                      </div>
-                      <Link href="/teacher" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Open Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    {/* Course Cards Grid */}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="rounded-xl border border-slate-200 p-2.5 bg-white">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-900">CS550</span>
-                          <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-sm">ACTIVE</span>
-                        </div>
-                        <div className="text-[10px] text-slate-400 mt-1">Enrolled: 27.4%</div>
-                        <div className="h-1.5 w-full bg-slate-100 rounded-full mt-1.5 overflow-hidden">
-                          <div className="h-full bg-blue-600 rounded-full w-[27%]" />
-                        </div>
-                      </div>
-                      <div className="rounded-xl border border-slate-200 p-2.5 bg-white">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-900">CE596</span>
-                          <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-sm">ACTIVE</span>
-                        </div>
-                        <div className="text-[10px] text-slate-400 mt-1">Enrolled: 21%</div>
-                        <div className="h-1.5 w-full bg-slate-100 rounded-full mt-1.5 overflow-hidden">
-                          <div className="h-full bg-blue-600 rounded-full w-[21%]" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60 text-xs flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Mic className="size-4 text-blue-600" />
-                        <span className="font-bold text-slate-800">Voice Diary Ready</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-blue-600">3 Classes Logged Today</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Content 4: Student Portal Preview */}
-                {activePortalTab === 'student' && (
-                  <div className="pt-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Student Space</span>
-                        <h4 className="text-base font-black text-slate-900">Liam Miller</h4>
-                        <span className="text-xs text-slate-500 font-medium">Class 10-A · Roll # 24</span>
-                      </div>
-                      <Link href="/student" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Open Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Attendance</span>
-                        <span className="text-xs font-black text-emerald-600">96.4%</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Term GPA</span>
-                        <span className="text-xs font-black text-blue-600">3.88 / A+</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Class Rank</span>
-                        <span className="text-xs font-black text-purple-600">2nd of 42</span>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl bg-white border border-slate-200 p-3 space-y-2 text-xs">
-                      <div className="flex items-center justify-between font-bold text-slate-800 pb-1 border-b border-slate-100">
-                        <span>Today&apos;s Homework &amp; Bell Schedule</span>
-                        <span className="text-blue-600 text-[10px]">Period 4 Next</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-600">
-                        <span>Physics: Numerical Problems Chapter 6</span>
-                        <span className="font-semibold text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Due Tomorrow</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Content 5: Super Admin Preview (Screen 1) */}
-                {activePortalTab === 'superadmin' && (
-                  <div className="pt-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Super Admin</span>
-                        <h4 className="text-base font-black text-slate-900">Institutions Overview</h4>
-                      </div>
-                      <Link href="/super-admin" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Open Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Campuses</span>
-                        <span className="text-xs font-black text-slate-900">0085</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Revenue</span>
-                        <span className="text-xs font-black text-emerald-600">15,70,000</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Sessions</span>
-                        <span className="text-xs font-black text-blue-600">1,376</span>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl bg-white border border-slate-200 p-3 space-y-2 text-xs">
-                      <div className="flex items-center justify-between font-bold text-slate-800 pb-1 border-b border-slate-100">
-                        <span>Institution Directory</span>
-                        <span className="text-emerald-600 text-[10px]">● All Campuses Connected</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-600">
-                        <span>Beacon Scholars Main Campus</span>
-                        <span className="font-mono text-[11px] font-bold text-slate-800">23 Students</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {/* iOS Home Indicator Bar */}
+                <div className="mt-2.5 flex justify-center pb-1">
+                  <span className="h-1 w-28 rounded-full bg-slate-600" />
+                </div>
               </div>
             </div>
 
@@ -507,41 +457,30 @@ export function PublicLanding() {
       <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 py-4 border-b border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-2xs" id="testimonials">
         <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
         <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-        <Link href="/signup" className="hover:text-blue-600 transition-colors">Request a Demo</Link>
+        <button
+          type="button"
+          onClick={() => setIsDemoModalOpen(true)}
+          className="hover:text-blue-600 transition-colors cursor-pointer"
+        >
+          Request a Demo
+        </button>
       </div>
 
-      {/* 4 Portals Explorer Grid */}
+      {/* 3 Dedicated Portals Explorer Grid */}
       <section className="py-16 md:py-24 bg-slate-50 border-b border-slate-200/80" id="portals">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
             Dedicated Workspaces
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-            One Platform. Four Purpose-Built Portals.
+            One Platform. Three Purpose-Built Portals.
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
             Experience role-specific operating consoles designed with precision for school directors, teachers, and parents.
           </p>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            {/* Portal 1: Super Admin */}
-            <Link
-              href="/super-admin"
-              className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition hover:border-blue-500 hover:shadow-md no-underline"
-            >
-              <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
-                <Building2 className="size-6" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900">Super Admin Console</h3>
-              <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                Multi-campus tenant directory, license provisioning, revenue telemetry, and root god-mode controls.
-              </p>
-              <span className="mt-4 inline-flex items-center text-xs font-bold text-blue-600 group-hover:translate-x-1 transition">
-                Explore Screen 1 →
-              </span>
-            </Link>
-
-            {/* Portal 2: School Admin */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            {/* Portal 1: Campus Admin */}
             <Link
               href="/admin"
               className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition hover:border-blue-500 hover:shadow-md no-underline"
@@ -551,14 +490,14 @@ export function PublicLanding() {
               </div>
               <h3 className="text-base font-bold text-slate-900">Campus Admin Portal</h3>
               <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                Annual platform growth wave analytics, automated fee challan slips, faculty attendance, and P&amp;L ledger.
+                Annual platform growth wave analytics, automated 3-copy fee challan slips, faculty attendance, and P&amp;L ledger.
               </p>
               <span className="mt-4 inline-flex items-center text-xs font-bold text-blue-600 group-hover:translate-x-1 transition">
-                Explore Screen 3 →
+                Explore Campus Admin →
               </span>
             </Link>
 
-            {/* Portal 3: Teacher Console */}
+            {/* Portal 2: Teacher Portal */}
             <Link
               href="/teacher"
               className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition hover:border-blue-500 hover:shadow-md no-underline"
@@ -566,16 +505,16 @@ export function PublicLanding() {
               <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
                 <CalendarCheck className="size-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Teacher Haziri Console</h3>
+              <h3 className="text-base font-bold text-slate-900">Teacher Portal</h3>
               <p className="mt-2 text-xs text-slate-500 leading-relaxed">
                 30-second digital classroom attendance, Urdu audio voice diary broadcast, and course performance metrics.
               </p>
               <span className="mt-4 inline-flex items-center text-xs font-bold text-blue-600 group-hover:translate-x-1 transition">
-                Explore Screen 2 →
+                Explore Teacher Portal →
               </span>
             </Link>
 
-            {/* Portal 4: Parent Portal */}
+            {/* Portal 3: Parents Portal */}
             <Link
               href="/parent"
               className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition hover:border-blue-500 hover:shadow-md no-underline"
@@ -583,12 +522,12 @@ export function PublicLanding() {
               <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
                 <Users className="size-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Parents Learning Space</h3>
+              <h3 className="text-base font-bold text-slate-900">Parents Portal</h3>
               <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                Dynamic student cards (Liam &amp; Ava Miller), online fee payment gateway, 3-face challans, and AI companion.
+                Multi-child student profiles, online fee payment gateway, 3-copy challan receipts, and AI companion.
               </p>
               <span className="mt-4 inline-flex items-center text-xs font-bold text-blue-600 group-hover:translate-x-1 transition">
-                Explore Screen 4 →
+                Explore Parents Portal →
               </span>
             </Link>
           </div>
@@ -764,7 +703,6 @@ export function PublicLanding() {
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Administrative</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/super-admin" className="hover:text-blue-600">Super Admin Desk</Link></li>
                 <li><Link href="/admin" className="hover:text-blue-600">Campus Admin Portal</Link></li>
                 <li><Link href="/admin/admissions" className="hover:text-blue-600">Admissions Desk</Link></li>
                 <li><Link href="/admin/students" className="hover:text-blue-600">Student Directory</Link></li>
@@ -775,12 +713,11 @@ export function PublicLanding() {
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Classroom &amp; Students</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Portals &amp; Pricing</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Console</Link></li>
-                <li><Link href="/student" className="hover:text-blue-600">Student Portal</Link></li>
-                <li><Link href="/parent" className="hover:text-blue-600">Parent Companion Portal</Link></li>
-                <li><Link href="/apply" className="hover:text-blue-600 text-blue-600 font-semibold">Online Admissions 2026-27</Link></li>
+                <li><Link href="/admin" className="hover:text-blue-600">Campus Admin</Link></li>
+                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Portal</Link></li>
+                <li><Link href="/parent" className="hover:text-blue-600">Parents Portal</Link></li>
                 <li><Link href="/pricing" className="hover:text-blue-600">Commercial Pricing &amp; ROI</Link></li>
               </ul>
             </div>
@@ -802,14 +739,117 @@ export function PublicLanding() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-400">
             <p>© 2026 EduFlow Systems. All rights reserved.</p>
             <div className="flex flex-wrap items-center gap-6">
-              <Link href="/apply" className="hover:text-blue-600">Apply Online</Link>
               <Link href="/pricing" className="hover:text-blue-600">Pricing &amp; Calculator</Link>
               <Link href="/login?force=1" className="hover:text-blue-600">Portal Login</Link>
-              <Link href="/signup" className="hover:text-blue-600">Register Campus</Link>
+              <button
+                type="button"
+                onClick={() => setIsDemoModalOpen(true)}
+                className="hover:text-blue-600 cursor-pointer"
+              >
+                Schedule Demo
+              </button>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Interactive Request a Demo Modal */}
+      {isDemoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 relative">
+            <button
+              onClick={() => setIsDemoModalOpen(false)}
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className="size-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <AcademicCrest className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">Request Institutional Demo</h3>
+                <p className="text-xs text-slate-500">Live 1-on-1 walkthrough for School Principals &amp; Directors</p>
+              </div>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                const form = e.currentTarget
+                const school = (form.elements.namedItem('school') as HTMLInputElement)?.value || 'My School'
+                const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || 'Admin'
+                const city = (form.elements.namedItem('city') as HTMLInputElement)?.value || 'Karachi'
+                const students = (form.elements.namedItem('students') as HTMLSelectElement)?.value || '500'
+                const text = encodeURIComponent(`Hello EduFlow Team, I am ${name} from ${school} (${city}) with ~${students} students. I would like to schedule an EduFlow demo walkthrough.`)
+                window.open(`https://wa.me/923127803616?text=${text}`, '_blank', 'noopener,noreferrer')
+                setIsDemoModalOpen(false)
+              }}
+              className="mt-4 space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">School / Institution Name</label>
+                <input
+                  name="school"
+                  required
+                  placeholder="e.g. Beaconhouse Scholars Academy"
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-900 text-xs focus:border-blue-600 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Your Name &amp; Designation</label>
+                  <input
+                    name="name"
+                    required
+                    placeholder="e.g. Principal Asim"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-900 text-xs focus:border-blue-600 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Campus City</label>
+                  <input
+                    name="city"
+                    required
+                    placeholder="Karachi, Lahore, etc."
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-900 text-xs focus:border-blue-600 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Approx. Student Body Count</label>
+                <select
+                  name="students"
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-900 text-xs focus:border-blue-600 focus:outline-none bg-white"
+                >
+                  <option value="250">Up to 250 Students</option>
+                  <option value="750">250 – 750 Students</option>
+                  <option value="1500">750 – 1,500 Students</option>
+                  <option value="3000">1,500+ Students (Multi-Campus)</option>
+                </select>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDemoModalOpen(false)}
+                  className="rounded-xl border border-slate-200 px-4 py-2.5 font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 font-bold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+                >
+                  <MessageCircle className="size-4" /> Schedule WhatsApp Demo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

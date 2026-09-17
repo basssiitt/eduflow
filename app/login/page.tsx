@@ -391,17 +391,17 @@ export default function LoginPage() {
                 Test Mode
               </span>
             </div>
-            <p className="text-xs text-slate-600 mb-3">
-              Explore and test EduFlow OS across all 5 dedicated role portals without needing manual login:
+            <p className="text-xs text-slate-500 mb-3 text-center">
+              Explore and test EduFlow OS across dedicated role workspaces:
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => handleInstantDemo('school_admin', '/admin')}
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
               >
                 <Building2 className="size-4 text-blue-600 shrink-0" />
-                <span className="truncate">School Admin</span>
+                <span className="truncate">Campus Admin</span>
               </button>
 
               <button
@@ -410,16 +410,7 @@ export default function LoginPage() {
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
               >
                 <GraduationCap className="size-4 text-blue-600 shrink-0" />
-                <span className="truncate">Teacher</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('student', '/student')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
-              >
-                <BookOpen className="size-4 text-indigo-600 shrink-0" />
-                <span className="truncate">Student Space</span>
+                <span className="truncate">Teacher Portal</span>
               </button>
 
               <button
@@ -428,16 +419,7 @@ export default function LoginPage() {
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
               >
                 <Users className="size-4 text-emerald-600 shrink-0" />
-                <span className="truncate">Parent</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('super_admin', '/super-admin')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left sm:col-span-2"
-              >
-                <ShieldCheck className="size-4 text-purple-600 shrink-0" />
-                <span className="truncate">Super Admin (Multi-Campus)</span>
+                <span className="truncate">Parents Portal</span>
               </button>
             </div>
           </div>
@@ -458,13 +440,9 @@ export default function LoginPage() {
             <span>•</span>
             <Link href="/admin" className="hover:text-blue-600 transition">Campus Admin</Link>
             <span>•</span>
-            <Link href="/teacher" className="hover:text-blue-600 transition">Teacher</Link>
+            <Link href="/teacher" className="hover:text-blue-600 transition">Teacher Portal</Link>
             <span>•</span>
-            <Link href="/student" className="hover:text-blue-600 transition">Student</Link>
-            <span>•</span>
-            <Link href="/parent" className="hover:text-blue-600 transition">Parent</Link>
-            <span>•</span>
-            <Link href="/super-admin" className="hover:text-blue-600 transition">Super Admin</Link>
+            <Link href="/parent" className="hover:text-blue-600 transition">Parents Portal</Link>
           </div>
           <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
             <span>Need help signing in?</span>

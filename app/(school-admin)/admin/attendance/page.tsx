@@ -107,7 +107,7 @@ export default function AdminAttendancePage() {
           </Link>
           <span className="text-slate-300">|</span>
           <Link href="/teacher" className="hover:text-blue-600 transition font-semibold text-slate-700">
-            Teacher Haziri Console →
+            Teacher Portal →
           </Link>
         </div>
       </nav>

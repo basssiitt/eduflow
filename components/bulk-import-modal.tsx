@@ -48,14 +48,34 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
     const records = allData.length > 0 ? allData : rows
     if (isSupabaseConfigured && supabaseClient && records.length > 0) {
       try {
+        let userSchoolId: string | null = null
+        const { data: userData } = await supabaseClient.auth.getUser()
+        if (userData?.user) {
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('school_id')
+            .eq('id', userData.user.id)
+            .single()
+          if (profile?.school_id) {
+            userSchoolId = profile.school_id
+          }
+        }
+        if (!userSchoolId) {
+          const { data: schools } = await supabaseClient.from('schools').select('id').limit(1)
+          if (schools && schools.length > 0) {
+            userSchoolId = schools[0].id
+          }
+        }
+
         const payload = records.map((r, i) => ({
-          name: r[0] || `Student ${i + 1}`,
+          full_name: r[0] || `Student ${i + 1}`,
           father_name: r[1] || '',
-          class: r[2] || 'Class 5',
+          class_name: r[2] || 'Class 5',
           section: r[3] || 'A',
-          guardian_phone: r[4] || '',
-          tuition_fee: Number(r[5]) || 15000,
-          roll_no: `2026-${String(i + 1).padStart(3, '0')}`,
+          monthly_fee: Number(r[5]) || 15000,
+          roll_number: `2026-${String(i + 1).padStart(3, '0')}`,
+          status: 'active',
+          ...(userSchoolId ? { school_id: userSchoolId } : {}),
         }))
         await supabaseClient.from('students').insert(payload)
       } catch {}

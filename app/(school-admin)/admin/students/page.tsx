@@ -58,15 +58,35 @@ function AddStudentModal({
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
+        let userSchoolId: string | null = null
+        const { data: userData } = await supabaseClient.auth.getUser()
+        if (userData?.user) {
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('school_id')
+            .eq('id', userData.user.id)
+            .single()
+          if (profile?.school_id) {
+            userSchoolId = profile.school_id
+          }
+        }
+        if (!userSchoolId) {
+          const { data: schools } = await supabaseClient.from('schools').select('id').limit(1)
+          if (schools && schools.length > 0) {
+            userSchoolId = schools[0].id
+          }
+        }
+
         const { error: insertError } = await supabaseClient.from('students').insert([
           {
-            name: name.trim(),
+            full_name: name.trim(),
             father_name: fatherName.trim(),
-            class: className,
+            class_name: className,
             section: section,
-            guardian_phone: phone.trim(),
-            tuition_fee: Number(fee) || 15000,
-            roll_no: rollNo,
+            monthly_fee: Number(fee) || 15000,
+            roll_number: rollNo,
+            status: 'active',
+            ...(userSchoolId ? { school_id: userSchoolId } : {}),
           },
         ])
 
@@ -76,7 +96,7 @@ function AddStudentModal({
           return
         }
       } catch (err: any) {
-        setError(err.message || 'Failed to save student')
+        setError(err?.message || 'Failed to save student')
         setSaving(false)
         return
       }

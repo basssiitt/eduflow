@@ -89,23 +89,38 @@ export function SuperAdminPortal() {
     setLoading(true)
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        const { data, error } = await supabaseClient
-          .from('campuses')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (!error && data && data.length > 0) {
+        const [schoolsRes, studentsRes] = await Promise.all([
+          supabaseClient
+            .from('schools')
+            .select('*')
+            .order('created_at', { ascending: false }),
+          supabaseClient
+            .from('students')
+            .select('id, school_id'),
+        ])
+
+        const studentsBySchool: Record<string, number> = {}
+        if (studentsRes.data) {
+          for (const st of studentsRes.data) {
+            if (st.school_id) {
+              studentsBySchool[st.school_id] = (studentsBySchool[st.school_id] || 0) + 1
+            }
+          }
+        }
+
+        if (!schoolsRes.error && schoolsRes.data) {
           setCampuses(
-            data.map((c: any, idx: number) => ({
+            schoolsRes.data.map((c: any, idx: number) => ({
               id: c.id ?? idx + 1,
               name: c.name || 'Unnamed School',
               city: c.city || 'Karachi',
-              owner: c.owner || 'Principal',
+              owner: c.owner || 'Campus Principal',
               phone: c.phone || '',
-              plan: (c.plan as Plan) || 'Starter',
-              students: Number(c.students) || 0,
-              status: (c.status as CampusStatus) || 'Active',
+              plan: 'Pro' as Plan,
+              students: studentsBySchool[c.id] || 0,
+              status: 'Active' as CampusStatus,
               slug: c.slug || '',
-              admin_email: c.admin_email || '',
+              admin_email: c.phone || '',
             }))
           )
         } else {
@@ -131,44 +146,44 @@ export function SuperAdminPortal() {
 
   const addCampus = async () => {
     if (!school || !owner || !email) return
-    const newRecord = {
-      name: school.trim(),
-      city,
-      owner: owner.trim(),
-      phone: phone.trim(),
-      plan,
-      students: 0,
-      status: 'Active' as CampusStatus,
-      slug,
-      admin_email: email.trim(),
-    }
+    setLoading(true)
+    try {
+      const response = await fetch('/api/super-admin/schools', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: school.trim(),
+          city,
+          owner: owner.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          password: initialAccessPass,
+          plan,
+        }),
+      })
 
-    if (isSupabaseConfigured && supabaseClient) {
-      try {
-        const { data, error } = await supabaseClient
-          .from('campuses')
-          .insert([newRecord])
-          .select()
-          .single()
-        if (!error && data) {
-          setCampuses((items) => [data, ...items])
-        } else {
-          setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
-        }
-      } catch {
-        setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
+      const resJson = await response.json()
+      if (!response.ok) {
+        setToastMsg(resJson.error || 'Failed to provision school')
+        setTimeout(() => setToastMsg(''), 4000)
+      } else {
+        setToastMsg(resJson.message || 'School campus provisioned successfully!')
+        setTimeout(() => setToastMsg(''), 4000)
+        await loadCampuses()
+        setCreated(true)
+        setOpen(false)
+        setSchool('')
+        setOwner('')
+        setPhone('')
+        setEmail('')
+        setInitialAccessPass('')
       }
-    } else {
-      setCampuses((items) => [{ id: Date.now(), ...newRecord }, ...items])
+    } catch (err: any) {
+      setToastMsg(err?.message || 'Network error while provisioning school')
+      setTimeout(() => setToastMsg(''), 4000)
+    } finally {
+      setLoading(false)
     }
-
-    setCreated(true)
-    setOpen(false)
-    setSchool('')
-    setOwner('')
-    setPhone('')
-    setEmail('')
-    setInitialAccessPass('')
   }
 
   const toggleCampus = async (id: string | number) => {

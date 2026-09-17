@@ -32,13 +32,7 @@ type SubjectGrade = {
   status: 'Pass' | 'Distinction' | 'Needs Work'
 }
 
-const mockSubjects: SubjectGrade[] = [
-  { subject: 'Mathematics', totalMarks: 100, obtainedMarks: 92, grade: 'A*', status: 'Distinction' },
-  { subject: 'English Language', totalMarks: 100, obtainedMarks: 85, grade: 'A', status: 'Pass' },
-  { subject: 'Science (Physics/Chem)', totalMarks: 100, obtainedMarks: 88, grade: 'A', status: 'Distinction' },
-  { subject: 'Urdu Literature', totalMarks: 100, obtainedMarks: 79, grade: 'B', status: 'Pass' },
-  { subject: 'Islamiat / Pakistan Studies', totalMarks: 100, obtainedMarks: 90, grade: 'A*', status: 'Distinction' },
-]
+const subjects: SubjectGrade[] = []
 
 export function StudentPortal() {
   const [data, setData] = useState<{
@@ -59,23 +53,24 @@ export function StudentPortal() {
   }, [])
 
   const attendanceRate = useMemo(() => {
-    if (!data?.attendance || data.attendance.length === 0) return 96
-    const present = data.attendance.filter((r) => r.status === 'Present').length
+    if (!data?.attendance || data.attendance.length === 0) return 0
+    const present = data.attendance.filter((r) => r.status === 'Present' || r.status === 'present').length
     return Math.round((present / data.attendance.length) * 100)
-  }, [data])
+  }, [data?.attendance])
 
   const averageGrade = useMemo(() => {
-    const total = mockSubjects.reduce((acc, curr) => acc + curr.obtainedMarks, 0)
-    return Math.round(total / mockSubjects.length)
+    if (subjects.length === 0) return 0
+    const total = subjects.reduce((acc, curr) => acc + curr.obtainedMarks, 0)
+    return Math.round(total / subjects.length)
   }, [])
 
   if (loading) {
     return <DashboardSkeleton />
   }
 
-  const studentName = data?.student?.name || 'Student Learner'
-  const studentClass = data?.student?.class ? `Class ${data.student.class} · Section ${data.student.section || 'A'}` : 'Class 8 · Section A'
-  const rollNo = data?.student?.roll_no || '08'
+  const studentName = data?.student?.name || 'Student'
+  const studentClass = data?.student?.class ? `Class ${data.student.class} · Section ${data.student.section || 'A'}` : 'Unassigned Class'
+  const rollNo = data?.student?.roll_no || '—'
 
   return (
     <div className="flex flex-col gap-6">
@@ -120,7 +115,7 @@ export function StudentPortal() {
           </p>
           <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-emerald-700">
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5">
-              <TrendingUp className="size-3" /> Excellent Presence
+              <TrendingUp className="size-3" /> {attendanceRate > 80 ? 'Good Attendance' : 'Active Term'}
             </span>
           </div>
         </article>
@@ -134,11 +129,11 @@ export function StudentPortal() {
             </div>
           </div>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
-            {averageGrade}%
+            {subjects.length > 0 ? `${averageGrade}%` : '—'}
           </p>
           <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-blue-800">
             <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5">
-              <Sparkles className="size-3 text-blue-600" /> Grade A* (Honors)
+              <Sparkles className="size-3 text-blue-600" /> {subjects.length > 0 ? (averageGrade >= 80 ? 'Grade A* (Honors)' : 'Satisfactory') : 'No Report Card'}
             </span>
           </div>
         </article>
@@ -152,9 +147,9 @@ export function StudentPortal() {
             </div>
           </div>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
-            {mockSubjects.length}
+            {subjects.length}
           </p>
-          <p className="mt-2 text-xs text-slate-500">Matric / Cambridge Stream</p>
+          <p className="mt-2 text-xs text-slate-500">{data?.student?.class ? `Class ${data.student.class}` : 'Active Curriculum'}</p>
         </article>
 
         {/* Card 4 - Daily Tasks */}
@@ -207,7 +202,7 @@ export function StudentPortal() {
                     </time>
                   </div>
                   <p className="mt-2 text-xs leading-relaxed text-slate-600">
-                    {diaryItem.note || 'Complete the assigned chapter exercises and prepare for tomorrow\'s test.'}
+                    {diaryItem.remarks || diaryItem.note || 'Classroom voice note and instruction.'}
                   </p>
                   {diaryItem.audio_url && (
                     <div className="mt-3 flex items-center gap-3">
@@ -251,47 +246,57 @@ export function StudentPortal() {
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 bg-slate-50 uppercase tracking-wider text-slate-600">
-                <tr>
-                  <th className="px-5 py-3">Subject</th>
-                  <th className="px-5 py-3 text-center">Score</th>
-                  <th className="px-5 py-3 text-center">Grade</th>
-                  <th className="px-5 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {mockSubjects.map((item) => (
-                  <tr key={item.subject} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-5 py-3.5 font-semibold text-slate-900">
-                      {item.subject}
-                    </td>
-                    <td className="px-5 py-3.5 text-center font-bold text-slate-900">
-                      {item.obtainedMarks} / {item.totalMarks}
-                    </td>
-                    <td className="px-5 py-3.5 text-center">
-                      <span className="inline-block rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-bold text-slate-800">
-                        {item.grade}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span
-                        className={cn(
-                          'inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold',
-                          item.status === 'Distinction'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-slate-100 text-slate-700 border border-slate-200'
-                        )}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
+          {subjects.length === 0 ? (
+            <div className="p-6">
+              <ZeroDataEmptyState
+                icon={Award}
+                title="No subject grades published"
+                description="Assessment marks and test results have not been recorded by teachers yet."
+              />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-slate-200 bg-slate-50 uppercase tracking-wider text-slate-600">
+                  <tr>
+                    <th className="px-5 py-3">Subject</th>
+                    <th className="px-5 py-3 text-center">Score</th>
+                    <th className="px-5 py-3 text-center">Grade</th>
+                    <th className="px-5 py-3 text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {subjects.map((item) => (
+                    <tr key={item.subject} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-5 py-3.5 font-semibold text-slate-900">
+                        {item.subject}
+                      </td>
+                      <td className="px-5 py-3.5 text-center font-bold text-slate-900">
+                        {item.obtainedMarks} / {item.totalMarks}
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <span className="inline-block rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-bold text-slate-800">
+                          {item.grade}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <span
+                          className={cn(
+                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold',
+                            item.status === 'Distinction'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200'
+                          )}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </div>
     </div>

@@ -38,7 +38,7 @@ export function getHomeRoute(role: string | null | undefined, email?: string | n
   }
   const normalized = normalizeRole(role)
   if (normalized === 'super_admin') {
-    return '/super-admin'
+    return isSuperAdminEmail(email) ? '/super-admin' : '/admin'
   }
   return ROLE_HOME_ROUTES[normalized] || '/admin'
 }
