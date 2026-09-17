@@ -16,7 +16,7 @@ export function LandingWithParentMockup() {
           content: "";
           position: absolute;
           inset: 0;
-          background: url('/eduflow-parent-portal-exact.svg') center center / contain no-repeat;
+          background: url('/eduflow-parent-portal-hero.webp') center center / contain no-repeat;
           pointer-events: none;
         }
         @media (max-width: 1023px) {
