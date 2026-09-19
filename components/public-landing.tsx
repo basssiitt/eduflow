@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import {
@@ -89,7 +90,6 @@ const faqs = [
 ]
 
 export function PublicLanding() {
-  const [activePortalTab, setActivePortalTab] = useState<'admin' | 'teacher' | 'parent'>('admin')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
 
@@ -134,273 +134,22 @@ export function PublicLanding() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Column: Interactive Product Showcase Inside iPhone Mockup */}
-            <div className="lg:col-span-6 flex justify-center order-2 lg:order-1">
-              <div className="relative mx-auto w-full max-w-[390px] rounded-[50px] border-[10px] border-slate-900 bg-slate-900 p-2.5 shadow-2xl shadow-slate-950/25 ring-1 ring-slate-800">
-                {/* Dynamic Island Notch & iOS Status Bar */}
-                <div className="flex items-center justify-between px-3 pt-1 pb-2 text-[11px] font-bold text-white">
-                  <span>9:41</span>
-                  <div className="flex h-5 w-24 items-center justify-between rounded-full bg-black px-2">
-                    <span className="size-2 rounded-full bg-slate-800" />
-                    <span className="size-1.5 rounded-full bg-blue-950 ring-1 ring-emerald-500/40" />
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[10px]">
-                    <span>5G</span>
-                    <span className="inline-block size-2 rounded-full bg-white" />
-                  </div>
-                </div>
-
-                {/* iPhone Screen Content */}
-                <div className="rounded-[38px] bg-white p-4 shadow-inner">
-                  {/* Institutional Header & Portal Switcher */}
-                  <div className="flex flex-col gap-2.5 pb-3 border-b border-slate-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-bold text-slate-800">EduFlow Mobile OS</span>
-                      </div>
-                      <span className="text-[10px] font-semibold text-slate-400">Beaconhouse Scholars</span>
-                    </div>
-
-                    {/* Portal Switcher Tabs */}
-                    <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-bold text-center">
-                      <button
-                        type="button"
-                        onClick={() => setActivePortalTab('admin')}
-                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'admin' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                      >
-                        Admin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActivePortalTab('teacher')}
-                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'teacher' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                      >
-                        Teacher
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActivePortalTab('parent')}
-                        className={`py-1 rounded-lg transition cursor-pointer ${activePortalTab === 'parent' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
-                      >
-                        Parent
-                      </button>
-                    </div>
-                  </div>
-
-                {/* Tab Content 1: Campus Admin Dashboard Preview */}
-                {activePortalTab === 'admin' && (
-                  <div className="pt-4 space-y-3.5">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Campus Control Console</span>
-                        </div>
-                        <h4 className="text-base font-black text-slate-900">Term 2 Operations &amp; Fee Recovery</h4>
-                      </div>
-                      <Link href="/admin" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Explore Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    {/* 4 Live Metric Pills */}
-                    <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Enrolled</span>
-                        <span className="text-xs font-black text-slate-900">1,240</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Collected</span>
-                        <span className="text-xs font-black text-emerald-600">PKR 1.45M</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Recovery</span>
-                        <span className="text-xs font-black text-blue-600">96.2%</span>
-                      </div>
-                      <div className="rounded-xl bg-slate-50 p-2 border border-slate-100">
-                        <span className="text-[9px] text-slate-400 block font-bold">Faculty</span>
-                        <span className="text-xs font-black text-purple-600">48 / 50</span>
-                      </div>
-                    </div>
-
-                    {/* Visual Growth & Fee Curve */}
-                    <div className="rounded-xl bg-gradient-to-br from-blue-50/50 to-slate-50 p-3 border border-blue-100/70 relative">
-                      <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold mb-1">
-                        <span>Monthly Fee Realization Trend</span>
-                        <span className="text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold text-[9px]">● Auto-Bank Challans Dispatched</span>
-                      </div>
-                      <svg className="w-full h-20 overflow-visible" viewBox="0 0 400 90" preserveAspectRatio="none">
-                        <defs>
-                          <linearGradient id="landingWave" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.35" />
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
-                          </linearGradient>
-                        </defs>
-                        <path d="M 0 75 Q 100 20, 200 45 T 400 12 L 400 90 L 0 90 Z" fill="url(#landingWave)" />
-                        <path d="M 0 75 Q 100 20, 200 45 T 400 12" fill="none" stroke="#2563eb" strokeWidth="2.5" />
-                        <circle cx="200" cy="45" r="4" fill="#2563eb" stroke="#fff" strokeWidth="2" />
-                      </svg>
-                    </div>
-
-                    {/* Real-time Challan & WhatsApp Automation Badge */}
-                    <div className="flex items-center justify-between text-xs bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/70">
-                      <div className="flex items-center gap-2">
-                        <ReceiptText className="size-4 text-blue-600" />
-                        <span className="font-semibold text-slate-800">3-Copy Bank Challan Batch</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
-                        100% Synced
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Content 2: Teacher Portal Preview */}
-                {activePortalTab === 'teacher' && (
-                  <div className="pt-4 space-y-3.5">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-blue-500" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Teacher Portal</span>
-                        </div>
-                        <h4 className="text-base font-black text-slate-900">Class 4-A · Morning Attendance</h4>
-                      </div>
-                      <Link href="/teacher" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-                        Explore Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    {/* 1-Click Attendance Student Register Simulation */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 text-xs">
-                      <div className="flex items-center justify-between font-bold text-slate-700 pb-1.5 border-b border-slate-100 text-[11px]">
-                        <span>Student Roll Call</span>
-                        <span className="text-slate-400 font-normal">28 Present · 1 Absent</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-                          <span className="font-semibold text-slate-800">01. Ahmed Raza</span>
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-                          <span className="font-semibold text-slate-800">02. Fatima Noor</span>
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 rounded-lg bg-rose-50/60 border border-rose-200">
-                          <span className="font-semibold text-slate-800">03. Bilal Hassan</span>
-                          <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded">Absent ✉</span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-                          <span className="font-semibold text-slate-800">04. Zainab Ali</span>
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Present</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Audio Voice Diary Strip */}
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60 text-xs flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="size-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
-                          <Mic className="size-3.5" />
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-900 block text-xs">Urdu &amp; English Voice Diary</span>
-                          <span className="text-[10px] text-slate-500">Auto-dispatches homework to WhatsApp</span>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-200/60">
-                        0:38 Voice Note
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Content 3: Parents Portal Preview */}
-                {activePortalTab === 'parent' && (
-                  <div className="pt-4 space-y-3.5">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-emerald-500" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Parents Portal</span>
-                        </div>
-                        <h4 className="text-base font-black text-slate-900">Welcome, Parents Portal</h4>
-                      </div>
-                      <Link
-                        href="/parent"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"
-                      >
-                        Explore Portal <ArrowRight className="size-3" />
-                      </Link>
-                    </div>
-
-                    {/* Dual Student Cards Preview */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Child 1: Ali Khan */}
-                      <div className="rounded-xl border border-blue-200/80 bg-blue-50/30 p-3 shadow-2xs">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="size-8 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center">
-                              AK
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-slate-900">Ali Khan</div>
-                              <div className="text-[10px] text-slate-500">Grade 4 · Sec A</div>
-                            </div>
-                          </div>
-                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Active
-                          </span>
-                        </div>
-                        <div className="mt-3 grid grid-cols-3 gap-1 border-t border-blue-100 pt-2 text-center">
-                          <div><span className="text-[9px] text-slate-400">Attendance</span><div className="text-xs font-black text-slate-900">96%</div></div>
-                          <div><span className="text-[9px] text-slate-400">Exam Grade</span><div className="text-xs font-black text-blue-600">88% (A)</div></div>
-                          <div><span className="text-[9px] text-slate-400">Fee Slip</span><div className="text-xs font-black text-emerald-600">Paid ✓</div></div>
-                        </div>
-                      </div>
-
-                      {/* Child 2: Fatima Khan */}
-                      <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="size-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">
-                              FK
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-slate-900">Fatima Khan</div>
-                              <div className="text-[10px] text-slate-500">Grade 2 · Sec B</div>
-                            </div>
-                          </div>
-                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Active
-                          </span>
-                        </div>
-                        <div className="mt-3 grid grid-cols-3 gap-1 border-t border-slate-100 pt-2 text-center">
-                          <div><span className="text-[9px] text-slate-400">Attendance</span><div className="text-xs font-black text-slate-900">98%</div></div>
-                          <div><span className="text-[9px] text-slate-400">Exam Grade</span><div className="text-xs font-black text-blue-600">92% (A+)</div></div>
-                          <div><span className="text-[9px] text-slate-400">Fee Slip</span><div className="text-xs font-black text-emerald-600">Paid ✓</div></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Instant Fee Challan & WhatsApp Diary Pill */}
-                    <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/60">
-                      <div className="flex items-center justify-between text-xs text-slate-700">
-                        <span className="font-semibold">September 3-Copy Bank Challan</span>
-                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Paid via Meezan Bank</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                </div>
-
-                {/* iOS Home Indicator Bar */}
-                <div className="mt-2.5 flex justify-center pb-1">
-                  <span className="h-1 w-28 rounded-full bg-slate-600" />
-                </div>
+            {/* Left Column: Clean High-Resolution Tilted iPhone Mockup showing Parent Portal */}
+            <div className="lg:col-span-6 flex justify-center items-center order-2 lg:order-1 py-4">
+              <div className="relative mx-auto w-full max-w-[440px] flex justify-center items-center">
+                {/* Soft ambient glow behind the tilted device */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/15 via-indigo-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+                <Image
+                  src="/eduflow-parent-portal-hero.png"
+                  alt="EduFlow Parents Portal mobile application mockup on tilted iPhone"
+                  width={617}
+                  height={885}
+                  priority
+                  className="relative z-10 w-full max-w-[360px] sm:max-w-[410px] h-auto object-contain drop-shadow-[0_24px_36px_rgba(15,23,42,0.18)]"
+                />
               </div>
             </div>
+
 
             {/* Right Column: Hero Copy & Feature Checkmarks (Screen 5) */}
             <div className="lg:col-span-6 flex flex-col items-start text-left order-1 lg:order-2">
@@ -704,7 +453,6 @@ export function PublicLanding() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Administrative</h4>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li><Link href="/admin" className="hover:text-blue-600">Campus Admin Portal</Link></li>
-                <li><Link href="/admin/admissions" className="hover:text-blue-600">Admissions Desk</Link></li>
                 <li><Link href="/admin/students" className="hover:text-blue-600">Student Directory</Link></li>
                 <li><Link href="/admin/timetable" className="hover:text-blue-600">Master Timetable</Link></li>
                 <li><Link href="/admin/exams" className="hover:text-blue-600">Examinations &amp; Reports</Link></li>

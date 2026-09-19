@@ -1,17 +1,92 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Check, CreditCard, Download, ExternalLink, HelpCircle, MessageCircle, ShieldCheck, Sparkles, Zap } from 'lucide-react'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { supabaseClient } from '@/lib/supabaseClient'
+import {
+  ArrowLeft,
+  Check,
+  CreditCard,
+  Download,
+  ExternalLink,
+  HelpCircle,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+} from 'lucide-react'
+
+interface InvoiceRecord {
+  id: string
+  date: string
+  plan: string
+  amount: string
+  status: string
+}
 
 export default function BillingPage() {
-  const [currentPlan] = useState({
-    name: 'Pro Campus Suite',
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([])
+  const [renewalDate, setRenewalDate] = useState<string>('')
+  const [loading, setLoading] = useState(true)
+
+  const whatsappConcierge = 'https://wa.me/923127803616?text=Hello%20EduFlow%2C%20I%20want%20to%20inquire%20about%20our%20campus%20subscription%20billing.'
+
+  useEffect(() => {
+    async function initBilling() {
+      setLoading(true)
+      let registrationTimestamp = Date.now()
+
+      // 1. Try to get created_at from Supabase Auth
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient.auth.getUser()
+          if (data?.user?.created_at) {
+            registrationTimestamp = new Date(data.user.created_at).getTime()
+          }
+        } catch {}
+      }
+
+      // 2. Check local storage if not available from Supabase
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedReg = localStorage.getItem('eduflow_school_reg_date')
+          if (cachedReg) {
+            registrationTimestamp = Number(cachedReg)
+          } else {
+            localStorage.setItem('eduflow_school_reg_date', String(registrationTimestamp))
+          }
+
+          // Check stored invoices
+          const storedInvoices = localStorage.getItem('eduflow_subscription_invoices')
+          if (storedInvoices) {
+            const parsed = JSON.parse(storedInvoices)
+            if (Array.isArray(parsed)) setInvoices(parsed)
+          }
+        } catch {}
+      }
+
+      // Compute trial auto-renewal date: registration + 30 days
+      const renew = new Date(registrationTimestamp + 30 * 24 * 60 * 60 * 1000)
+      const formatted = new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(renew)
+      setRenewalDate(formatted)
+      setLoading(false)
+    }
+
+    initBilling()
+  }, [])
+
+  const currentPlan = {
+    name: 'Pro Campus Suite (Trial Active)',
     price: 'PKR 5,000 / month',
-    status: 'Active',
-    nextBillingDate: '10 October 2026',
+    status: 'Active Trial',
+    nextBillingDate: renewalDate || 'In 30 days',
     studentsEnrolled: 'Up to 2,500 Students',
     features: [
       '1-Click Digital Haziri Attendance',
@@ -20,15 +95,7 @@ export default function BillingPage() {
       'Urdu & English Audio Voice Diaries',
       'Full Student Roster & Academic Register',
     ],
-  })
-
-  const invoices = [
-    { id: 'INV-2026-009', date: '01 Sep 2026', plan: 'Pro Campus Suite', amount: 'PKR 5,000', status: 'Paid' },
-    { id: 'INV-2026-008', date: '01 Aug 2026', plan: 'Pro Campus Suite', amount: 'PKR 5,000', status: 'Paid' },
-    { id: 'INV-2026-007', date: '01 Jul 2026', plan: 'Pro Campus Suite', amount: 'PKR 5,000', status: 'Paid' },
-  ]
-
-  const whatsappConcierge = 'https://wa.me/923127803616?text=Hello%20EduFlow%2C%20I%20want%20to%20upgrade%20our%20campus%20subscription%20plan.'
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -54,8 +121,8 @@ export default function BillingPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-blue-50 text-blue-700 border-blue-200">
-              SaaS Subscription
+            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">
+              30-Day Free Trial
             </Badge>
             <span className="text-sm text-slate-500">Campus Account</span>
           </div>
@@ -167,54 +234,66 @@ export default function BillingPage() {
 
       {/* Subscription Invoices History */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Subscription Invoices</h2>
             <p className="text-xs text-slate-500">Past billing records and verified payment receipts.</p>
           </div>
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
-                <tr>
-                  <th className="px-4 py-3.5">Invoice #</th>
-                  <th className="px-4 py-3.5">Billing Date</th>
-                  <th className="px-4 py-3.5">Plan Description</th>
-                  <th className="px-4 py-3.5">Amount</th>
-                  <th className="px-4 py-3.5">Status</th>
-                  <th className="px-4 py-3.5 text-right">Receipt</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-slate-50/70">
-                    <td className="px-4 py-3.5 font-mono text-xs font-medium text-slate-500">{inv.id}</td>
-                    <td className="px-4 py-3.5 text-xs text-slate-600">{inv.date}</td>
-                    <td className="px-4 py-3.5 font-semibold text-slate-900">{inv.plan}</td>
-                    <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">{inv.amount}</td>
-                    <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                        {inv.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.print()}
-                        className="text-xs text-slate-700 hover:bg-slate-50 border border-slate-200"
-                      >
-                        <Download className="mr-1.5 size-3.5 text-blue-600" /> PDF
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {invoices.length === 0 ? (
+          <div className="p-4">
+            <ZeroDataEmptyState
+              icon={CreditCard}
+              title="No Invoices or Billing Charges Yet"
+              description="Your school is currently on the 30-day Free Trial. Subscription invoices and receipts will appear here once your account transitions to paid billing."
+              actionLabel="Contact Billing Concierge"
+              onAction={() => window.open(whatsappConcierge, '_blank', 'noopener,noreferrer')}
+            />
           </div>
-        </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-slate-200">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3.5">Invoice #</th>
+                    <th className="px-4 py-3.5">Billing Date</th>
+                    <th className="px-4 py-3.5">Plan Description</th>
+                    <th className="px-4 py-3.5">Amount</th>
+                    <th className="px-4 py-3.5">Status</th>
+                    <th className="px-4 py-3.5 text-right">Receipt</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {invoices.map((inv) => (
+                    <tr key={inv.id} className="hover:bg-slate-50/70">
+                      <td className="px-4 py-3.5 font-mono text-xs font-medium text-slate-500">{inv.id}</td>
+                      <td className="px-4 py-3.5 text-xs text-slate-600">{inv.date}</td>
+                      <td className="px-4 py-3.5 font-semibold text-slate-900">{inv.plan}</td>
+                      <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">{inv.amount}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                          {inv.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.print()}
+                          className="text-xs text-slate-700 hover:bg-slate-50 border border-slate-200"
+                        >
+                          <Download className="mr-1.5 size-3.5 text-blue-600" /> PDF
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

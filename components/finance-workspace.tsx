@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { createExpense, fetchAdminStats } from '@/lib/live-data'
+import { createExpense, fetchAdminStats, fetchTeachers } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import {
   ArrowDownLeft,
@@ -27,6 +27,7 @@ import {
   TrendingUp,
   Upload,
   UserCheck,
+  Users,
   Wallet,
   X,
 } from "lucide-react"
@@ -61,17 +62,9 @@ type PayrollRecord = {
 
 const money = (amount: number) => `${amount < 0 ? "−" : ""}PKR ${Math.abs(amount).toLocaleString("en-PK")}`
 
-const initialStaff: PayrollRecord[] = [
-  { id: '1', code: 'TCH-2026-001', name: 'Muhammad Asad', role: 'Head of Sciences', department: 'Sciences', baseSalary: 75000, absences: 0, deduction: 0, allowances: 5000, netSalary: 80000, status: 'Paid', disbursedDate: '01-Oct-2026' },
-  { id: '2', code: 'TCH-2026-002', name: 'Fatima Noor', role: 'Senior English Teacher', department: 'Languages', baseSalary: 62000, absences: 1, deduction: 2000, allowances: 2000, netSalary: 62000, status: 'Paid', disbursedDate: '01-Oct-2026' },
-  { id: '3', code: 'TCH-2026-003', name: 'Tariq Mehmood', role: 'Mathematics Lead', department: 'Sciences', baseSalary: 70000, absences: 0, deduction: 0, allowances: 3000, netSalary: 73000, status: 'Pending' },
-  { id: '4', code: 'TCH-2026-004', name: 'Ayesha Siddiqua', role: 'Urdu & Islamiat Incharge', department: 'Humanities', baseSalary: 55000, absences: 2, deduction: 3600, allowances: 1500, netSalary: 52900, status: 'Pending' },
-  { id: '5', code: 'TCH-2026-005', name: 'Bilal Ahmed', role: 'Computer Science Instructor', department: 'IT', baseSalary: 65000, absences: 0, deduction: 0, allowances: 4000, netSalary: 69000, status: 'Pending' },
-]
-
 export function FinanceWorkspace() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [payroll, setPayroll] = useState<PayrollRecord[]>(initialStaff)
+  const [payroll, setPayroll] = useState<PayrollRecord[]>([])
   const [tab, setTab] = useState<"ledger" | "pnl" | "payroll" | "cash">("ledger")
   const [modal, setModal] = useState<"voucher" | null>(null)
   const [paySlipStaff, setPaySlipStaff] = useState<PayrollRecord | null>(null)
@@ -84,12 +77,19 @@ export function FinanceWorkspace() {
   const [page, setPage] = useState(1)
   const pageSize = 10
 
+  // Petty cash state
+  const [openingCash, setOpeningCash] = useState<number>(0)
+  const [isEditingOpeningCash, setIsEditingOpeningCash] = useState(false)
+  const [openingCashInput, setOpeningCashInput] = useState("")
+
   const loadTransactions = async () => {
     setLoading(true)
-    const { data } = await fetchAdminStats()
-    if (data && data.expenses && data.expenses.length > 0) {
-      setTransactions(
-        data.expenses.map((exp: any, idx: number) => {
+    let fetchedRows: Transaction[] = []
+
+    try {
+      const { data } = await fetchAdminStats()
+      if (data && data.expenses && data.expenses.length > 0) {
+        fetchedRows = data.expenses.map((exp: any, idx: number) => {
           const amt = Number(exp.amount) || 0
           const isIncome = exp.type === 'income' || amt > 0
           return {
@@ -100,22 +100,51 @@ export function FinanceWorkspace() {
             vendor: exp.vendor || (isIncome ? "Payer / Student" : "Campus Vendor"),
             amount: isIncome ? Math.abs(amt) : -Math.abs(amt),
             status: "Cleared",
-            type: isIncome ? 'income' : 'expense',
+            type: (isIncome ? 'income' : 'expense') as 'income' | 'expense',
           }
         })
-      )
-    } else {
-      // Realistic starting seed for high-grade school bookkeeping
-      setTransactions([
-        { id: 'VOU-1081', date: '02/10/2026', category: 'Fee collection', description: 'October Tuition Recovery - Grade 5-10', vendor: 'Student Accounts', amount: 485000, status: 'Cleared', type: 'income' },
-        { id: 'VOU-1082', date: '02/10/2026', category: 'Fee collection', description: 'Term Admission & Registration Fees', vendor: 'New Enrollees (24 students)', amount: 144000, status: 'Cleared', type: 'income' },
-        { id: 'VOU-1083', date: '01/10/2026', category: 'Payroll', description: 'Faculty Salary - Muhammad Asad (Sciences)', vendor: 'Muhammad Asad', amount: -80000, status: 'Cleared', type: 'expense' },
-        { id: 'VOU-1084', date: '01/10/2026', category: 'Payroll', description: 'Faculty Salary - Fatima Noor (English)', vendor: 'Fatima Noor', amount: -62000, status: 'Cleared', type: 'expense' },
-        { id: 'VOU-1085', date: '28/09/2026', category: 'Utilities', description: 'Campus Electric & Solar Grid Bill', vendor: 'K-Electric / LESCO', amount: -68400, status: 'Cleared', type: 'expense' },
-        { id: 'VOU-1086', date: '25/09/2026', category: 'Maintenance', description: 'Science & Robotics Lab Reagents Restock', vendor: 'Al-Madina Scientific Stores', amount: -32500, status: 'Cleared', type: 'expense' },
-        { id: 'VOU-1087', date: '20/09/2026', category: 'Stationery', description: 'Exam Printing Papers & Answer Sheets (50 Reams)', vendor: 'Paper World Traders', amount: -21000, status: 'Cleared', type: 'expense' },
-      ])
+      } else if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('eduflow_finance_transactions')
+        if (stored) {
+          try {
+            fetchedRows = JSON.parse(stored)
+          } catch {}
+        }
+      }
+    } catch {}
+
+    setTransactions(fetchedRows)
+
+    // Fetch teachers for payroll
+    try {
+      const teachersRes = await fetchTeachers()
+      if (teachersRes.data && teachersRes.data.length > 0) {
+        setPayroll(teachersRes.data.map(t => ({
+          id: String(t.id),
+          code: t.employee_code || `TCH-${t.id}`,
+          name: t.name,
+          role: t.qualification || 'Faculty Educator',
+          department: t.department || 'Academics',
+          baseSalary: t.salary || 0,
+          absences: 0,
+          deduction: 0,
+          allowances: 0,
+          netSalary: t.salary || 0,
+          status: 'Pending' as const,
+        })))
+      } else {
+        setPayroll([])
+      }
+    } catch {}
+
+    // Load petty cash opening
+    if (typeof window !== 'undefined') {
+      try {
+        const storedOpening = localStorage.getItem('eduflow_petty_cash_opening')
+        if (storedOpening) setOpeningCash(Number(storedOpening) || 0)
+      } catch {}
     }
+
     setLoading(false)
   }
 
@@ -149,6 +178,12 @@ export function FinanceWorkspace() {
   const utilitiesExpense = Math.abs(transactions.filter((x) => x.amount < 0 && x.category === 'Utilities').reduce((a, x) => a + x.amount, 0))
   const otherExpenses = Math.abs(transactions.filter((x) => x.amount < 0 && !['Payroll', 'Utilities'].includes(x.category)).reduce((a, x) => a + x.amount, 0))
 
+  // Petty cash calculations
+  const disbursedToday = useMemo(() => {
+    return Math.abs(transactions.filter(x => x.amount < 0 && (x.date === 'Today' || x.date === new Date().toLocaleDateString('en-GB'))).reduce((a, x) => a + x.amount, 0))
+  }, [transactions])
+  const currentCashInDrawer = Math.max(0, openingCash - disbursedToday)
+
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(""), 2800) }
 
   const saveVoucher = async () => {
@@ -170,19 +205,24 @@ export function FinanceWorkspace() {
       } catch {}
     }
 
-    setTransactions((rows) => [
-      {
-        id: `VOU-${Date.now().toString().slice(-4)}`,
-        date: "Today",
-        category: voucher.category,
-        description: voucher.description,
-        vendor: voucher.party,
-        amount: voucherType === 'expense' ? -Math.abs(finalAmount) : Math.abs(finalAmount),
-        status: "Cleared",
-        type: voucherType,
-      },
-      ...rows,
-    ])
+    const newTx: Transaction = {
+      id: `VOU-${Date.now().toString().slice(-4)}`,
+      date: "Today",
+      category: voucher.category,
+      description: voucher.description,
+      vendor: voucher.party,
+      amount: voucherType === 'expense' ? -Math.abs(finalAmount) : Math.abs(finalAmount),
+      status: "Cleared",
+      type: voucherType,
+    }
+
+    const updated = [newTx, ...transactions]
+    setTransactions(updated)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('eduflow_finance_transactions', JSON.stringify(updated))
+      } catch {}
+    }
 
     setModal(null)
     setVoucher({ description: "", party: "", amount: "", category: "Utilities" })
@@ -195,21 +235,38 @@ export function FinanceWorkspace() {
     )
 
     // Log corresponding payroll expense voucher
-    setTransactions((rows) => [
-      {
-        id: `VOU-${Date.now().toString().slice(-4)}`,
-        date: 'Today',
-        category: 'Payroll',
-        description: `Faculty Salary - ${staff.name} (${staff.department})`,
-        vendor: staff.name,
-        amount: -Math.abs(staff.netSalary),
-        status: 'Cleared',
-        type: 'expense',
-      },
-      ...rows,
-    ])
+    const newTx: Transaction = {
+      id: `VOU-${Date.now().toString().slice(-4)}`,
+      date: 'Today',
+      category: 'Payroll',
+      description: `Faculty Salary - ${staff.name} (${staff.department})`,
+      vendor: staff.name,
+      amount: -Math.abs(staff.netSalary),
+      status: 'Cleared',
+      type: 'expense',
+    }
+
+    const updated = [newTx, ...transactions]
+    setTransactions(updated)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('eduflow_finance_transactions', JSON.stringify(updated))
+      } catch {}
+    }
 
     notify(`Salary voucher of ${money(staff.netSalary)} disbursed to ${staff.name}`)
+  }
+
+  const handleSaveOpeningCash = () => {
+    const val = Number(openingCashInput) || 0
+    setOpeningCash(val)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('eduflow_petty_cash_opening', String(val))
+      } catch {}
+    }
+    setIsEditingOpeningCash(false)
+    notify(`Opening petty cash set to ${money(val)}`)
   }
 
   const exportCsv = () => {
@@ -284,7 +341,7 @@ export function FinanceWorkspace() {
           </strong>
           <small className="flex items-center gap-1 font-semibold text-emerald-700">
             {netProfit >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-            <span className="tabular-nums">{profitMargin}%</span> net margin · {netProfit >= 0 ? 'Surplus' : 'Deficit'}
+            <span className="tabular-nums">{profitMargin}%</span> net margin · {netProfit === 0 && totalIncome === 0 ? 'Baseline' : netProfit >= 0 ? 'Surplus' : 'Deficit'}
           </small>
         </div>
       </section>
@@ -333,8 +390,8 @@ export function FinanceWorkspace() {
               <ZeroDataEmptyState
                 icon={Wallet}
                 title="No financial vouchers recorded"
-                description="Record income credits or expense debits to keep your campus accounts audit-ready."
-                actionLabel="Log Voucher"
+                description="Your accounts ledger is currently empty. Record income credits or operating expense vouchers to begin financial auditing."
+                actionLabel="Log First Voucher"
                 onAction={() => setModal("voucher")}
               />
             </div>
@@ -478,8 +535,10 @@ export function FinanceWorkspace() {
           {/* Master Net Summary Box */}
           <div className="m-6 mt-0 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Net Operating Surplus / Profit</span>
-              <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-0.5 tabular-nums">{money(netProfit)}</p>
+              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Net Operating Surplus / Balance</span>
+              <p className={`text-2xl font-black mt-0.5 tabular-nums ${netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                {money(netProfit)}
+              </p>
               <p className="text-xs text-slate-500">Calculated as: Total Operating Revenues − Total Operating Costs</p>
             </div>
             <div className="flex items-center gap-3">
@@ -487,9 +546,11 @@ export function FinanceWorkspace() {
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Operating Margin</span>
                 <strong className="text-lg font-black text-slate-900 dark:text-slate-100 tabular-nums">{profitMargin}%</strong>
               </div>
-              <div className="rounded-xl border border-emerald-200 bg-emerald-100/60 dark:bg-emerald-950 p-3 text-center">
-                <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">Financial Health</span>
-                <strong className="text-sm font-black text-emerald-700 dark:text-emerald-400">Excellent (Surplus)</strong>
+              <div className="rounded-xl border border-slate-200 bg-white dark:bg-slate-900 p-3 text-center">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Financial Health</span>
+                <strong className={`text-sm font-black ${netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'}`}>
+                  {totalIncome === 0 && totalExpense === 0 ? 'Initialized (0 Balance)' : netProfit >= 0 ? 'Surplus' : 'Deficit'}
+                </strong>
               </div>
             </div>
           </div>
@@ -507,74 +568,86 @@ export function FinanceWorkspace() {
             </div>
           </div>
 
-          <div className="finance-table-wrap">
-            <table className="finance-table">
-              <thead>
-                <tr>
-                  <th>Employee Code</th>
-                  <th>Faculty Member</th>
-                  <th>Department</th>
-                  <th>Base Salary</th>
-                  <th>Absence Penalty</th>
-                  <th>Net Disbursal</th>
-                  <th>Status</th>
-                  <th className="text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payroll.map((staff) => (
-                  <tr key={staff.id}>
-                    <td className="font-mono text-xs text-slate-500">{staff.code}</td>
-                    <td>
-                      <b>{staff.name}</b>
-                      <small>{staff.role}</small>
-                    </td>
-                    <td><span className="font-medium text-slate-700 dark:text-slate-300">{staff.department}</span></td>
-                    <td className="font-semibold text-slate-800 dark:text-slate-200 tabular-nums">{money(staff.baseSalary)}</td>
-                    <td>
-                      {staff.deduction > 0 ? (
-                        <span className="font-bold text-rose-600 tabular-nums">−{money(staff.deduction)} ({staff.absences} absent)</span>
-                      ) : (
-                        <span className="text-slate-400">PKR 0 (100% Haziri)</span>
-                      )}
-                    </td>
-                    <td className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(staff.netSalary)}</td>
-                    <td>
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                        staff.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-                      }`}>
-                        {staff.status === 'Paid' ? <CheckCircle2 className="size-3 text-emerald-600" /> : null}
-                        {staff.status}
-                      </span>
-                    </td>
-                    <td className="text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setPaySlipStaff(staff)}
-                          className="h-7 text-xs rounded-lg"
-                        >
-                          <Printer className="size-3 mr-1" /> Pay Slip
-                        </Button>
-                        {staff.status === 'Pending' ? (
+          {payroll.length === 0 ? (
+            <div className="p-6">
+              <ZeroDataEmptyState
+                icon={Users}
+                title="No faculty members registered for payroll"
+                description="Your school does not have any registered faculty records yet. Add teachers in the Faculty Directory to generate salary registers."
+                actionLabel="Go to Faculty Directory"
+                onAction={() => window.location.href = '/admin/teachers'}
+              />
+            </div>
+          ) : (
+            <div className="finance-table-wrap">
+              <table className="finance-table">
+                <thead>
+                  <tr>
+                    <th>Employee Code</th>
+                    <th>Faculty Member</th>
+                    <th>Department</th>
+                    <th>Base Salary</th>
+                    <th>Absence Penalty</th>
+                    <th>Net Disbursal</th>
+                    <th>Status</th>
+                    <th className="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payroll.map((staff) => (
+                    <tr key={staff.id}>
+                      <td className="font-mono text-xs text-slate-500">{staff.code}</td>
+                      <td>
+                        <b>{staff.name}</b>
+                        <small>{staff.role}</small>
+                      </td>
+                      <td><span className="font-medium text-slate-700 dark:text-slate-300">{staff.department}</span></td>
+                      <td className="font-semibold text-slate-800 dark:text-slate-200 tabular-nums">{money(staff.baseSalary)}</td>
+                      <td>
+                        {staff.deduction > 0 ? (
+                          <span className="font-bold text-rose-600 tabular-nums">−{money(staff.deduction)} ({staff.absences} absent)</span>
+                        ) : (
+                          <span className="text-slate-400">PKR 0 (100% Haziri)</span>
+                        )}
+                      </td>
+                      <td className="font-black text-slate-900 dark:text-slate-100 tabular-nums">{money(staff.netSalary)}</td>
+                      <td>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          staff.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                        }`}>
+                          {staff.status === 'Paid' ? <CheckCircle2 className="size-3 text-emerald-600" /> : null}
+                          {staff.status}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           <Button
                             size="sm"
-                            onClick={() => disburseSalary(staff)}
-                            className="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs"
+                            variant="outline"
+                            onClick={() => setPaySlipStaff(staff)}
+                            className="h-7 text-xs rounded-lg"
                           >
-                            Disburse
+                            <Printer className="size-3 mr-1" /> Pay Slip
                           </Button>
-                        ) : (
-                          <span className="text-[11px] text-slate-400 font-medium px-2">Cleared</span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                          {staff.status === 'Pending' ? (
+                            <Button
+                              size="sm"
+                              onClick={() => disburseSalary(staff)}
+                              className="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs"
+                            >
+                              Disburse
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-slate-400 font-medium px-2">Cleared</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 
@@ -592,10 +665,39 @@ export function FinanceWorkspace() {
             <div className="max-w-md mx-auto p-5 rounded-2xl border border-slate-200 bg-white text-center shadow-xs">
               <Wallet className="size-10 text-blue-600 mx-auto mb-2" />
               <h3 className="font-black text-lg text-slate-900">Daily Vault Balance</h3>
-              <p className="text-xs text-slate-500 mt-1">Opening Cash: PKR 50,000 · Disbursed Today: PKR 14,200</p>
+              
+              {isEditingOpeningCash ? (
+                <div className="my-3 flex items-center justify-center gap-2">
+                  <input
+                    type="number"
+                    placeholder="Enter Opening PKR"
+                    value={openingCashInput}
+                    onChange={(e) => setOpeningCashInput(e.target.value)}
+                    className="h-8 w-36 text-xs px-2 rounded-lg border border-slate-300"
+                  />
+                  <Button size="sm" onClick={handleSaveOpeningCash} className="h-8 text-xs bg-blue-600 text-white">Save</Button>
+                  <Button size="sm" variant="outline" onClick={() => setIsEditingOpeningCash(false)} className="h-8 text-xs">Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <p className="text-xs text-slate-500">
+                    Opening Cash: {money(openingCash)} · Disbursed Today: {money(disbursedToday)}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setOpeningCashInput(String(openingCash))
+                      setIsEditingOpeningCash(true)
+                    }}
+                    className="text-[11px] font-semibold text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+
               <div className="my-4 py-3 bg-slate-50 rounded-xl border border-slate-200">
                 <span className="text-xs uppercase font-bold text-slate-500">Current Cash in Drawer</span>
-                <strong className="block text-2xl font-black text-emerald-700 mt-1">PKR 35,800</strong>
+                <strong className="block text-2xl font-black text-emerald-700 mt-1">{money(currentCashInDrawer)}</strong>
               </div>
               <Button onClick={() => notify("Petty cash reconciled and signed off for today.")} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs font-semibold">
                 Sign-off Today&apos;s Cash

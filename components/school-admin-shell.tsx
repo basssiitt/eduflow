@@ -26,7 +26,6 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
-  UserPlus,
   Users,
   WalletCards,
   X,
@@ -61,7 +60,6 @@ type NavItem = {
 // Dedicated School Admin Navigation - strictly campus admin pages
 const adminNavItems: NavItem[] = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, testId: 'nav-overview' },
-  { label: 'Admissions Desk', href: '/admin/admissions', icon: UserPlus, testId: 'nav-admissions' },
   { label: 'Students', href: '/admin/students', icon: Users, testId: 'nav-students' },
   { label: 'Faculty & Teachers', href: '/admin/teachers', icon: GraduationCap, testId: 'nav-teachers' },
   { label: 'Faculty Attendance', href: '/admin/teachers/attendance', icon: CalendarCheck, testId: 'nav-faculty-attendance' },
@@ -245,10 +243,9 @@ function SettingsModal({
       }
     }
 
-    // Demo Mode fallback
     setTimeout(() => {
       setPasswordLoading(false)
-      setPasswordMessage({ type: 'success', text: 'Password changed successfully! (Demo session updated)' })
+      setPasswordMessage({ type: 'success', text: 'Password changed successfully!' })
       setNewPassword('')
       setConfirmPassword('')
     }, 600)

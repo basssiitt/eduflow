@@ -1,13 +1,13 @@
 # Logo Design Reference
 
-AI-powered logo design with 55+ styles, 30 color palettes, 25 industry guides. Gemini Nano Banana is the default provider; Atlas Cloud and MuAPI are also available as explicit opt-in providers.
+AI-powered logo design with 55+ styles, 30 color palettes, 25 industry guides. Uses Gemini Nano Banana models.
 
 ## Scripts
 
 | Script | Purpose |
 |--------|---------|
 | `scripts/logo/search.py` | Search styles, colors, industries; generate design briefs |
-| `scripts/logo/generate.py` | Generate logos with Gemini Nano Banana, Atlas Cloud, or MuAPI |
+| `scripts/logo/generate.py` | Generate logos with Gemini Nano Banana |
 | `scripts/logo/core.py` | BM25 search engine for logo data |
 
 ## Commands
@@ -15,20 +15,20 @@ AI-powered logo design with 55+ styles, 30 color palettes, 25 industry guides. G
 ### Design Brief (Start Here)
 
 ```bash
-python3 scripts/logo/search.py "tech startup modern" --design-brief -p "BrandName"
+python3 ~/.claude/skills/design/scripts/logo/search.py "tech startup modern" --design-brief -p "BrandName"
 ```
 
 ### Search Domains
 
 ```bash
 # Styles
-python3 scripts/logo/search.py "minimalist clean" --domain style
+python3 ~/.claude/skills/design/scripts/logo/search.py "minimalist clean" --domain style
 
 # Color palettes
-python3 scripts/logo/search.py "tech professional" --domain color
+python3 ~/.claude/skills/design/scripts/logo/search.py "tech professional" --domain color
 
 # Industry guidelines
-python3 scripts/logo/search.py "healthcare medical" --domain industry
+python3 ~/.claude/skills/design/scripts/logo/search.py "healthcare medical" --domain industry
 ```
 
 ### Generate Logo
@@ -36,14 +36,11 @@ python3 scripts/logo/search.py "healthcare medical" --domain industry
 **ALWAYS** use white background for output logos.
 
 ```bash
-python3 scripts/logo/generate.py --brand "TechFlow" --style minimalist --industry tech
-python3 scripts/logo/generate.py --prompt "coffee shop vintage badge" --style vintage
-python3 scripts/logo/generate.py --brand "TechFlow" --provider atlas
-python3 scripts/logo/generate.py --brand "TechFlow" --provider muapi
-python3 scripts/logo/generate.py --brand "TechFlow" --provider muapi --muapi-model nano-banana-pro
+python3 ~/.claude/skills/design/scripts/logo/generate.py --brand "TechFlow" --style minimalist --industry tech
+python3 ~/.claude/skills/design/scripts/logo/generate.py --prompt "coffee shop vintage badge" --style vintage
 ```
 
-Options: `--style`, `--industry`, `--prompt`, `--provider`, `--atlas-model`, `--muapi-model`
+Options: `--style`, `--industry`, `--prompt`
 
 ## Available Styles
 
@@ -92,19 +89,4 @@ Options: `--style`, `--industry`, `--prompt`, `--provider`, `--atlas-model`, `--
 ```bash
 export GEMINI_API_KEY="your-key"
 pip install google-genai
-
-# Optional Atlas Cloud provider (no extra Python package required)
-export ATLASCLOUD_API_KEY="your-key"
-
-# Optional MuAPI provider (no extra Python package required)
-export MUAPI_API_KEY="your-key"
 ```
-
-MuAPI uses the asynchronous model endpoint and prediction result API. See the
-[MuAPI API reference](https://muapi.ai/docs/api-reference) for authentication
-and the [nano-banana model contract](https://api.muapi.ai/api/v1/models/nano-banana)
-or [nano-banana-pro model contract](https://api.muapi.ai/api/v1/models/nano-banana-pro)
-for the current model-specific schemas. The logo generator supports both documented
-model slugs and sends their shared required `prompt` plus optional `aspect_ratio`
-fields; the Pro model also accepts an optional `resolution` field that this focused
-logo workflow leaves at the provider default.

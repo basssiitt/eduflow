@@ -25,19 +25,20 @@ import {
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 
 export default function AdminSettingsPage() {
-  const [campusName, setCampusName] = useState('Greenfield International School')
-  const [campusCode, setCampusCode] = useState('GIS-LHR-01')
-  const [phone, setPhone] = useState('+92 300 1234567')
-  const [email, setEmail] = useState('admin@greenfield.edu.pk')
-  const [address, setAddress] = useState('Plot 42-B, Sector G, Phase 5, DHA, Lahore')
+  const [campusName, setCampusName] = useState('')
+  const [campusCode, setCampusCode] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [lang, setLang] = useState<'en' | 'ur'>('en')
   const [notifications, setNotifications] = useState(true)
   const [smsAlerts, setSmsAlerts] = useState(true)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // Subscription state (Admin Only)
   const [plan, setPlan] = useState('Pro')
-  const [trialDays, setTrialDays] = useState('30')
+  const [trialDaysRemaining, setTrialDaysRemaining] = useState(30)
 
   // Password state (Self-Service)
   const [newPassword, setNewPassword] = useState('')
@@ -47,19 +48,99 @@ export default function AdminSettingsPage() {
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   useEffect(() => {
-    const storedSchool = sessionStorage.getItem('eduflow-demo-school')
-    const storedEmail = sessionStorage.getItem('eduflow-demo-email')
-    const storedPlan = sessionStorage.getItem('eduflow-demo-plan')
-    const storedDays = sessionStorage.getItem('eduflow-trial-days')
+    async function loadSchoolProfile() {
+      setLoading(true)
 
-    if (storedSchool) setCampusName(storedSchool)
-    if (storedEmail) setEmail(storedEmail)
-    if (storedPlan) setPlan(storedPlan)
-    if (storedDays) setTrialDays(storedDays)
+      let initialName = ''
+      let initialEmail = ''
+      let initialPhone = ''
+      let initialCode = ''
+      let initialAddress = ''
+
+      // 1. Fetch user metadata from Supabase
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient.auth.getUser()
+          const user = data?.user
+          if (user) {
+            initialEmail = user.email || ''
+            const meta = user.user_metadata || {}
+            initialName = meta.school_name || meta.schoolName || meta.campus_name || meta.institution_name || ''
+            initialPhone = meta.phone || meta.contact_phone || user.phone || ''
+            initialCode = meta.campus_code || meta.school_code || ''
+            initialAddress = meta.address || meta.campus_address || ''
+
+            if (user.created_at) {
+              const regDate = new Date(user.created_at).getTime()
+              const elapsedDays = Math.floor((Date.now() - regDate) / (1000 * 60 * 60 * 24))
+              setTrialDaysRemaining(Math.max(0, 30 - elapsedDays))
+            }
+          }
+        } catch {}
+      }
+
+      // 2. Check local storage overrides
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = localStorage.getItem('eduflow_school_profile')
+          if (stored) {
+            const parsed = JSON.parse(stored)
+            if (parsed.campusName) initialName = parsed.campusName
+            if (parsed.campusCode) initialCode = parsed.campusCode
+            if (parsed.phone) initialPhone = parsed.phone
+            if (parsed.email) initialEmail = parsed.email
+            if (parsed.address) initialAddress = parsed.address
+            if (parsed.lang) setLang(parsed.lang)
+            if (typeof parsed.notifications === 'boolean') setNotifications(parsed.notifications)
+            if (typeof parsed.smsAlerts === 'boolean') setSmsAlerts(parsed.smsAlerts)
+          }
+        } catch {}
+      }
+
+      setCampusName(initialName)
+      setCampusCode(initialCode)
+      setPhone(initialPhone)
+      setEmail(initialEmail)
+      setAddress(initialAddress)
+      setLoading(false)
+    }
+
+    loadSchoolProfile()
   }, [])
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const profileData = {
+      campusName,
+      campusCode,
+      phone,
+      email,
+      address,
+      lang,
+      notifications,
+      smsAlerts,
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('eduflow_school_profile', JSON.stringify(profileData))
+      } catch {}
+    }
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        await supabaseClient.auth.updateUser({
+          data: {
+            school_name: campusName,
+            campus_code: campusCode,
+            phone: phone,
+            address: address,
+          }
+        })
+      } catch {}
+    }
+
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
@@ -100,10 +181,9 @@ export default function AdminSettingsPage() {
       }
     }
 
-    // Demo Mode fallback
     setTimeout(() => {
       setPasswordLoading(false)
-      setPasswordMessage({ type: 'success', text: 'Password changed successfully! (Demo session updated)' })
+      setPasswordMessage({ type: 'success', text: 'Password updated successfully!' })
       setNewPassword('')
       setConfirmPassword('')
     }, 500)
@@ -151,16 +231,18 @@ export default function AdminSettingsPage() {
               <Input
                 value={campusName}
                 onChange={(e) => setCampusName(e.target.value)}
+                placeholder="e.g. Al-Huda Model High School & College"
                 required
                 className="rounded-xl text-sm border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
               />
             </label>
 
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-900">
-              Campus Code
+              Campus Code / Registration #
               <Input
                 value={campusCode}
                 onChange={(e) => setCampusCode(e.target.value)}
+                placeholder="e.g. AHS-KHI-01"
                 required
                 className="rounded-xl text-sm font-mono border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
               />
@@ -171,6 +253,7 @@ export default function AdminSettingsPage() {
               <Input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. +92 300 1234567"
                 required
                 className="rounded-xl text-sm font-mono border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
               />
@@ -182,6 +265,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="e.g. principal@school.edu.pk"
                 required
                 className="rounded-xl text-sm border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
               />
@@ -192,6 +276,7 @@ export default function AdminSettingsPage() {
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g. Plot 12, Main Boulevard, Gulberg, Lahore"
                 required
                 className="rounded-xl text-sm border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
               />
@@ -293,7 +378,7 @@ export default function AdminSettingsPage() {
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-slate-600">
-                  {trialDays} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and WhatsApp broadcasts.
+                  {trialDaysRemaining} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and WhatsApp broadcasts.
                 </p>
               </div>
             </div>

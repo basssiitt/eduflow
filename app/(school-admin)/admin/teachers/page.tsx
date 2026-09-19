@@ -388,7 +388,6 @@ function DeleteTeacherModal({
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState<TeacherRecord[]>([])
   const [query, setQuery] = useState('')
-  const [deptFilter, setDeptFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState('All')
   const [addOpen, setAddOpen] = useState(false)
   const [teacherToDelete, setTeacherToDelete] = useState<TeacherRecord | null>(null)
@@ -417,19 +416,20 @@ export default function TeachersPage() {
 
   const filtered = useMemo(() => {
     return teachers.filter((t) => {
-      const matchesDept = deptFilter === 'All' || t.department.toLowerCase().includes(deptFilter.toLowerCase())
       const matchesStatus = statusFilter === 'All' || t.status === statusFilter
       const q = query.toLowerCase().trim()
       const matchesQuery =
         !q ||
         t.name.toLowerCase().includes(q) ||
         t.email.toLowerCase().includes(q) ||
+        t.phone.toLowerCase().includes(q) ||
         t.employee_code.toLowerCase().includes(q) ||
         t.subject.toLowerCase().includes(q) ||
-        t.qualification.toLowerCase().includes(q)
-      return matchesDept && matchesStatus && matchesQuery
+        t.qualification.toLowerCase().includes(q) ||
+        t.classes.some((c) => c.toLowerCase().includes(q))
+      return matchesStatus && matchesQuery
     })
-  }, [teachers, query, deptFilter, statusFilter])
+  }, [teachers, query, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paginated = useMemo(() => {
@@ -651,28 +651,6 @@ export default function TeachersPage() {
           </div>
         </div>
 
-        {/* Department Quick Filter Sub-bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200 px-5 py-2.5 bg-slate-50/70 text-xs">
-          <span className="font-semibold text-slate-500 mr-2 shrink-0">Department:</span>
-          {['All', 'Science & Math', 'Languages', 'Humanities', 'Arts & Sports', 'IT'].map((d) => (
-            <button
-              key={d}
-              onClick={() => {
-                setDeptFilter(d)
-                setPage(1)
-              }}
-              className={cn(
-                'rounded-lg px-2.5 py-1 font-medium transition shrink-0',
-                deptFilter === d
-                  ? 'bg-blue-600 text-white font-semibold shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
-              )}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-
         {/* Table Body */}
         {loading ? (
           <div className="p-4 divide-y divide-slate-100">
@@ -690,16 +668,15 @@ export default function TeachersPage() {
               icon={GraduationCap}
               title="No faculty members found"
               description={
-                query || deptFilter !== 'All' || statusFilter !== 'All'
-                  ? 'Try clearing your search query or department filters.'
+                query || statusFilter !== 'All'
+                  ? 'Try clearing your search query or status filter.'
                   : 'Start by onboarding teachers to assign them to classes and record attendance.'
               }
               actionLabel="Onboard New Teacher"
               onAction={() => setAddOpen(true)}
-              secondaryActionLabel={query || deptFilter !== 'All' ? 'Reset Filters' : undefined}
+              secondaryActionLabel={query || statusFilter !== 'All' ? 'Reset Filters' : undefined}
               onSecondaryAction={() => {
                 setQuery('')
-                setDeptFilter('All')
                 setStatusFilter('All')
               }}
             />
@@ -709,11 +686,10 @@ export default function TeachersPage() {
             <table className="w-full min-w-[850px] text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
                 <tr>
-                  <th className="px-5 py-3.5">Code</th>
-                  <th className="px-5 py-3.5">Teacher Name &amp; Degree</th>
-                  <th className="px-5 py-3.5">Department &amp; Subject</th>
-                  <th className="px-5 py-3.5">Assigned Classes</th>
-                  <th className="px-5 py-3.5">Monthly Salary</th>
+                  <th className="px-5 py-3.5">Teacher Name</th>
+                  <th className="px-5 py-3.5">Contact Number</th>
+                  <th className="px-5 py-3.5">Assigned Class(es)</th>
+                  <th className="px-5 py-3.5">Assigned Subject(s)</th>
                   <th className="px-5 py-3.5">Status</th>
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
@@ -740,13 +716,6 @@ export default function TeachersPage() {
                       key={teacher.id}
                       className="hover:bg-slate-50/60 transition-colors"
                     >
-                      {/* Employee Code */}
-                      <td className="px-5 py-4">
-                        <span className="font-mono text-xs font-bold text-slate-700 bg-slate-50 rounded px-1.5 py-0.5 border border-slate-200">
-                          {teacher.employee_code}
-                        </span>
-                      </td>
-
                       {/* Teacher Profile */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
@@ -761,22 +730,24 @@ export default function TeachersPage() {
                             <p className="font-bold text-slate-900">
                               {teacher.name}
                             </p>
-                            <p className="text-xs text-slate-500 line-clamp-1">
-                              {teacher.qualification}
+                            <p className="text-xs text-slate-500 font-mono">
+                              {teacher.employee_code} · {teacher.qualification}
                             </p>
                           </div>
                         </div>
                       </td>
 
-                      {/* Department & Subject */}
+                      {/* Contact Number */}
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-slate-800">
-                          {teacher.subject}
-                        </p>
-                        <p className="text-xs text-slate-400">{teacher.department}</p>
+                        <div className="font-mono text-xs font-semibold text-slate-800">
+                          {teacher.phone || '—'}
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          {teacher.email}
+                        </div>
                       </td>
 
-                      {/* Classes */}
+                      {/* Assigned Classes */}
                       <td className="px-5 py-4">
                         <div className="flex flex-wrap gap-1 max-w-[220px]">
                           {teacher.classes.map((cls) => (
@@ -790,9 +761,11 @@ export default function TeachersPage() {
                         </div>
                       </td>
 
-                      {/* Salary */}
-                      <td className="px-5 py-4 font-mono font-semibold text-slate-900">
-                        Rs. {(teacher.salary || 0).toLocaleString()}
+                      {/* Assigned Subject(s) */}
+                      <td className="px-5 py-4">
+                        <p className="font-semibold text-slate-800">
+                          {teacher.subject}
+                        </p>
                       </td>
 
                       {/* Status */}
@@ -810,6 +783,7 @@ export default function TeachersPage() {
 
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
+
                         <div className="flex items-center justify-end gap-1.5">
                           {/* WhatsApp contact */}
                           {teacher.phone && (

@@ -427,10 +427,7 @@ Image Editing Mode:
         action = check_logo_required(args.brand, skip_prompt=args.no_logo_prompt)
         if action == 'generate':
             print("\n💡 To generate a logo, use the logo-design skill:")
-            # Resolved from this file so the hint is correct from any cwd and in
-            # every install layout (plugin cache, project or --global install).
-            logo_script = Path(__file__).resolve().parents[1] / "logo" / "generate.py"
-            print(f"   python \"{logo_script}\" --brand \"{args.brand}\" --industry \"{args.industry}\"")
+            print(f"   python ~/.claude/skills/design/scripts/logo/generate.py --brand \"{args.brand}\" --industry \"{args.industry}\"")
             print("\n   Then re-run this command with --logo <generated_logo.png>")
             sys.exit(0)
         elif action == 'exit':

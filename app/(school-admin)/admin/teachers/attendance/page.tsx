@@ -1,26 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
   CalendarCheck,
-  Check,
   CheckCircle2,
-  Clock,
-  Download,
-  GraduationCap,
-  MessageCircle,
-  Plus,
   Printer,
   Search,
   UserCheck,
   Users,
-  UserX,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { fetchTeachers } from '@/lib/live-data'
 
 type FacultyAttendance = {
   id: string
@@ -32,19 +28,11 @@ type FacultyAttendance = {
   note?: string
 }
 
-const initialFaculty: FacultyAttendance[] = [
-  { id: '1', code: 'TCH-2026-001', name: 'Muhammad Asad', department: 'Sciences', timeIn: '07:42 AM', status: 'Present', note: 'Morning Assembly Duty' },
-  { id: '2', code: 'TCH-2026-002', name: 'Fatima Noor', department: 'Languages', timeIn: '08:05 AM', status: 'Late', note: '15 min late - Traffic' },
-  { id: '3', code: 'TCH-2026-003', name: 'Tariq Mehmood', department: 'Sciences', timeIn: '07:35 AM', status: 'Present' },
-  { id: '4', code: 'TCH-2026-004', name: 'Ayesha Siddiqua', department: 'Humanities', timeIn: '—', status: 'Leave', note: 'Sick leave approved' },
-  { id: '5', code: 'TCH-2026-005', name: 'Bilal Ahmed', department: 'IT', timeIn: '07:50 AM', status: 'Present' },
-  { id: '6', code: 'TCH-2026-006', name: 'Zainab Bibi', department: 'Arts & Sports', timeIn: '—', status: 'Absent', note: 'Unexcused' },
-]
-
 export default function FacultyAttendancePage() {
+  const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0])
-  const [faculty, setFaculty] = useState<FacultyAttendance[]>(initialFaculty)
-  const [department, setDepartment] = useState('All')
+  const [faculty, setFaculty] = useState<FacultyAttendance[]>([])
+  const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [toast, setToast] = useState('')
 
@@ -53,20 +41,82 @@ export default function FacultyAttendancePage() {
     setTimeout(() => setToast(''), 2600)
   }
 
+  useEffect(() => {
+    async function loadTeachers() {
+      setLoading(true)
+      try {
+        const res = await fetchTeachers()
+        const teachers = res.data || []
+
+        let savedRecords: Record<string, Partial<FacultyAttendance>> = {}
+        if (typeof window !== 'undefined') {
+          try {
+            const cached = localStorage.getItem(`eduflow_faculty_attendance_${selectedDate}`)
+            if (cached) savedRecords = JSON.parse(cached)
+          } catch {}
+        }
+
+        const list: FacultyAttendance[] = teachers.map((t) => {
+          const idStr = String(t.id)
+          const saved = savedRecords[idStr]
+          return {
+            id: idStr,
+            code: t.employee_code || `TCH-${t.id}`,
+            name: t.name,
+            department: t.department || 'Academics',
+            timeIn: saved?.timeIn || '07:45 AM',
+            status: (saved?.status as FacultyAttendance['status']) || 'Present',
+            note: saved?.note || '',
+          }
+        })
+        setFaculty(list)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadTeachers()
+  }, [selectedDate])
+
+  const saveAttendanceState = (updated: FacultyAttendance[]) => {
+    setFaculty(updated)
+    if (typeof window !== 'undefined') {
+      const recordsMap: Record<string, Partial<FacultyAttendance>> = {}
+      for (const f of updated) {
+        recordsMap[f.id] = { status: f.status, timeIn: f.timeIn, note: f.note }
+      }
+      try {
+        localStorage.setItem(`eduflow_faculty_attendance_${selectedDate}`, JSON.stringify(recordsMap))
+      } catch {}
+    }
+  }
+
   const markAllPresent = () => {
-    setFaculty(prev => prev.map(f => ({ ...f, status: 'Present', timeIn: f.timeIn === '—' ? '07:45 AM' : f.timeIn })))
+    if (faculty.length === 0) return
+    const updated = faculty.map(f => ({
+      ...f,
+      status: 'Present' as const,
+      timeIn: f.timeIn === '—' ? '07:45 AM' : f.timeIn,
+    }))
+    saveAttendanceState(updated)
     notify('All faculty marked Present for today.')
   }
 
   const updateStatus = (id: string, status: FacultyAttendance['status']) => {
-    setFaculty(prev =>
-      prev.map(f => (f.id === id ? { ...f, status, timeIn: status === 'Absent' || status === 'Leave' ? '—' : f.timeIn === '—' ? '07:50 AM' : f.timeIn } : f))
+    const updated = faculty.map(f =>
+      f.id === id
+        ? {
+            ...f,
+            status,
+            timeIn: status === 'Absent' || status === 'Leave' ? '—' : f.timeIn === '—' ? '07:50 AM' : f.timeIn,
+          }
+        : f
     )
+    saveAttendanceState(updated)
   }
 
   const filtered = faculty.filter(
-    f => (department === 'All' || f.department === department) &&
-      (f.name.toLowerCase().includes(query.toLowerCase()) || f.code.toLowerCase().includes(query.toLowerCase()))
+    f => f.name.toLowerCase().includes(query.toLowerCase()) || f.code.toLowerCase().includes(query.toLowerCase())
   )
 
   const presentCount = faculty.filter(f => f.status === 'Present').length
@@ -105,7 +155,11 @@ export default function FacultyAttendancePage() {
           <Button variant="outline" onClick={() => window.print()} className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium">
             <Printer className="mr-1.5 size-4 text-slate-500" /> Print Haziri Sheet
           </Button>
-          <Button onClick={markAllPresent} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs font-semibold">
+          <Button
+            onClick={markAllPresent}
+            disabled={faculty.length === 0}
+            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl shadow-xs font-semibold"
+          >
             <UserCheck className="mr-1.5 size-4 text-white" /> Mark All Present
           </Button>
         </div>
@@ -152,97 +206,109 @@ export default function FacultyAttendancePage() {
               onChange={(e) => setSelectedDate(e.target.value)}
               className="h-9 w-auto rounded-xl border-slate-200 bg-white text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
             />
-            <select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 focus:border-blue-600 focus:outline-hidden"
-            >
-              <option>All</option>
-              <option>Sciences</option>
-              <option>Languages</option>
-              <option>Humanities</option>
-              <option>IT</option>
-              <option>Arts &amp; Sports</option>
-            </select>
           </div>
-          <div className="w-full sm:w-64">
-            <Input
-              placeholder="Search faculty name or code..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="h-9 rounded-xl border-slate-200 bg-white text-xs text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
-            />
+          <div className="w-full sm:w-72">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 size-4 text-slate-400" />
+              <Input
+                placeholder="Search faculty name or code..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="h-9 pl-9 rounded-xl border-slate-200 bg-white text-xs text-slate-900 focus:border-blue-600 focus:ring-blue-500/20"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-slate-200 text-slate-600 text-[10px] uppercase tracking-wider bg-slate-50 font-semibold">
-                <th className="px-5 py-3 font-semibold">Teacher Code</th>
-                <th className="px-5 py-3 font-semibold">Faculty Name</th>
-                <th className="px-5 py-3 font-semibold">Department</th>
-                <th className="px-5 py-3 font-semibold">Time-In</th>
-                <th className="px-5 py-3 font-semibold">Status</th>
-                <th className="px-5 py-3 font-semibold">Remarks</th>
-                <th className="px-5 py-3 font-semibold text-right">Quick Mark</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((teacher) => (
-                <tr key={teacher.id} className="hover:bg-slate-50/60 transition">
-                  <td className="px-5 py-3.5 font-mono text-slate-500 font-semibold">{teacher.code}</td>
-                  <td className="px-5 py-3.5 font-bold text-slate-900">{teacher.name}</td>
-                  <td className="px-5 py-3.5 text-slate-600">{teacher.department}</td>
-                  <td className="px-5 py-3.5 font-mono text-slate-800">{teacher.timeIn}</td>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                      teacher.status === 'Present' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20' :
-                      teacher.status === 'Late' ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20' :
-                      teacher.status === 'Leave' ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' :
-                      'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
-                    }`}>
-                      {teacher.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 italic text-[11px]">{teacher.note || '—'}</td>
-                  <td className="px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => updateStatus(teacher.id, 'Present')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Present' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 hover:bg-emerald-50 border border-slate-200'}`}
-                        title="Mark Present"
-                      >
-                        P
-                      </button>
-                      <button
-                        onClick={() => updateStatus(teacher.id, 'Late')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Late' ? 'bg-amber-600 text-white' : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'}`}
-                        title="Mark Late"
-                      >
-                        L
-                      </button>
-                      <button
-                        onClick={() => updateStatus(teacher.id, 'Leave')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Leave' ? 'bg-slate-700 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
-                        title="Mark Leave"
-                      >
-                        LV
-                      </button>
-                      <button
-                        onClick={() => updateStatus(teacher.id, 'Absent')}
-                        className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Absent' ? 'bg-rose-600 text-white' : 'bg-white text-slate-600 hover:bg-rose-50 border border-slate-200'}`}
-                        title="Mark Absent"
-                      >
-                        A
-                      </button>
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="p-12 flex flex-col items-center justify-center text-slate-400">
+            <Loader2 className="size-8 animate-spin text-blue-600 mb-2" />
+            <p className="text-xs font-medium text-slate-500">Loading faculty attendance records...</p>
+          </div>
+        ) : faculty.length === 0 ? (
+          <div className="p-6">
+            <ZeroDataEmptyState
+              icon={Users}
+              title="No Faculty Members Found"
+              description="Your school does not have any registered faculty members yet. Add teachers in the Faculty Directory to begin tracking daily attendance and payroll deductions."
+              actionLabel="Add Faculty Member"
+              onAction={() => router.push('/admin/teachers')}
+            />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 text-center text-sm text-slate-500">
+            No teachers matched your search &quot;{query}&quot;.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600 text-[10px] uppercase tracking-wider bg-slate-50 font-semibold">
+                  <th className="px-5 py-3 font-semibold">Teacher Code</th>
+                  <th className="px-5 py-3 font-semibold">Faculty Name</th>
+                  <th className="px-5 py-3 font-semibold">Department</th>
+                  <th className="px-5 py-3 font-semibold">Time-In</th>
+                  <th className="px-5 py-3 font-semibold">Status</th>
+                  <th className="px-5 py-3 font-semibold">Remarks</th>
+                  <th className="px-5 py-3 font-semibold text-right">Quick Mark</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map((teacher) => (
+                  <tr key={teacher.id} className="hover:bg-slate-50/60 transition">
+                    <td className="px-5 py-3.5 font-mono text-slate-500 font-semibold">{teacher.code}</td>
+                    <td className="px-5 py-3.5 font-bold text-slate-900">{teacher.name}</td>
+                    <td className="px-5 py-3.5 text-slate-600">{teacher.department}</td>
+                    <td className="px-5 py-3.5 font-mono text-slate-800">{teacher.timeIn}</td>
+                    <td className="px-5 py-3.5">
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                        teacher.status === 'Present' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20' :
+                        teacher.status === 'Late' ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20' :
+                        teacher.status === 'Leave' ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' :
+                        'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
+                      }`}>
+                        {teacher.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-500 italic text-[11px]">{teacher.note || '—'}</td>
+                    <td className="px-5 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => updateStatus(teacher.id, 'Present')}
+                          className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Present' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 hover:bg-emerald-50 border border-slate-200'}`}
+                          title="Mark Present"
+                        >
+                          P
+                        </button>
+                        <button
+                          onClick={() => updateStatus(teacher.id, 'Late')}
+                          className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Late' ? 'bg-amber-600 text-white' : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200'}`}
+                          title="Mark Late"
+                        >
+                          L
+                        </button>
+                        <button
+                          onClick={() => updateStatus(teacher.id, 'Leave')}
+                          className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Leave' ? 'bg-slate-700 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+                          title="Mark Leave"
+                        >
+                          LV
+                        </button>
+                        <button
+                          onClick={() => updateStatus(teacher.id, 'Absent')}
+                          className={`size-7 rounded-lg text-xs font-bold transition ${teacher.status === 'Absent' ? 'bg-rose-600 text-white' : 'bg-white text-slate-600 hover:bg-rose-50 border border-slate-200'}`}
+                          title="Mark Absent"
+                        >
+                          A
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </div>
   )

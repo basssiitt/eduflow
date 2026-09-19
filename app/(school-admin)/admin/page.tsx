@@ -105,15 +105,23 @@ export default function AdminOverviewPage() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Total Students</span>
-            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">+12%</span>
+            {stats.students > 0 ? (
+              <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Live</span>
+            ) : (
+              <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">0%</span>
+            )}
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900">
               {loading ? '—' : stats.students.toLocaleString()}
             </p>
-            {/* Blue Wave Sparkline */}
+            {/* Sparkline: flat dashed baseline when 0 */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 20 Q 25 5, 50 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {stats.students > 0 ? (
+                <path d="M0 20 Q 25 5, 50 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
@@ -126,15 +134,23 @@ export default function AdminOverviewPage() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Active Classes</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Live</span>
+            {uniqueClasses.length > 0 ? (
+              <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Live</span>
+            ) : (
+              <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">0</span>
+            )}
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900">
               {loading ? '—' : uniqueClasses.length.toLocaleString()}
             </p>
-            {/* Wave Sparkline */}
+            {/* Sparkline */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 22 Q 30 25, 55 10 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {uniqueClasses.length > 0 ? (
+                <path d="M0 22 Q 30 25, 55 10 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
@@ -147,15 +163,23 @@ export default function AdminOverviewPage() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Attendance Rate</span>
-            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Today</span>
+            {stats.attendance.length > 0 ? (
+              <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Today</span>
+            ) : (
+              <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">No Logs</span>
+            )}
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900">
               {loading ? '—' : `${attendanceRate}%`}
             </p>
-            {/* Wave Sparkline */}
+            {/* Sparkline */}
             <svg className="h-7 w-20 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 18 Q 20 8, 50 15 T 100 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {stats.attendance.length > 0 && attendanceRate > 0 ? (
+                <path d="M0 18 Q 20 8, 50 15 T 100 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
@@ -168,15 +192,23 @@ export default function AdminOverviewPage() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Faculty Staff</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Active</span>
+            {teacherCount > 0 ? (
+              <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Active</span>
+            ) : (
+              <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">0</span>
+            )}
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900">
               {loading ? '—' : teacherCount.toLocaleString()}
             </p>
-            {/* Wave Sparkline */}
+            {/* Sparkline */}
             <svg className="h-7 w-20 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 25 Q 35 15, 65 8 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {teacherCount > 0 ? (
+                <path d="M0 25 Q 35 15, 65 8 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
@@ -219,62 +251,83 @@ export default function AdminOverviewPage() {
           </div>
         </div>
 
-        {/* Smooth Area Wave Chart */}
-        <div className="mt-6 relative">
-          {/* Floating Data Badge Indicator */}
-          <div className="absolute top-8 left-[45%] -translate-x-1/2 z-10 hidden sm:flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white shadow-md">
-            <span>Active Enrollment: {loading ? '—' : stats.students}</span>
+        {stats.students === 0 ? (
+          <div className="mt-6 flex flex-col items-center justify-center py-14 px-4 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+            <div className="size-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+              <GraduationCap className="size-5" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-900">No Enrollment Data Logged</h3>
+            <p className="text-xs text-slate-500 max-w-sm mt-1">
+              Annual platform growth baseline initialized at 0. Enroll students to start logging active attendance and academic trajectory curves.
+            </p>
+            <div className="mt-4 flex items-center gap-2">
+              <Link
+                href="/admin/students"
+                className="inline-flex items-center rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-blue-700 transition shadow-xs"
+              >
+                + Enroll First Student
+              </Link>
+            </div>
           </div>
+        ) : (
+          <div className="mt-6 relative">
+            {/* Floating Data Badge Indicator */}
+            <div className="absolute top-8 left-[45%] -translate-x-1/2 z-10 hidden sm:flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white shadow-md">
+              <span>Active Enrollment: {loading ? '—' : stats.students}</span>
+            </div>
 
-          <svg className="w-full h-48 sm:h-64 overflow-visible" viewBox="0 0 800 240" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="blueWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2563eb" stopOpacity="0.45" />
-                <stop offset="60%" stopColor="#3b82f6" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
+            <svg className="w-full h-48 sm:h-64 overflow-visible" viewBox="0 0 800 240" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blueWaveGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#2563eb" stopOpacity="0.45" />
+                  <stop offset="60%" stopColor="#3b82f6" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
 
-            {/* Grid Lines */}
-            <line x1="0" y1="50" x2="800" y2="50" stroke="#f1f5f9" strokeDasharray="4 4" />
-            <line x1="0" y1="110" x2="800" y2="110" stroke="#f1f5f9" strokeDasharray="4 4" />
-            <line x1="0" y1="170" x2="800" y2="170" stroke="#f1f5f9" strokeDasharray="4 4" />
-            <line x1="0" y1="230" x2="800" y2="230" stroke="#e2e8f0" />
+              {/* Grid Lines */}
+              <line x1="0" y1="50" x2="800" y2="50" stroke="#f1f5f9" strokeDasharray="4 4" />
+              <line x1="0" y1="110" x2="800" y2="110" stroke="#f1f5f9" strokeDasharray="4 4" />
+              <line x1="0" y1="170" x2="800" y2="170" stroke="#f1f5f9" strokeDasharray="4 4" />
+              <line x1="0" y1="230" x2="800" y2="230" stroke="#e2e8f0" />
 
-            {/* Curved Area Fill */}
-            <path
-              d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40 L 800 230 L 0 230 Z"
-              fill="url(#blueWaveGrad)"
-            />
+              {/* Curved Area Fill */}
+              <path
+                d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40 L 800 230 L 0 230 Z"
+                fill="url(#blueWaveGrad)"
+              />
 
-            {/* Curved Stroke Line */}
-            <path
-              d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40"
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-            />
+              {/* Curved Stroke Line */}
+              <path
+                d="M 0 200 C 120 180, 180 150, 260 120 C 340 90, 390 40, 460 30 C 530 20, 580 90, 660 60 C 720 40, 760 50, 800 40"
+                fill="none"
+                stroke="#2563eb"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+              />
 
-            {/* Target Peak Data Point Dot */}
-            <circle cx="460" cy="30" r="5" fill="#2563eb" stroke="#ffffff" strokeWidth="2.5" />
-          </svg>
+              {/* Target Peak Data Point Dot */}
+              <circle cx="460" cy="30" r="5" fill="#2563eb" stroke="#ffffff" strokeWidth="2.5" />
+            </svg>
 
-          {/* X-axis Timestamps */}
-          <div className="flex justify-between text-[11px] font-medium text-slate-400 mt-2 px-1">
-            <span>22:10</span>
-            <span>22:11</span>
-            <span>22:12</span>
-            <span>22:13</span>
-            <span>22:14</span>
-            <span>22:15</span>
-            <span>22:16</span>
-            <span>22:17</span>
-            <span>22:18</span>
-            <span>22:19</span>
-            <span>22:20</span>
+            {/* X-axis Timestamps */}
+            <div className="flex justify-between text-[11px] font-medium text-slate-400 mt-2 px-1">
+              <span>Jan</span>
+              <span>Feb</span>
+              <span>Mar</span>
+              <span>Apr</span>
+              <span>May</span>
+              <span>Jun</span>
+              <span>Jul</span>
+              <span>Aug</span>
+              <span>Sep</span>
+              <span>Oct</span>
+              <span>Nov</span>
+              <span>Dec</span>
+            </div>
           </div>
-        </div>
+        )}
+
       </div>
 
       {/* Class Performance Table (Screen 3 Bottom Card) */}
