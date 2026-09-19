@@ -59,3 +59,6 @@ Parse: `file:line:col` → location | 💡 → how to fix | Exit 0/1 → pass/fa
 - ❌ Fix symptom (`if (x) { x.y }`) → ✅ Root cause (`x?.y`)
 ````
 <!-- <<< End Ultimate Bug Scanner quick reference -->
+
+@TEAM_STRUCTURE.md
+

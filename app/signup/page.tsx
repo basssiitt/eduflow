@@ -30,22 +30,37 @@ function GoogleIcon() {
   )
 }
 
+import { PAKISTAN_LOCATIONS, PROVINCES } from '@/lib/pakistan-locations'
+
 export default function SignUpPage() {
   const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [schoolName, setSchoolName] = useState('')
+  const [province, setProvince] = useState('Sindh')
   const [city, setCity] = useState('Karachi')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [agreeTerms, setAgreeTerms] = useState(false)
+  const [agreeTrial, setAgreeTrial] = useState(true)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
   const [emailSent, setEmailSent] = useState(false)
 
+  const handleProvinceChange = (newProvince: string) => {
+    setProvince(newProvince)
+    const cityList = PAKISTAN_LOCATIONS[newProvince] || []
+    setCity(cityList[0] || '')
+  }
+
   const handleGoogleAuth = async () => {
     setError('')
+    if (!agreeTerms) {
+      setError('Please agree to the Terms & Conditions and Privacy Policy to continue.')
+      return
+    }
     setGoogleLoading(true)
 
     if (isSupabaseConfigured && supabaseClient) {
@@ -66,6 +81,10 @@ export default function SignUpPage() {
     }
 
     // Demo Mode Google Simulator - set both cookie and sessionStorage
+    const now = Date.now()
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
+    const trialEnds = now + thirtyDaysMs
+
     document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
     sessionStorage.setItem('eduflow-demo-user', 'true')
     sessionStorage.setItem('eduflow-demo-role', 'school_admin')
@@ -73,10 +92,21 @@ export default function SignUpPage() {
     sessionStorage.setItem('eduflow-demo-school', schoolName || 'Beacon Scholars Academy')
     sessionStorage.setItem('eduflow-demo-plan', 'Pro')
     sessionStorage.setItem('eduflow-trial-days', '30')
+    sessionStorage.setItem('eduflow_trial_start', String(now))
+    sessionStorage.setItem('eduflow_trial_ends', String(trialEnds))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('eduflow_trial_start', String(now))
+      localStorage.setItem('eduflow_trial_ends', String(trialEnds))
+      localStorage.setItem('eduflow_school_reg_date', String(now))
+    }
     window.location.href = '/admin'
   }
 
   const enterDemoWorkspace = (cleanEmail: string, cleanSchool: string, cleanName: string) => {
+    const now = Date.now()
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
+    const trialEnds = now + thirtyDaysMs
+
     document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
     sessionStorage.setItem('eduflow-demo-user', 'true')
     sessionStorage.setItem('eduflow-demo-role', 'school_admin')
@@ -85,12 +115,24 @@ export default function SignUpPage() {
     sessionStorage.setItem('eduflow-demo-owner', cleanName)
     sessionStorage.setItem('eduflow-demo-plan', 'Pro')
     sessionStorage.setItem('eduflow-trial-days', '30')
+    sessionStorage.setItem('eduflow_trial_start', String(now))
+    sessionStorage.setItem('eduflow_trial_ends', String(trialEnds))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('eduflow_trial_start', String(now))
+      localStorage.setItem('eduflow_trial_ends', String(trialEnds))
+      localStorage.setItem('eduflow_school_reg_date', String(now))
+    }
     window.location.replace('/admin')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+
+    if (!agreeTerms) {
+      setError('Please confirm that you have read and agreed to the Terms & Conditions and Privacy Policy.')
+      return
+    }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.')
@@ -325,25 +367,41 @@ export default function SignUpPage() {
                     />
                   </label>
 
-                  <label htmlFor="city" className="sm:col-span-2">
-                    Campus City / Region
-                    <select
-                      id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-900 focus:outline-hidden focus:border-blue-600"
-                    >
-                      <option>Karachi</option>
-                      <option>Lahore</option>
-                      <option>Islamabad</option>
-                      <option>Rawalpindi</option>
-                      <option>Faisalabad</option>
-                      <option>Multan</option>
-                      <option>Peshawar</option>
-                      <option>Quetta</option>
-                      <option>Other / Remote</option>
-                    </select>
-                  </label>
+                  <div className="grid gap-3 sm:grid-cols-2 sm:col-span-2">
+                    <label htmlFor="province">
+                      Province / Region
+                      <select
+                        id="province"
+                        value={province}
+                        onChange={(e) => handleProvinceChange(e.target.value)}
+                        className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-900 focus:outline-hidden focus:border-blue-600 font-medium"
+                        required
+                      >
+                        {PROVINCES.map((prov) => (
+                          <option key={prov} value={prov}>
+                            {prov}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label htmlFor="city">
+                      Campus City
+                      <select
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-900 focus:outline-hidden focus:border-blue-600 font-medium"
+                        required
+                      >
+                        {(PAKISTAN_LOCATIONS[province] || []).map((cityName) => (
+                          <option key={cityName} value={cityName}>
+                            {cityName}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
 
                   <label htmlFor="email" className="sm:col-span-2">
                     Official Admin Email Address
@@ -422,9 +480,44 @@ export default function SignUpPage() {
                   </div>
                 )}
 
-                <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
-                  <Check className="size-3.5 text-emerald-600 shrink-0" />
-                  <span>By registering, you agree to EduFlow&apos;s Terms of Service and 30-day Pro trial terms.</span>
+                {/* Required Legal and Trial Checkboxes */}
+                <div className="mt-4 space-y-2.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 text-xs text-slate-700">
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreeTerms}
+                      onChange={(e) => setAgreeTerms(e.target.checked)}
+                      required
+                      className="mt-0.5 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
+                    />
+                    <span className="leading-snug">
+                      I have read and agree to EduFlow&apos;s{' '}
+                      <Link href="/terms" target="_blank" className="font-semibold text-blue-600 hover:underline">
+                        Terms &amp; Conditions
+                      </Link>
+                      ,{' '}
+                      <Link href="/privacy" target="_blank" className="font-semibold text-blue-600 hover:underline">
+                        Privacy Policy
+                      </Link>
+                      , and{' '}
+                      <Link href="/refund-policy" target="_blank" className="font-semibold text-blue-600 hover:underline">
+                        Refund Policy
+                      </Link>
+                      . <span className="text-red-500 font-bold">*</span>
+                    </span>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreeTrial}
+                      onChange={(e) => setAgreeTrial(e.target.checked)}
+                      className="mt-0.5 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
+                    />
+                    <span className="leading-snug text-slate-600">
+                      I understand my <strong>30-Day Free Pro Plan Trial</strong> activates automatically with full feature access and zero upfront payment.
+                    </span>
+                  </label>
                 </div>
 
                 <button

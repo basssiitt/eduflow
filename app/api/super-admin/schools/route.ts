@@ -13,16 +13,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mtchdghzlkiemwtzyduo.supabase.co'
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KmiVb1kw1LiOskGkpDkLpw_gapmgN09'
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+
+    if (!supabaseUrl || (!anonKey && !serviceRoleKey)) {
+      return NextResponse.json(
+        { error: 'Database credentials are not configured on the server.' },
+        { status: 503 }
+      )
+    }
 
     // Use admin client if service role key exists, otherwise anon client
     const clientToUse = serviceRoleKey
       ? createClient(supabaseUrl, serviceRoleKey, {
           auth: { autoRefreshToken: false, persistSession: false },
         })
-      : createClient(supabaseUrl, anonKey)
+      : createClient(supabaseUrl, (anonKey || '') as string)
 
     const slug = name
       .toLowerCase()

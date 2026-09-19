@@ -83,9 +83,11 @@ Instructions:
       contents: `${systemPrompt}\n\nParent Question: ${prompt}`,
     })
     return NextResponse.json({ text: result.text ?? 'Main aap ke sawal ka jawab talaash kar raha hoon. Baraye meherbani dobarah poochhein.' })
-  } catch (_err: unknown) {
+  } catch (err: unknown) {
+    console.error('EduFlow AI Parent Companion upstream generation error:', err)
     return NextResponse.json({
       text: `Ali Khan (${context.grade}) ki attendance ${context.attendance} hai aur unke term exam marks 88.3% (Grade A*) hain. Upcoming Mid-Term exams ${context.examDate} se start honge.`,
+      fallback: true,
     }, { status: 200 })
   }
 }

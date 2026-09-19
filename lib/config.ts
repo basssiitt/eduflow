@@ -1,10 +1,20 @@
-export const SUPER_ADMIN_EMAILS = [
+const DEFAULT_SUPER_ADMIN_EMAILS = [
   'basithunyawrr@gmail.com',
 ]
 
+export const SUPER_ADMIN_EMAILS: string[] = (() => {
+  const envEmails = process.env.SUPER_ADMIN_EMAILS
+  if (!envEmails) return DEFAULT_SUPER_ADMIN_EMAILS
+  return envEmails
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+})()
+
 export function isSuperAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false
-  return SUPER_ADMIN_EMAILS.includes(email.toLowerCase().trim())
+  const cleanEmail = email.toLowerCase().trim()
+  return SUPER_ADMIN_EMAILS.includes(cleanEmail) || DEFAULT_SUPER_ADMIN_EMAILS.includes(cleanEmail)
 }
 
 export function normalizeRole(role: string | null | undefined): string {
@@ -12,14 +22,22 @@ export function normalizeRole(role: string | null | undefined): string {
   return role.toLowerCase().trim().replace(/-/g, '_')
 }
 
-/** Generic home routes (used by middleware / role-gate fallbacks) */
+/**
+ * 3 Public Portals:
+ * 1. School Admin (/admin) - School Owner
+ * 2. Teacher (/teacher) - Teacher Workspace
+ * 3. Parent (/parent) - Parents Portal (includes children learning progress, attendance, and reports)
+ *
+ * 1 Hidden/Private Portal:
+ * Super Admin (/super-admin) - Website Owner Exclusive (basithunyawrr@gmail.com)
+ */
 export const ROLE_HOME_ROUTES: Record<string, string> = {
   super_admin: '/super-admin',
   school_admin: '/admin',
   admin: '/admin',
   teacher: '/teacher',
   parent: '/parent',
-  student: '/student',
+  student: '/parent', // Student portal is merged into Parents Portal
 }
 
 /** Specific portal landing pages per role (used by the OAuth callback) */
@@ -29,7 +47,7 @@ export const ROLE_PORTAL_ROUTES: Record<string, string> = {
   admin: '/admin/overview',
   teacher: '/teacher/classes',
   parent: '/parent/children',
-  student: '/student',
+  student: '/parent/children', // Student portal is merged into Parents Portal
 }
 
 export function getHomeRoute(role: string | null | undefined, email?: string | null): string {

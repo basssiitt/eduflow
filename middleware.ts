@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
-const protectedRoutes = ['/admin', '/teacher', '/parent', '/student', '/super-admin', '/onboarding']
+const protectedRoutes = ['/admin', '/teacher', '/parent', '/super-admin', '/onboarding']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -10,8 +10,17 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   })
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mtchdghzlkiemwtzyduo.supabase.co'
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_KmiVb1kw1LiOskGkpDkLpw_gapmgN09'
+
+  const { pathname } = request.nextUrl
+
+  // Student portal is consolidated into Parents Portal: redirect any /student route to /parent
+  if (pathname === '/student' || pathname.startsWith('/student/')) {
+    const parentUrl = new URL('/parent', request.url)
+    return NextResponse.redirect(parentUrl, { status: 301 })
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
     return response
@@ -35,7 +44,6 @@ export async function middleware(request: NextRequest) {
   })
 
   const { data: { user } } = await supabase.auth.getUser()
-  const { pathname } = request.nextUrl
   const force = request.nextUrl.searchParams.get('force') === '1'
 
   // Helper for clean redirect with status 303 (See Other) and preserving session cookies
@@ -62,16 +70,16 @@ export async function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   )
 
-  // 1. Unauthenticated handling (with demo role cookie support)
+  // 1. Unauthenticated handling (demo role cookie support only in development or when explicitly enabled)
   if (!user) {
-    const demoRole = request.cookies.get('eduflow-demo-role')?.value
+    const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_COOKIES === 'true'
+    const demoRole = isDemoAllowed ? request.cookies.get('eduflow-demo-role')?.value : null
     if (demoRole) {
       const normalizedDemo = normalizeRole(demoRole)
       if (
         (pathname.startsWith('/admin') && ['school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/student') && ['student', 'school_admin', 'admin'].includes(normalizedDemo)) ||
         pathname.startsWith('/onboarding')
       ) {
         return response
@@ -140,14 +148,6 @@ export async function middleware(request: NextRequest) {
     }
     // Conceal existence of super-admin from unauthorized users
     return safeRedirect(user ? homeUrl : '/login')
-  }
-
-  // Guard /student
-  if (pathname === '/student' || pathname.startsWith('/student/')) {
-    if (!isSuperAdmin && !['student', 'school_admin', 'admin'].includes(normalizedRole)) {
-      return safeRedirect(homeUrl)
-    }
-    return response
   }
 
   // Guard /admin

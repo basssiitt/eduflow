@@ -12,7 +12,7 @@ export async function fetchStudents() {
   try {
     const res = await supabaseClient
       .from('students')
-      .select('id, full_name, father_name, roll_number, class_name, section, monthly_fee, status, school_id')
+      .select('*')
       .order('roll_number', { ascending: true, nullsFirst: false })
 
     if (res.error) {
@@ -21,15 +21,15 @@ export async function fetchStudents() {
 
     const mapped = (res.data || []).map((row: any) => ({
       id: row.id,
-      name: row.full_name || 'Enrolled Student',
-      father_name: row.father_name || '',
-      roll_no: row.roll_number || '',
-      class: row.class_name || 'Unassigned',
+      name: row.full_name || row.fullName || 'Enrolled Student',
+      father_name: row.father_name || row.guardian_name || row.guardianName || '',
+      roll_no: row.roll_number || row.rollNumber || '',
+      class: row.class_name || row.grade || 'Unassigned',
       section: row.section || 'A',
-      guardian_phone: '',
-      tuition_fee: Number(row.monthly_fee) || 0,
+      guardian_phone: row.guardian_phone || row.guardianPhone || '',
+      tuition_fee: Number(row.monthly_fee ?? row.monthlyFee ?? 0),
       status: row.status || 'active',
-      school_id: row.school_id,
+      school_id: row.school_id || row.campus_id || row.campusId,
     }))
 
     return { data: mapped, error: null }

@@ -16,15 +16,19 @@ This report provides:
 
 ## 1. Multi-Role System Architecture Audit
 
-EduFlow OS implements 5 dedicated user portals with role-based routing and offline synchronization:
+EduFlow OS implements strictly **3 Public Portals** and **1 Hidden / Private Portal** designed specifically for the platform owner:
 
-| User Role | Home Path | Primary Modules | Status |
+### 🌐 3 Public Portals
+| Public Portal | Home Path | Primary Modules | Status |
 | :--- | :--- | :--- | :--- |
-| **School Admin** | `/admin` | Overview, Students, **Faculty & Teachers (New)**, Attendance, Fee Challans (3-copy), Finance & Vouchers, Billing, Campus Settings | **100% Active** |
-| **Teacher** | `/teacher` | 1-Click Haziri Attendance, **Assigned Classes & Timetable (New)**, Audio Voice Diary Recorder, Term Gradebook | **100% Active** |
-| **Student** | `/student` | **Overview, Report Cards & Grades, Haziri Log Register, Homework Voice Diary (New Portal)** | **100% Active** |
-| **Parent** | `/parent` | **My Enrolled Children (New)**, Learning Space, Attendance Calendar, Fee Receipts, AI Bilingual Companion (Gemini) | **100% Active** |
-| **Super Admin** | `/super-admin` | Multi-Campus Tenants, Subscription Plans, Platform Telemetry Live-Stream | **100% Active** |
+| **School Admin** *(School Owner)* | `/admin` | Campus Overview, Students Directory, Faculty & Teachers, Haziri Attendance, 3-Copy Fee Challans, Finance & Vouchers, Campus Settings | **100% Active** |
+| **Teacher Portal** | `/teacher` | 1-Click Haziri Attendance Register, Weekly Period Timetables, Assigned Classes, Homework Audio Voice Diary Recorder, Term Gradebook | **100% Active** |
+| **Parents Portal** *(All-in-One Family Hub)* | `/parent` | Enrolled Children Switcher, Student Academic Progress, Classroom Haziri Attendance Logs, Term Report Cards & Grades, Homework Audio Diaries, Fee Challans & Receipts, Bilingual AI Companion (Gemini). *(Student portal is merged into Parents Portal)* | **100% Active** |
+
+### 🔒 1 Hidden / Private Portal (Website Owner Exclusive)
+| Private Portal | Home Path | Primary Modules | Status |
+| :--- | :--- | :--- | :--- |
+| **Super Admin** | `/super-admin` | Multi-Campus Tenants, Subscription Plans, Platform Telemetry Live-Stream, Global Site Settings. Restricted exclusively to the website owner (`basithunyawrr@gmail.com`). | **100% Active (Concealed)** |
 
 ---
 
@@ -64,6 +68,16 @@ EduFlow OS implements 5 dedicated user portals with role-based routing and offli
 ### 5. 1-Click Interactive Demo Portals & Middleware Hardening
 - Added 1-click demo access directly on `/login` for all 5 roles.
 - Enhanced `middleware.ts` to support `eduflow-demo-role` cookies alongside real Supabase sessions, enabling frictionless testing and evaluation.
+- **Security Audit Remediation:** Gated demo role cookie traversal to non-production environments (`NODE_ENV !== 'production'`) unless explicitly allowed via `ENABLE_DEMO_COOKIES`. Configured dynamic `SUPER_ADMIN_EMAILS` environment mapping. Normalized student schema field mapping across `class_name` and `grade`.
+
+### 6. Full Mock Layer Purge & Live Service Alignment
+- **Problem Identified:** Residual mock infrastructure (`mocks/` with MSW handlers, `public/mockServiceWorker.js`, and `lib/mock-data/` with Faker) created confusing duplication with live Supabase database queries.
+- **Delivered Solution:**
+  - Fully removed `mocks/` directory (`browser.ts`, `handlers.ts`, `server.ts`).
+  - Removed `public/mockServiceWorker.js`.
+  - Removed `lib/mock-data/` generator (`faker-generator.ts`).
+  - Purged `msw` worker config and `msw` / `@faker-js/faker` dependencies from `package.json`.
+  - Authored clean unit test suite (`__tests__/config-and-roles.test.ts`) validating role normalization, multi-tenant portal paths, and super admin authorization.
 
 ---
 
@@ -170,19 +184,37 @@ Based on our benchmark audit, here is the detailed breakdown of features categor
 
 ---
 
-## 5. Verification & Code Quality Metrics
+## 5. Team Sprint Task Assignments (Team Maali & The 8 Subagents)
+
+To accelerate EduFlow OS development following the eradication of the mock layer, tasks are assigned across Team Maali and the 8 specialized subagents according to `TEAM_STRUCTURE.md`:
+
+| Team Member | Role & Specialization | Current Sprint Task Assignment | Key Deliverable | Quality Gate |
+| :--- | :--- | :--- | :--- | :--- |
+| 👑 **Maali** | *Team Lead & Orchestrator* | Squad dispatch, task decomposition, synthesis, final gate sign-off, and mock layer eradication verification across all 3 public portals and the private owner portal. | Orchestration log & PR sign-off | Gate 4 (Final Sign-off) |
+| 🏗️ **Faris** | *Architect & Systems Planner* | Blueprint the conflict-free Timetable Scheduling Engine (`app/lib/timetable/`) and define multi-tenant data contracts. | Timetable Architecture Blueprint & Zod contracts | Gate 1 (Schema & Auth) |
+| 🎨 **Zara** | *Frontend & UI/UX Specialist* | Polish 3-Face Fee Challan print stylesheet (`@media print`), responsive parent sibling switcher, and Urdu RTL layout typography. | Pixel-perfect Challan slip & WCAG 2.2 compliant UI | Gate 2 (UI & Logic) |
+| ⚡ **Hamza** | *Backend & API Engineer* | Author type-safe Server Actions for fee challan batch generation, attendance upsert, and AI chat context fetching. | Validated Server Actions with `{ success, data, error }` | Gate 2 (UI & Logic) |
+| 🗄️ **Tariq** | *Database & Schema Engineer* | Author PostgreSQL RLS policies for multi-tenancy (`school_id`) and optimize composite indexes on `students`, `attendance`, `fee_invoices`. | Safe migration SQL & verified RLS security rules | Gate 1 (Schema & Auth) |
+| 🔒 **Bilal** | *Security & Auth Guardian* | Audit route guards across the 3 public portals (`/admin`, `/teacher`, `/parent`) and the 1 hidden owner portal (`/super-admin`), and ensure zero cross-tenant credential or data leaks. | Security audit matrix & zero-leak verification | Gate 3 (Bug & Security) |
+| 🔍 **Rayan** | *QA & UBS Hunter* | Static code analysis, TypeScript typecheck verification, eliminating dead imports, and root-cause bug remediation. | UBS scan clean (Exit Code 0) & typecheck clean | Gate 3 (Bug & Security) |
+| 🧪 **Sobia** | *Test & Verification Lead* | Author deterministic Vitest tests for role normalization, fee calculation, and semantic DOM accessibility (replacing legacy MSW tests). | Passing test suite with >80% coverage on core logic | Gate 4 (Testing & Docs) |
+| 📝 **Zubair** | *Docs & Roadmap Curator* | Synchronize `GAP_ANALYSIS_AND_ROADMAP.md`, update Codemaps, and document the live database connection requirements. | Up-to-date Roadmap & release documentation | Gate 4 (Testing & Docs) |
+
+---
+
+## 6. Verification & Code Quality Metrics
 
 | Verification Check | Target | Result | Status |
 | :--- | :--- | :--- | :--- |
 | **Next.js 16 Production Build** | Zero syntax or type errors | `31/31` static and dynamic routes compiled | **PASSED (0 errors)** |
 | **Ultimate Bug Scanner (UBS)** | Zero critical security/logic defects | 76 files audited, `0` Critical defects | **PASSED (0 criticals)** |
-| **Portal Response Verification** | HTTP 200 on all 5 portals | All routes verified via curl sessions | **PASSED (200 OK)** |
+| **Portal Response Verification** | HTTP 200 on all portals | All routes verified via curl sessions | **PASSED (200 OK)** |
 | **Mobile Responsiveness** | Breakpoint compliance | Tested on mobile, tablet, and desktop viewports | **PASSED** |
 
 ---
 
-## 6. Conclusion & Next Steps
+## 7. Conclusion & Next Steps
 
-EduFlow OS has transformed into a robust, high-performance school management operating system with 5 interconnected portals. By implementing the Faculty & Teachers management module, Teacher timetable workspace, Parent children hub, and dedicated Student portal, the fundamental missing pieces of the platform have been completely resolved.
+EduFlow OS has transformed into a robust, high-performance school management operating system with strictly 3 public portals (School Admin, Teacher, and Parents Portal) and 1 hidden/private portal (Super Admin) exclusively for the platform owner. By implementing the Faculty & Teachers management module, Teacher timetable workspace, and consolidating the student experience directly into the Parents Portal, the system architecture is now clean, secure, and intuitive.
 
 Executing the prioritized roadmap outlined above will position EduFlow OS as the leading school operating system in the region.

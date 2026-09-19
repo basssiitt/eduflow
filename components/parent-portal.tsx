@@ -404,22 +404,24 @@ export function ParentPortal() {
               className="h-9 w-52 xl:w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold text-xs">
-            <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee: {feeStatus}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => setChallanModalOpen(true)}
-            className="rounded-xl border-slate-200 hover:border-blue-300 text-xs font-bold"
-          >
-            <Printer className="size-3.5 mr-1.5 text-blue-600" /> View Challan
-          </Button>
-          <Button
-            onClick={() => setPayModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
-          >
-            <CreditCard className="size-3.5 mr-1.5" /> Pay Online
-          </Button>
+          <div id="fees" className="flex flex-wrap items-center gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-xl font-bold text-xs">
+              <CheckCircle2 className="size-3.5 text-emerald-600" /> Fee: {feeStatus}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => setChallanModalOpen(true)}
+              className="rounded-xl border-slate-200 hover:border-blue-300 text-xs font-bold"
+            >
+              <Printer className="size-3.5 mr-1.5 text-blue-600" /> View Challan
+            </Button>
+            <Button
+              onClick={() => setPayModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs text-xs"
+            >
+              <CreditCard className="size-3.5 mr-1.5" /> Pay Online
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -556,7 +558,7 @@ export function ParentPortal() {
 
       {/* Main Grid: Class Diary + Context-Aware Gemini AI */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
-        <section className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm flex flex-col gap-4">
+        <section id="diary" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm flex flex-col gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Daily Diary</span>
             <h2 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">Teacher Homework Audio Diary</h2>
@@ -570,7 +572,7 @@ export function ParentPortal() {
       </div>
 
       {/* Academic Hub: Report Cards & Exam Date Sheet */}
-      <section className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
+      <section id="academics" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Academics &amp; Assessment</span>
@@ -681,6 +683,70 @@ export function ParentPortal() {
             )}
           </div>
         )}
+      </section>
+
+      {/* Classroom Haziri & Attendance Register (Consolidated into Parents Portal) */}
+      <section id="attendance" className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Classroom Haziri</span>
+            <h2 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">Attendance Log &amp; Monthly Summary</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500">Overall Rate:</span>
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              {activeStudent?.attendance || '0%'}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          {!live?.attendance || live.attendance.length === 0 ? (
+            <ZeroDataEmptyState
+              icon={CalendarDays}
+              title="No attendance records found"
+              description="Daily Haziri logs recorded by the classroom teacher will automatically appear here."
+            />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-[10px] uppercase tracking-wider bg-slate-50/70 dark:bg-slate-950/70">
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Teacher Remarks</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {live.attendance.map((record: any, index: number) => {
+                    const isPresent = record.status === 'Present' || record.status === 'present'
+                    const isLeave = record.status === 'Leave' || record.status === 'leave'
+                    return (
+                      <tr key={record.id || index} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{record.date}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={cn(
+                              'px-2.5 py-0.5 rounded-md font-bold text-[11px]',
+                              isPresent
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : isLeave
+                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                : 'bg-rose-50 text-rose-700 border border-rose-200'
+                            )}
+                          >
+                            {record.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-500">{record.remarks || record.note || 'Regular attendance logged.'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Online Payment Modal */}

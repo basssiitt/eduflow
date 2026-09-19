@@ -1,28 +1,142 @@
-# v0 sandbox internal files
+# ==============================================================================
+# EduFlow OS - Enterprise Security & Repository Hygiene .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Secrets, Credentials, and Environment Files
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.production
+.env*.local
+.env.backup
+*.env
+*.env.*
+!.env.example
+
+# Private Keys, Certificates & Tokens
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.token
+*.secret
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+.credentials
+credentials.json
+service-account*.json
+firebase-adminsdk*.json
+
+# ------------------------------------------------------------------------------
+# 2. Dependencies & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ------------------------------------------------------------------------------
+# 3. Build Artifacts, Bundler & Framework Outputs
+# ------------------------------------------------------------------------------
+.next/
+out/
+build/
+dist/
+.vercel/
+.turbo/
+*.tsbuildinfo
+.wrangler/
+workers-site/
+dist-isolated/
+
+# ------------------------------------------------------------------------------
+# 4. Logs, Debugging & Diagnostic Traces
+# ------------------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# 5. Testing, Code Coverage & Reports
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+cypress/videos/
+cypress/screenshots/
+
+# ------------------------------------------------------------------------------
+# 6. Operating System & Local Filesystem Artifacts
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------------------------
+# 7. IDE, Editor & Workspace Metadata
+# ------------------------------------------------------------------------------
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.bak
+
+# VS Code - preserve team presets if any, ignore personal cache
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# ------------------------------------------------------------------------------
+# 8. Databases & Local Storage Dumps
+# ------------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+dump.rdb
+
+# ------------------------------------------------------------------------------
+# 9. Sandbox, AI Agent & Tool Specific Temp Files
+# ------------------------------------------------------------------------------
 __v0_runtime_loader.js
 __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 .snowflake/
 .v0-trash/
-.vercel/
-
-# Environment variables
-.env
-.env.local
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Common ignores
-node_modules
-.next/
-*.tsbuildinfo
-.DS_Store
-__pycache__/
-*.pyc
-*.pyo
 .ideavo/project
-*.log
-.wrangler/
-coverage/
+.agents/scratch/
+.agents/cache/
+__pycache__/
+*.py[cod]
+*$py.class

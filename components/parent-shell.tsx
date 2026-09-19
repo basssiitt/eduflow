@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  Award,
+  BookOpen,
   Bot,
   CalendarCheck,
   ChevronDown,
@@ -46,12 +48,14 @@ type NavItem = {
   testId?: string
 }
 
-// Dedicated Parent Navigation - strictly parent and student progress
+// Dedicated Parent Navigation - comprehensive parent portal covering all child learning, attendance, diaries & fees
 const parentNavItems: NavItem[] = [
   { label: 'My Enrolled Children', href: '/parent/children', icon: Users, testId: 'nav-parent-children' },
   { label: 'Child Progress', href: '/parent', icon: User, testId: 'nav-parent-progress' },
-  { label: 'Attendance', href: '/parent#attendance', icon: CalendarCheck, testId: 'nav-parent-attendance' },
-  { label: 'Fee Receipts', href: '/parent#fees', icon: ReceiptText, testId: 'nav-parent-fees' },
+  { label: 'Classroom Attendance', href: '/parent#attendance', icon: CalendarCheck, testId: 'nav-parent-attendance' },
+  { label: 'Report Cards & Grades', href: '/parent#academics', icon: Award, testId: 'nav-parent-academics' },
+  { label: 'Homework Audio Diary', href: '/parent#diary', icon: BookOpen, testId: 'nav-parent-diary' },
+  { label: 'Fee Challans & Receipts', href: '/parent#fees', icon: ReceiptText, testId: 'nav-parent-fees' },
   { label: 'AI Companion', href: '/parent#ai', icon: Bot, testId: 'nav-parent-ai' },
 ]
 

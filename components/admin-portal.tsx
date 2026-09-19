@@ -38,6 +38,7 @@ function StatusBadge({ status }: { status: Status }) {
 }
 
 import { ThreeFaceChallanSlip } from "@/components/challan-slip"
+import { BankSettingsModal, BankSettings } from "@/components/bank-settings-modal"
 import { Building2 } from "lucide-react"
 
 export function AdminPortal() {
@@ -68,14 +69,6 @@ export function AdminPortal() {
       jazzcash: '03121234567',
     }
   })
-
-  const saveBankSettings = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('eduflow-bank-settings', JSON.stringify(bankSettings))
-    }
-    setBankModalOpen(false)
-  }
 
   const loadInvoices = async () => {
     setLoading(true)
@@ -497,84 +490,18 @@ export function AdminPortal() {
         />
       )}
 
-      {bankModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Payment Gateway &amp; Banking</span>
-                <h3 className="text-lg font-black text-slate-900">School Bank Account Setup</h3>
-              </div>
-              <button onClick={() => setBankModalOpen(false)} className="text-slate-400 hover:text-slate-700">
-                <X className="size-5" />
-              </button>
-            </div>
-            <form onSubmit={saveBankSettings} className="mt-4 space-y-3.5 text-xs">
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">Bank Name</label>
-                <Input
-                  value={bankSettings.bankName}
-                  onChange={(e) => setBankSettings({ ...bankSettings, bankName: e.target.value })}
-                  placeholder="e.g. Meezan Bank Ltd."
-                  required
-                  className="rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-500 text-xs"
-                />
-              </div>
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">Account Title</label>
-                <Input
-                  value={bankSettings.accountTitle}
-                  onChange={(e) => setBankSettings({ ...bankSettings, accountTitle: e.target.value })}
-                  placeholder="e.g. EduFlow School Accounts"
-                  required
-                  className="rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-500 text-xs"
-                />
-              </div>
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">IBAN (24 Characters)</label>
-                <Input
-                  value={bankSettings.iban}
-                  onChange={(e) => setBankSettings({ ...bankSettings, iban: e.target.value })}
-                  placeholder="PK92 MEZN 0001 2345 6789 0101"
-                  required
-                  className="font-mono rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-500 text-xs"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">1Link PSID Prefix</label>
-                  <Input
-                    value={bankSettings.psidPrefix}
-                    onChange={(e) => setBankSettings({ ...bankSettings, psidPrefix: e.target.value })}
-                    placeholder="1004"
-                    className="font-mono rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-500 text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">EasyPaisa / JazzCash</label>
-                  <Input
-                    value={bankSettings.easypaisa}
-                    onChange={(e) => setBankSettings({ ...bankSettings, easypaisa: e.target.value })}
-                    placeholder="03XXXXXXXXX"
-                    className="rounded-xl border-slate-200 bg-white text-slate-900 focus:border-blue-500 text-xs"
-                  />
-                </div>
-              </div>
-              <p className="text-[11px] text-slate-500 pt-1">
-                These credentials will appear on all 3-Face Challans and power online Parent Portal fee payments.
-              </p>
-              <div className="pt-3 flex gap-2">
-                <Button type="button" variant="outline" onClick={() => setBankModalOpen(false)} className="flex-1 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700">
-                  Cancel
-                </Button>
-                <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold">
-                  Save Bank Details
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <BankSettingsModal
+        isOpen={bankModalOpen}
+        onClose={() => setBankModalOpen(false)}
+        settings={bankSettings}
+        onSave={(updated) => {
+          setBankSettings(updated)
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('eduflow-bank-settings', JSON.stringify(updated))
+          }
+          setBankModalOpen(false)
+        }}
+      />
 
       {importOpen && (
         <BulkImportModal

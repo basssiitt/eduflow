@@ -119,46 +119,33 @@ export function PublicLanding() {
           >
             Log In
           </Link>
-          <button
-            type="button"
-            onClick={() => setIsDemoModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
+          <Link
+            href="/signup"
+            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition"
           >
-            Request a Demo
-          </button>
+            Sign Up
+          </Link>
         </div>
       </nav>
 
-      {/* Hero Section matching Screen 5 */}
+      {/* Hero Section with Left Text & Right iPhone Mockup */}
       <section className="relative overflow-hidden bg-white py-12 lg:py-20 border-b border-slate-200/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Column: Clean High-Resolution Tilted iPhone Mockup showing Parent Portal */}
-            <div className="lg:col-span-6 flex justify-center items-center order-2 lg:order-1 py-4">
-              <div className="relative mx-auto w-full max-w-[440px] flex justify-center items-center">
-                {/* Soft ambient glow behind the tilted device */}
-                <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/15 via-indigo-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
-                <Image
-                  src="/eduflow-parent-portal-hero.png"
-                  alt="EduFlow Parents Portal mobile application mockup on tilted iPhone"
-                  width={617}
-                  height={885}
-                  priority
-                  className="relative z-10 w-full max-w-[360px] sm:max-w-[410px] h-auto object-contain drop-shadow-[0_24px_36px_rgba(15,23,42,0.18)]"
-                />
+            {/* Left Column: Hero Copy, Badges & Feature Checkmarks */}
+            <div className="lg:col-span-6 flex flex-col items-start text-left order-1">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-3.5 py-1 text-xs font-bold text-blue-700 mb-4 shadow-2xs">
+                <Sparkles className="size-3.5 text-blue-600" />
+                <span>30-Day Free Pro Trial • No Credit Card Required</span>
               </div>
-            </div>
 
-
-            {/* Right Column: Hero Copy & Feature Checkmarks (Screen 5) */}
-            <div className="lg:col-span-6 flex flex-col items-start text-left order-1 lg:order-2">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
                 EduFlow: The Unified Educational System.
               </h1>
               
               <p className="mt-5 text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
-                Boost Efficiency, Empower Staff, Engage Parents, and Nurture Students — from one unified, integrated platform.
+                Boost Efficiency, Empower Staff, Engage Parents, and Nurture Students — from one unified, integrated platform designed for Pakistani schools.
               </p>
 
               {/* Action Buttons */}
@@ -167,7 +154,7 @@ export function PublicLanding() {
                   className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-blue-700 transition hover:shadow-lg"
                   href="/signup"
                 >
-                  Get Started for Free <ArrowRight className="ml-2 size-4" />
+                  Start 30-Day Free Trial <ArrowRight className="ml-2 size-4" />
                 </Link>
                 <Link
                   className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-xs hover:bg-slate-50 transition"
@@ -177,7 +164,7 @@ export function PublicLanding() {
                 </Link>
               </div>
 
-              {/* 2x2 Feature Checklist with Blue Icons from Mockup */}
+              {/* 2x2 Feature Checklist with Blue Icons */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 pt-6 border-t border-slate-100 w-full">
                 <div className="flex items-center gap-2.5 text-xs font-bold text-slate-800">
                   <span className="flex size-4.5 items-center justify-center rounded-full bg-blue-50 text-blue-600 border border-blue-200">✓</span>
@@ -198,6 +185,23 @@ export function PublicLanding() {
               </div>
 
             </div>
+
+            {/* Right Column: Clean High-Resolution Tilted iPhone Mockup showing Parent Portal */}
+            <div className="lg:col-span-6 flex justify-center items-center order-2 py-4">
+              <div className="relative mx-auto w-full max-w-[440px] flex justify-center items-center">
+                {/* Soft ambient glow behind the tilted device */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/15 via-indigo-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+                <Image
+                  src="/eduflow-parent-portal-hero.png"
+                  alt="EduFlow Parents Portal mobile application mockup on tilted iPhone"
+                  width={617}
+                  height={885}
+                  priority
+                  className="relative z-10 w-full max-w-[360px] sm:max-w-[410px] h-auto object-contain drop-shadow-[0_24px_36px_rgba(15,23,42,0.18)]"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -435,67 +439,91 @@ export function PublicLanding() {
         </div>
       </section>
 
-      {/* Clean Modern SaaS Footer */}
-      <footer className="bg-white py-12 border-t border-slate-200">
+      {/* Comprehensive Institutional SaaS Footer */}
+      <footer className="bg-white py-14 border-t border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-8 border-b border-slate-100">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-10 border-b border-slate-200">
+            {/* Column 1: Brand & Pakistan Trust */}
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2.5 mb-3">
-                <AcademicCrest className="size-6 text-blue-600" />
-                <span className="text-base font-black text-slate-900">EduFlow</span>
+                <div className="flex size-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs">
+                  <AcademicCrest className="size-5" />
+                </div>
+                <span className="text-lg font-black tracking-tight text-slate-900">EduFlow OS</span>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                The Unified Educational System designed for modern educational institutions in Pakistan.
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                Pakistan&apos;s premier 1-click AI school management system &amp; operating system for K-12 schools, colleges, and academies.
               </p>
+              <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-[11px] font-semibold text-emerald-800">
+                <span>🇵🇰 Proudly Engineered for Pakistan</span>
+              </div>
             </div>
 
+            {/* Column 2: Core Modules */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Administrative</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Core Modules</h4>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li><Link href="/admin" className="hover:text-blue-600">Campus Admin Portal</Link></li>
                 <li><Link href="/admin/students" className="hover:text-blue-600">Student Directory</Link></li>
+                <li><Link href="/admin/attendance" className="hover:text-blue-600">1-Click Haziri Attendance</Link></li>
+                <li><Link href="/admin/fees" className="hover:text-blue-600">3-Copy Bank Challans</Link></li>
                 <li><Link href="/admin/timetable" className="hover:text-blue-600">Master Timetable</Link></li>
                 <li><Link href="/admin/exams" className="hover:text-blue-600">Examinations &amp; Reports</Link></li>
-                <li><Link href="/admin/fees" className="hover:text-blue-600">Fee Challans (3-Copy)</Link></li>
               </ul>
             </div>
 
+            {/* Column 3: Dedicated Portals */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Portals &amp; Pricing</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">User Portals</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/admin" className="hover:text-blue-600">Campus Admin</Link></li>
-                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Portal</Link></li>
-                <li><Link href="/parent" className="hover:text-blue-600">Parents Portal</Link></li>
-                <li><Link href="/pricing" className="hover:text-blue-600">Commercial Pricing &amp; ROI</Link></li>
+                <li><Link href="/admin" className="hover:text-blue-600">School Admin</Link></li>
+                <li><Link href="/teacher" className="hover:text-blue-600">Teacher Console</Link></li>
+                <li><Link href="/parent" className="hover:text-blue-600">Parent Portal</Link></li>
+                <li><Link href="/pricing" className="hover:text-blue-600">Pricing &amp; Calculator</Link></li>
+                <li><Link href="/signup" className="hover:text-blue-600 font-semibold text-blue-600">30-Day Free Pro Trial</Link></li>
               </ul>
             </div>
 
+            {/* Column 4: Legal & Policies */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Legal &amp; Compliance</h4>
+              <ul className="space-y-2 text-xs text-slate-600">
+                <li><Link href="/terms" className="hover:text-blue-600 font-medium">Terms &amp; Conditions</Link></li>
+                <li><Link href="/privacy" className="hover:text-blue-600 font-medium">Privacy Policy</Link></li>
+                <li><Link href="/refund-policy" className="hover:text-blue-600 font-medium">Refund &amp; Cancellation</Link></li>
+                <li><span className="text-slate-400">Student Data Security</span></li>
+                <li><span className="text-slate-400">100% Data Sovereignty</span></li>
+              </ul>
+            </div>
+
+            {/* Column 5: Direct Support */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Direct Support</h4>
               <p className="text-xs text-slate-500 mb-3">
-                Reach our local technical implementation team on WhatsApp:
+                Talk directly with our local implementation team:
               </p>
               <a
-                href={`${whatsapp}?text=Hello%20EduFlow%20Team%2C%20I%20want%20to%20schedule%20a%20demo.`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700"
+                href={`${whatsapp}?text=Hello%20EduFlow%20Team%2C%20I%20have%20an%20inquiry%20about%20EduFlow.`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
               >
-                <MessageCircle className="size-3.5" /> 0312-7803616
+                <MessageCircle className="size-3.5" /> +92 312 7803616
               </a>
+              <p className="mt-2 text-[11px] text-slate-400">
+                Email: support@eduflow.pk
+              </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-400">
-            <p>© 2026 EduFlow Systems. All rights reserved.</p>
-            <div className="flex flex-wrap items-center gap-6">
-              <Link href="/pricing" className="hover:text-blue-600">Pricing &amp; Calculator</Link>
-              <Link href="/login?force=1" className="hover:text-blue-600">Portal Login</Link>
-              <button
-                type="button"
-                onClick={() => setIsDemoModalOpen(true)}
-                className="hover:text-blue-600 cursor-pointer"
-              >
-                Schedule Demo
-              </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-500">
+            <p>© 2026 EduFlow OS. All rights reserved. Registered Educational Technology System in Pakistan.</p>
+            <div className="flex flex-wrap items-center gap-5 font-medium">
+              <Link href="/terms" className="hover:text-blue-600 transition">Terms</Link>
+              <Link href="/privacy" className="hover:text-blue-600 transition">Privacy</Link>
+              <Link href="/refund-policy" className="hover:text-blue-600 transition">Refunds</Link>
+              <Link href="/pricing" className="hover:text-blue-600 transition">Pricing</Link>
+              <Link href="/signup" className="hover:text-blue-600 transition font-semibold text-blue-600">Start 30-Day Free Trial</Link>
             </div>
           </div>
         </div>
