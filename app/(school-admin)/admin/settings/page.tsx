@@ -214,7 +214,7 @@ export default function AdminSettingsPage() {
           <span className="text-sm text-slate-500">Academic Session 2026–2027</span>
         </div>
         <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Campus Settings</h1>
-        <p className="text-slate-600">Manage school profile, branch metadata, WhatsApp alerts, and localization.</p>
+        <p className="text-slate-600">Manage school profile, branch metadata, SMS alerts, and localization.</p>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-6">
@@ -378,7 +378,7 @@ export default function AdminSettingsPage() {
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-slate-600">
-                  {trialDaysRemaining} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and WhatsApp broadcasts.
+                  {trialDaysRemaining} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and SMS broadcasts.
                 </p>
               </div>
             </div>

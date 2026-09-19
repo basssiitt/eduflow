@@ -13,7 +13,7 @@ import {
   CreditCard,
   Download,
   ExternalLink,
-  MessageCircle,
+  Phone,
   Plus,
   Receipt,
   Search,
@@ -53,7 +53,7 @@ const planRates: Record<Plan, number> = {
 
 const planFeatures: Record<Plan, string[]> = {
   Starter: ['1-Click Haziri Attendance', 'Voice & Text Diaries', 'Basic Gradebook'],
-  Pro: ['3-Copy Fee Challans', 'WhatsApp Fee Reminders', 'Automated Term Exam Cards'],
+  Pro: ['3-Copy Fee Challans', 'Automated SMS Fee Reminders', 'Automated Term Exam Cards'],
   Enterprise: ['24/7 Gemini AI Companion', 'Full Accounting Ledger', 'Multi-Campus Clustering'],
 }
 
@@ -401,13 +401,11 @@ export default function SuperAdminSubscriptionsPage() {
                         <div className="flex items-center justify-end gap-2">
                           {campus.phone && (
                             <a
-                              href={`https://wa.me/${campus.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(campus.owner)}%2C%20this%20is%20regarding%20your%20EduFlow%20subscription.`}
-                              target="_blank"
-                              rel="noreferrer"
+                              href={`tel:${campus.phone.replace(/[^0-9+]/g, '')}`}
                               className="rounded-lg p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                              title="WhatsApp Principal"
+                              title={`Call ${campus.owner}`}
                             >
-                              <MessageCircle className="size-4" />
+                              <Phone className="size-4" />
                             </a>
                           )}
                           <Link

@@ -70,37 +70,19 @@ export async function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   )
 
-  // 1. Unauthenticated handling (demo role cookie support only in development or when explicitly enabled)
-  if (!user) {
-    const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_COOKIES === 'true'
-    const demoRole = isDemoAllowed ? request.cookies.get('eduflow-demo-role')?.value : null
-    if (demoRole) {
-      const normalizedDemo = normalizeRole(demoRole)
-      if (
-        (pathname.startsWith('/admin') && ['school_admin', 'admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/teacher') && ['teacher', 'school_admin', 'admin'].includes(normalizedDemo)) ||
-        (pathname.startsWith('/parent') && ['parent', 'school_admin', 'admin'].includes(normalizedDemo)) ||
-        pathname.startsWith('/onboarding')
-      ) {
-        return response
-      }
-    }
-
-    if (isProtected) {
-      if (pathname === '/login' || pathname.startsWith('/login/')) {
-        return response
-      }
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('next', pathname)
-      return safeRedirect(loginUrl)
-    }
-    return response
+  // Redirect broadcast to admin overview
+  if (pathname.startsWith('/admin/broadcast')) {
+    return NextResponse.redirect(new URL('/admin', request.url), { status: 301 })
   }
 
-  // 2. Authenticated user handling
-  const userEmail = (user.email || '').toLowerCase().trim()
-  let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
-  if (!role) {
+  // 1. Check session cookies
+  const cookieEmail = request.cookies.get('eduflow-user-email')?.value?.toLowerCase().trim()
+  const cookieRole = request.cookies.get('eduflow-user-role')?.value?.toLowerCase().trim()
+  const demoRole = request.cookies.get('eduflow-demo-role')?.value?.toLowerCase().trim()
+
+  const effectiveEmail = (user?.email || cookieEmail || '').toLowerCase().trim()
+  let role = (user?.app_metadata?.role || user?.user_metadata?.role || '') as string
+  if (!role && user) {
     try {
       const { data: profile } = await supabase
         .from('profiles')
@@ -112,15 +94,35 @@ export async function middleware(request: NextRequest) {
       }
     } catch {}
   }
+  if (!role && cookieRole) {
+    role = cookieRole
+  }
+  if (!role && demoRole) {
+    role = demoRole
+  }
+
   let normalizedRole = normalizeRole(role)
-  const isSuperAdmin = isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin'
+  const isSuperAdmin = isSuperAdminEmail(effectiveEmail) || normalizedRole === 'super_admin'
   if (isSuperAdmin) {
     normalizedRole = 'super_admin'
   }
 
-  const homeUrl = getHomeRoute(normalizedRole, userEmail)
+  // Unauthenticated handling
+  if (!user && !cookieEmail && !demoRole) {
+    if (isProtected) {
+      if (pathname === '/login' || pathname.startsWith('/login/')) {
+        return response
+      }
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('next', pathname)
+      return safeRedirect(loginUrl)
+    }
+    return response
+  }
 
-  // If already authenticated and visiting /login or /signup:
+  const homeUrl = getHomeRoute(normalizedRole, effectiveEmail)
+
+  // If authenticated and visiting /login or /signup:
   if (
     pathname === '/login' ||
     pathname.startsWith('/login/') ||
@@ -143,11 +145,11 @@ export async function middleware(request: NextRequest) {
 
   // Guard /super-admin - STRICTLY CONFIDENTIAL: only basithunyawrr@gmail.com
   if (pathname === '/super-admin' || pathname.startsWith('/super-admin/')) {
-    if (user && isSuperAdminEmail(userEmail)) {
+    if (isSuperAdminEmail(effectiveEmail)) {
       return response
     }
     // Conceal existence of super-admin from unauthorized users
-    return safeRedirect(user ? homeUrl : '/login')
+    return safeRedirect(effectiveEmail ? homeUrl : '/login')
   }
 
   // Guard /admin

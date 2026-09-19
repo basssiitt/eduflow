@@ -175,7 +175,7 @@ function AddStudentModal({
           </label>
 
           <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-700">
-            WhatsApp Phone No.
+            Parent Phone No.
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}

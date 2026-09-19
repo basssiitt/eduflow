@@ -460,7 +460,7 @@ export default function AdminOverviewPage() {
               <ArrowRight className="size-4 text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600" />
             </div>
             <h3 className="mt-4 text-base font-bold text-slate-900">Campus Settings</h3>
-            <p className="mt-1 text-xs text-slate-500">Configure school name, WhatsApp absent broadcasts, and preferences.</p>
+            <p className="mt-1 text-xs text-slate-500">Configure school name, automated SMS broadcasts, and preferences.</p>
           </Link>
         </div>
       </div>

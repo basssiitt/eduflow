@@ -13,7 +13,7 @@ import {
   GraduationCap,
   Headphones,
   Heart,
-  MessageCircle,
+  Mail,
   ReceiptText,
   User,
   Users,
@@ -244,17 +244,15 @@ export default function ParentChildrenPage() {
 
               {/* Card Actions */}
               <div className="mt-5 flex items-center justify-between gap-2 pt-3 border-t border-slate-200">
-                <Link
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    `Assalam-o-Alaikum, inquiry regarding ${child.name} (${child.class}-${child.section}).`
+                <a
+                  href={`mailto:school@eduflow.pk?subject=${encodeURIComponent(
+                    `Inquiry regarding ${child.name} (${child.class}-${child.section})`
                   )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-blue-600 transition"
                 >
-                  <MessageCircle className="size-3.5 text-emerald-600" />
-                  <span>Contact Teacher</span>
-                </Link>
+                  <Mail className="size-3.5 text-blue-600" />
+                  <span>Contact School</span>
+                </a>
 
                 <div className="flex items-center gap-2">
                   <Link href="/parent">

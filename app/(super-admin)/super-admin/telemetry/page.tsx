@@ -66,7 +66,7 @@ export default function SuperAdminTelemetryPage() {
       icon: Sparkles,
     },
     {
-      name: 'WhatsApp Cloud Dispatcher',
+      name: 'SMS Gateway Dispatcher',
       category: 'Parent Communications',
       status: 'Operational',
       uptime: '99.91%',

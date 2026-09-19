@@ -92,7 +92,7 @@ export default function RefundPolicyPage() {
             <div className="space-y-2">
               <p>To initiate a refund under our 14-day money-back guarantee:</p>
               <ol className="list-decimal list-inside space-y-1 pl-2 text-slate-700">
-                <li>Send an email to <a href="mailto:billing@eduflow.pk" className="text-blue-600 font-semibold underline">billing@eduflow.pk</a> or message our WhatsApp Finance desk at <a href="https://wa.me/923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.</li>
+                <li>Send an email to <a href="mailto:billing@eduflow.pk" className="text-blue-600 font-semibold underline">billing@eduflow.pk</a> or call our Finance desk at <a href="tel:+923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.</li>
                 <li>Provide your School Name, Registered Admin Email, and Bank Transaction Slip / Reference Number.</li>
                 <li>Refunds are processed to the original payment method (Bank Transfer, 1Link, EasyPaisa, or JazzCash) within 3 to 5 business days.</li>
               </ol>

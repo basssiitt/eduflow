@@ -16,7 +16,7 @@ import {
   Globe,
   HelpCircle,
   Laptop,
-  MessageCircle,
+  Mail,
   Phone,
   ShieldCheck,
   Sparkles,
@@ -41,7 +41,7 @@ const PLANS = [
       'Faculty Profiles & Duty Roster',
       'Basic Marks & Report Cards',
       'Offline-First Local Storage Mode',
-      'WhatsApp Support Desk',
+      'Dedicated Campus Support Desk',
     ],
   },
   {
@@ -55,7 +55,7 @@ const PLANS = [
     features: [
       'Everything in Starter Campus',
       '3-Copy Automated Fee Challans (Bank/School/Student)',
-      '1-Click WhatsApp Fee & Absent Broadcasts',
+      '1-Click SMS & Portal Fee & Absent Notices',
       'Digital Admissions & Inquiries Management',
       'Master Timetable Builder & Conflict Guard',
       'Board-Compliant Marks (BISE & Cambridge)',
@@ -141,7 +141,7 @@ export default function PricingPage() {
             Predictable School Pricing in PKR. Zero Hidden Charges.
           </h1>
           <p className="mt-4 text-sm sm:text-base text-slate-600">
-            Choose the subscription tier for your campus size. All plans include 30 days of risk-free trial, unlimited teacher accounts, and seamless WhatsApp communication.
+            Choose the subscription tier for your campus size. All plans include 30 days of risk-free trial, unlimited teacher accounts, and seamless institutional communication.
           </p>
         </div>
 
@@ -251,7 +251,7 @@ export default function PricingPage() {
                   <span className="font-bold text-slate-800">PKR {paperChallanPrintingCost.toLocaleString()}/mo</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span>Bulk SMS Credits (Replaced with WhatsApp):</span>
+                  <span>Automated Parent Notices (Portal &amp; SMS):</span>
                   <span className="font-bold text-slate-800">PKR {manualSmsCost.toLocaleString()}/mo</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
@@ -281,12 +281,10 @@ export default function PricingPage() {
                   Claim Your Savings — Free Trial <ArrowRight className="size-3.5" />
                 </Link>
                 <a
-                  href={`https://wa.me/923127803616?text=Hello%2C%20I%20calculated%20PKR%20${netMonthlySavings.toLocaleString()}%20monthly%20savings%20for%20my%20${studentCount}%20students%20school.%20Please%20schedule%20a%20walkthrough.`}
-                  target="_blank"
-                  rel="noreferrer"
+                  href="mailto:sales@eduflow.pk?subject=Campus%20Subscription%20Inquiry"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
                 >
-                  <MessageCircle className="size-3.5 text-emerald-600" /> WhatsApp Sales
+                  <Mail className="size-3.5 text-emerald-600" /> Contact Sales Desk
                 </a>
               </div>
             </div>

@@ -1,11 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Check, Download, FileText, MessageCircle, Printer, ReceiptText, Search, Send, X } from "lucide-react"
+import { Check, Download, FileText, Printer, ReceiptText, Search, Send, X } from "lucide-react"
 
 type Row = { id: number; name: string; roll: string; grade: string; guardian: string; phone: string; due: string; paid: number; total: number; months: number; last: string }
 const money = (n: number) => `PKR ${n.toLocaleString()}`
-const wa = (r: Row) => `https://wa.me/?text=${encodeURIComponent(`Dear ${r.guardian}, this is a friendly reminder that ${r.name}'s school fee balance is ${money(r.total - r.paid)}. Please contact the school office for assistance.`)}`
 
 export function ArrearsLedger() {
   const [rows, setRows] = useState<Row[]>([])
@@ -119,7 +118,6 @@ export function ArrearsLedger() {
                   <td><span className={`admin-status ${r.paid === 0 ? "admin-status-overdue" : "admin-status-pending"}`}><i />{r.paid === 0 ? "No payment" : "Partial"}</span></td>
                   <td>
                     <div className="ledger-actions">
-                      <a className="row-action whatsapp" href={wa(r)} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${r.name}`}><MessageCircle /></a>
                       <button className="row-action" onClick={() => setPay(r)} aria-label={`Record payment for ${r.name}`}><Check /></button>
                       <button className="row-action" onClick={() => setNotice(r)} aria-label={`Print notice for ${r.name}`}><Printer /></button>
                     </div>
@@ -181,12 +179,12 @@ export function ArrearsLedger() {
               <div className="broadcast-success">
                 <div className="success-icon"><Check /></div>
                 <h2>Broadcast queued</h2>
-                <p>{overdue} reminders queued for WhatsApp delivery.</p>
+                <p>{overdue} reminders queued for SMS notification delivery.</p>
                 <button className="admin-btn admin-btn-primary" onClick={() => { setBroadcast(false); setSent(false) }}>Done</button>
               </div>
             ) : (
               <>
-                <div className="eyebrow">WhatsApp Broadcast</div>
+                <div className="eyebrow">SMS Broadcast</div>
                 <h2>Send Reminders</h2>
                 <p>Queue payment reminders for {overdue} accounts.</p>
                 <div className="modal-actions">

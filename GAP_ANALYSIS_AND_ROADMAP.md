@@ -40,7 +40,7 @@ EduFlow OS implements strictly **3 Public Portals** and **1 Hidden / Private Por
   - **Metric Cards Banner:** Total Faculty, Active Today in Classroom, Average Class Load, and Monthly Faculty Payroll.
   - **Onboarding Modal:** Validated registration for Full Name, Email, Phone/WhatsApp, Auto-generated Employee Code (`TCH-2026-XXX`), Academic Qualification, Department, Subject Specialization, Assigned Classes & Sections, Monthly Salary (PKR), Joining Date, and Status.
   - **Offboard / Delete Modal:** Safe confirmation flow that removes teachers and prevents accidental deletions.
-  - **Quick Contact Actions:** Direct 1-click WhatsApp chat (`wa.me`) and mail client (`mailto:`) links for instant staff communication.
+  - **Quick Contact Actions:** Direct 1-click Direct email (`mailto:`) links for instant staff communication.
   - **Department & Status Filters:** Filter by Sciences & Math, Languages, Humanities, Arts & Sports, IT, and Active / On Leave / Inactive statuses.
   - **CSV Export:** Full faculty roster export for administrative reporting.
   - **Navigation Integration:** Added to `SchoolAdminShell` sidebar and `AdminOverviewPage` quick stats.
@@ -124,7 +124,7 @@ Based on our benchmark audit, here is the detailed breakdown of features categor
   - Printable official PDF report card slip with school crest, principal signature line, and position in class.
 
 #### 3. Automated WhatsApp & SMS Notification Gateway
-- **Current State:** Manual WhatsApp links (`wa.me`).
+- **Current State:** Direct email and phone support.
 - **What is Missing:**
   - Automated morning broadcast: sends instant WhatsApp / SMS alerts to parents of students marked "Absent" at 09:30 AM.
   - Automated fee reminder alerts 3 days before due date.

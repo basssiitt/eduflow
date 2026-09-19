@@ -15,7 +15,7 @@ import {
   GraduationCap,
   HeartHandshake,
   HelpCircle,
-  MessageCircle,
+  Mail,
   Phone,
   Printer,
   ShieldCheck,
@@ -157,12 +157,10 @@ export default function ApplyOnlinePage() {
             Portal Sign In
           </Link>
           <a
-            href="https://wa.me/923127803616?text=Hello%20EduFlow%20Admissions%20Desk%2C%20I%20have%20an%20inquiry%20regarding%20admission."
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition"
+            href="mailto:admissions@eduflow.pk?subject=Admission%20Inquiry"
+            className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition"
           >
-            <MessageCircle className="size-3.5" /> WhatsApp Desk
+            <Mail className="size-3.5" /> Admissions Desk
           </a>
         </div>
       </nav>
@@ -179,7 +177,7 @@ export default function ApplyOnlinePage() {
                 Online Admission Application Form
               </h1>
               <p className="mt-2 text-sm text-slate-600">
-                Fill out the applicant details below. Upon submission, you will receive an official application tracking voucher. Our admissions incharge will contact you via WhatsApp for document verification and interview scheduling.
+                Fill out the applicant details below. Upon submission, you will receive an official application tracking voucher. Our admissions incharge will contact you via email or phone for document verification and interview scheduling.
               </p>
             </div>
 
@@ -323,7 +321,7 @@ export default function ApplyOnlinePage() {
 
                   <div>
                     <label htmlFor="phone" className="block text-xs font-bold text-slate-700 mb-1">
-                      Mobile Number (WhatsApp Enabled) *
+                      Mobile Number *
                     </label>
                     <input
                       id="phone"
@@ -477,7 +475,7 @@ export default function ApplyOnlinePage() {
               <ul className="list-disc list-inside space-y-1 text-slate-600">
                 <li>Keep your Application Tracking Code (<strong>{submittedApp.trackingCode}</strong>) for all inquiries.</li>
                 <li>Bring the candidate&apos;s NADRA B-Form copy and 2 passport-sized photographs on the test day.</li>
-                <li>School administration will send an entry test schedule via WhatsApp within 24 to 48 hours.</li>
+                <li>School administration will send an entry test schedule via email or SMS within 24 to 48 hours.</li>
               </ul>
             </div>
 
@@ -486,12 +484,10 @@ export default function ApplyOnlinePage() {
                 ← Return to EduFlow Homepage
               </Link>
               <a
-                href={`https://wa.me/923127803616?text=Assalam-o-Alaikum%2C%20I%20have%20submitted%20admission%20application%20${submittedApp.trackingCode}%20for%20${encodeURIComponent(submittedApp.studentName)}.`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-xs"
+                href={`mailto:admissions@eduflow.pk?subject=${encodeURIComponent(`Admission Application ${submittedApp.trackingCode} - ${submittedApp.studentName}`)}`}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-700 shadow-xs"
               >
-                <MessageCircle className="size-4" /> Message Admissions Office on WhatsApp
+                <Mail className="size-4" /> Email Admissions Office
               </a>
             </div>
           </div>

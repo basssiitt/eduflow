@@ -24,7 +24,7 @@ export const aj = arcjet({
       mode: securityMode,
       allow: [
         'CATEGORY:SEARCH_ENGINE', // Googlebot, Bing, etc.
-        'CATEGORY:PREVIEW',       // Slack, WhatsApp preview scrapers
+        'CATEGORY:PREVIEW',       // Chat & link preview scrapers
       ],
     }),
 

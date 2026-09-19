@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, MoreHorizontal, Plus, Printer, ReceiptText, Search, TrendingUp, Upload, X } from "lucide-react"
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MoreHorizontal, Plus, Printer, ReceiptText, Search, TrendingUp, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
@@ -417,15 +417,6 @@ export function AdminPortal() {
                           >
                             <Printer className="size-3.5" />
                           </button>
-                          <a
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-emerald-400 hover:text-emerald-700 transition"
-                            href={`https://wa.me/?text=${encodeURIComponent(`Fee reminder for ${r.name}: ${money(total(r))} due ${r.due}`)}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            title="WhatsApp reminder"
-                          >
-                            <MessageCircle className="size-3.5" />
-                          </a>
                           <button
                             className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition"
                             onClick={() => toggleStatus(r)}

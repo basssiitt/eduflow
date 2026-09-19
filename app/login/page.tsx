@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
-import { ArrowRight, BookOpen, Building2, Eye, EyeOff, GraduationCap, LockKeyhole, LogOut, MessageCircle, ShieldCheck, UserCheck, Users } from 'lucide-react'
+import { ArrowRight, BookOpen, Building2, Eye, EyeOff, GraduationCap, LockKeyhole, LogOut, Mail, ShieldCheck, UserCheck, Users } from 'lucide-react'
 import { AcademicCrest } from '@/components/academic-crest'
 
 function isSafeRedirectUrl(url: string | null | undefined): boolean {
@@ -144,28 +144,7 @@ export default function LoginPage() {
       }
     }
 
-    // Demo Mode Google Simulator
-    handleInstantDemo('school_admin', '/admin')
-  }
-
-  const handleInstantDemo = (role: string, destination: string) => {
-    document.cookie = `eduflow-demo-role=${role}; path=/; max-age=86400; SameSite=Lax`
-    sessionStorage.setItem('eduflow-demo-user', 'true')
-    sessionStorage.setItem('eduflow-demo-role', role)
-    if (role === 'school_admin') {
-      sessionStorage.setItem('eduflow-demo-email', 'admin@school.edu.pk')
-      sessionStorage.setItem('eduflow-demo-school', 'Beacon Scholars Academy')
-      sessionStorage.setItem('eduflow-demo-plan', 'Pro')
-      sessionStorage.setItem('eduflow-trial-days', '30')
-    } else if (role === 'teacher') {
-      sessionStorage.setItem('eduflow-demo-email', 'tariq.teacher@school.edu.pk')
-    } else if (role === 'parent') {
-      sessionStorage.setItem('eduflow-demo-email', 'parent@family.edu.pk')
-    } else if (role === 'student') {
-      sessionStorage.setItem('eduflow-demo-email', 'zain.student@school.edu.pk')
-    }
-    const safeTarget = isSafeRedirectUrl(destination) ? destination : '/admin'
-    window.location.href = safeTarget
+    setGoogleLoading(false)
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -173,77 +152,62 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    if (!isSupabaseConfigured || !supabaseClient) {
-      setError('Supabase is not configured. Please check environment variables.')
+    const cleanEmail = email.trim().toLowerCase()
+    if (!cleanEmail) {
+      setError('Please provide your registered email address.')
+      setLoading(false)
+      return
+    }
+
+    if (!password) {
+      setError('Please provide your password.')
       setLoading(false)
       return
     }
 
     try {
-      const cleanEmail = email.trim()
-      const { data, error: authError } = await supabaseClient.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
+      // 1. Call server auth endpoint
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, password }),
       })
 
-      if (authError || !data?.user) {
-        if (authError?.message?.toLowerCase().includes('email not confirmed')) {
-          setError('Your email has not been verified yet. Please check your inbox and click the confirmation link to activate your account.')
-        } else {
-          setError('Invalid email or password. Please verify your credentials or use the 1-Click Interactive Demo below.')
-        }
+      const result = await res.json()
+
+      if (!res.ok || !result.success) {
+        setError(result.error || 'Invalid email or password. Please verify your credentials and try again.')
         setLoading(false)
         return
       }
 
-      // Sync auth session cookies
-      await supabaseClient.auth.getSession()
-
-      const user = data.user
-      const userEmail = (user.email || cleanEmail).toLowerCase().trim()
-
-      // Fetch the user's actual role from Supabase profiles table
-      let role = ''
-      try {
-        const { data: profile } = await supabaseClient
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single()
-
-        if (profile?.role) {
-          role = profile.role
-        }
-      } catch {}
-
-      if (!role) {
-        role = (user.app_metadata?.role ?? user.user_metadata?.role ?? '') as string
+      // 2. Also authenticate browser Supabase client if configured
+      if (isSupabaseConfigured && supabaseClient) {
+        try {
+          await supabaseClient.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          })
+        } catch {}
       }
 
-      let normalizedRole = normalizeRole(role)
-      if (isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin') {
-        normalizedRole = 'super_admin'
-      }
+      // 3. Resolve destination route
+      const destination = result.destination || '/admin'
 
-      // Sync fallback cookie for middleware and role gate insurance
-      document.cookie = `eduflow-demo-role=${normalizedRole}; path=/; max-age=86400; SameSite=Lax`
-
-      const destination = getHomeRoute(normalizedRole, userEmail)
-
-      // Honor next query param only if safe relative URL and authorized
+      // Check query parameter for redirect
       const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
       const nextPath = searchParams?.get('next')
       if (nextPath && isSafeRedirectUrl(nextPath) && !nextPath.startsWith('/login')) {
-        if (nextPath.startsWith('/super-admin') && normalizedRole !== 'super_admin') {
-          window.location.href = destination
+        if (nextPath.startsWith('/super-admin') && result.role !== 'super_admin') {
+          window.location.assign(destination)
         } else {
-          window.location.href = nextPath
+          window.location.assign(nextPath)
         }
       } else {
-        window.location.href = destination
+        window.location.assign(destination)
       }
-    } catch {
-      setError('Invalid email or password')
+    } catch (err: any) {
+      setError(err?.message || 'Authentication error. Please check your network and try again.')
       setLoading(false)
     }
   }
@@ -361,7 +325,7 @@ export default function LoginPage() {
                 <input type="checkbox" defaultChecked />
                 <span>Remember me</span>
               </label>
-              <a href="https://wa.me/923001234567?text=I%20need%20help%20resetting%20my%20EduFlow%20password" target="_blank" rel="noreferrer">
+              <a href="mailto:support@eduflow.pk?subject=EduFlow%20Password%20Reset%20Request">
                 Forgot password?
               </a>
             </div>
@@ -381,50 +345,7 @@ export default function LoginPage() {
             <span>Strict role-based authentication enforced via Supabase.</span>
           </div>
 
-          {/* 1-Click Instant Demo Workspaces */}
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900">
-                1-Click Interactive Demo Portals
-              </span>
-              <span className="rounded-full bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                Test Mode
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mb-3 text-center">
-              Explore and test EduFlow OS across dedicated role workspaces:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('school_admin', '/admin')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
-              >
-                <Building2 className="size-4 text-blue-600 shrink-0" />
-                <span className="truncate">Campus Admin</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('teacher', '/teacher')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
-              >
-                <GraduationCap className="size-4 text-blue-600 shrink-0" />
-                <span className="truncate">Teacher Portal</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('parent', '/parent')}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 font-semibold text-slate-800 shadow-xs hover:border-blue-500 hover:bg-blue-50/30 transition text-left"
-              >
-                <Users className="size-4 text-emerald-600 shrink-0" />
-                <span className="truncate">Parents Portal</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+          <div className="mt-5 pt-4 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-600">
               Don&apos;t have a school account yet?{' '}
               <Link href="/signup" className="font-bold text-blue-600 hover:underline">
@@ -446,8 +367,8 @@ export default function LoginPage() {
           </div>
           <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
             <span>Need help signing in?</span>
-            <a href="https://wa.me/923127803616" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline">
-              <MessageCircle className="size-3.5" /> WhatsApp Support
+            <a href="mailto:support@eduflow.pk" className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline">
+              <Mail className="size-3.5" /> Campus Support Desk
             </a>
           </div>
         </footer>

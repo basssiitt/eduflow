@@ -5,7 +5,7 @@ import Papa from 'papaparse'
 import { Check, Download, FileSpreadsheet, Upload, X } from 'lucide-react'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 
-const headers = ['Full Name', 'Father Name', 'Class', 'Section', 'Parent WhatsApp Phone', 'Monthly Tuition Fee']
+const headers = ['Full Name', 'Father Name', 'Class', 'Section', 'Parent Phone', 'Monthly Tuition Fee']
 
 function downloadTemplate() {
   const sample = [

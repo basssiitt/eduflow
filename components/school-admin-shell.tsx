@@ -19,7 +19,6 @@ import {
   Lock,
   LogOut,
   Menu,
-  MessageCircle,
   PanelLeftClose,
   PanelLeftOpen,
   ReceiptText,
@@ -68,7 +67,6 @@ const adminNavItems: NavItem[] = [
   { label: 'Examinations', href: '/admin/exams', icon: Award, testId: 'nav-exams' },
   { label: 'Fee Challans', href: '/admin/fees', icon: ReceiptText, testId: 'nav-fees' },
   { label: 'Finance & P&L', href: '/admin/finance', icon: WalletCards, testId: 'nav-finance' },
-  { label: 'WhatsApp Broadcast', href: '/admin/broadcast', icon: MessageCircle, testId: 'nav-broadcast' },
   { label: 'Billing & Plan', href: '/admin/billing', icon: CreditCard, testId: 'nav-billing' },
   { label: 'Campus Settings', href: '/admin/settings', icon: Settings, testId: 'nav-settings' },
 ]
@@ -335,7 +333,7 @@ function SettingsModal({
 
               <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 dark:border-slate-800">
                 <div>
-                  <p className="text-sm font-semibold">WhatsApp &amp; Bell Notifications</p>
+                  <p className="text-sm font-semibold">System &amp; Bell Notifications</p>
                   <p className="text-xs text-muted-foreground">Alerts for daily attendance and fee collections.</p>
                 </div>
                 <Button
@@ -372,7 +370,7 @@ function SettingsModal({
                   <p>✓ Complete 3-Copy Bank Challan Generator</p>
                   <p>✓ 1-Click Haziri &amp; Attendance Registers</p>
                   <p>✓ Full Accounting Ledger &amp; Student Management</p>
-                  <p>✓ WhatsApp Fee Reminders</p>
+                  <p>✓ Automated SMS Fee Reminders</p>
                 </div>
               </div>
 

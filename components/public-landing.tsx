@@ -18,21 +18,21 @@ import {
   GraduationCap,
   Headphones,
   LayoutDashboard,
-  Lock,
-  MessageCircle,
+  Mail,
   Mic,
-  Plus,
-  ReceiptText,
+  Receipt,
+  Search,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
+  Star,
   TrendingUp,
+  UserCheck,
   Users,
   X,
   Zap,
 } from 'lucide-react'
 import { AcademicCrest } from '@/components/academic-crest'
-
-const whatsapp = 'https://wa.me/923127803616'
 
 const plans = [
   {
@@ -54,7 +54,7 @@ const plans = [
     features: [
       'Everything in Starter',
       '1-Click Automated Fee Challans (3-Copy)',
-      'Automated WhatsApp Absent & Fee Alerts',
+      'Automated SMS & Bell Notification Alerts',
       'Term Examination Report Cards',
       'Staff Payroll & Operational Ledger',
     ],
@@ -84,8 +84,8 @@ const faqs = [
     'Yes. We support 1-click Excel and CSV bulk data imports for students, classes, fee arrears, and staff records with automatic schema validation.',
   ],
   [
-    'Do WhatsApp absent notifications cost extra credits?',
-    'No separate SMS balance is needed. EduFlow broadcasts directly through WhatsApp with transparent institutional logging and zero SMS balance fees.',
+    'Can parents receive automated absent alerts on their phones?',
+    'Yes. EduFlow broadcasts instant attendance and fee alerts directly via automated SMS and mobile notifications with transparent logging.',
   ],
 ]
 
@@ -307,7 +307,7 @@ export function PublicLanding() {
               </div>
               <h3 className="text-base font-bold text-slate-900">1-Click Digital Haziri</h3>
               <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                Capture class attendance in 30 seconds with automatic instant WhatsApp absent alerts to parents.
+                Capture class attendance in 30 seconds with automatic instant SMS absent alerts to parents.
               </p>
             </div>
 
@@ -503,15 +503,13 @@ export function PublicLanding() {
                 Talk directly with our local implementation team:
               </p>
               <a
-                href={`${whatsapp}?text=Hello%20EduFlow%20Team%2C%20I%20have%20an%20inquiry%20about%20EduFlow.`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
+                href="mailto:support@eduflow.pk?subject=EduFlow%20Inquiry"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs hover:bg-blue-700 transition"
               >
-                <MessageCircle className="size-3.5" /> +92 312 7803616
+                <Mail className="size-3.5" /> support@eduflow.pk
               </a>
               <p className="mt-2 text-[11px] text-slate-400">
-                Email: support@eduflow.pk
+                Direct phone: +92 312 7803616
               </p>
             </div>
           </div>
@@ -535,7 +533,7 @@ export function PublicLanding() {
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 relative">
             <button
               onClick={() => setIsDemoModalOpen(false)}
-              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
             >
               <X className="size-5" />
             </button>
@@ -557,8 +555,9 @@ export function PublicLanding() {
                 const name = (form.elements.namedItem('name') as HTMLInputElement)?.value || 'Admin'
                 const city = (form.elements.namedItem('city') as HTMLInputElement)?.value || 'Karachi'
                 const students = (form.elements.namedItem('students') as HTMLSelectElement)?.value || '500'
-                const text = encodeURIComponent(`Hello EduFlow Team, I am ${name} from ${school} (${city}) with ~${students} students. I would like to schedule an EduFlow demo walkthrough.`)
-                window.open(`https://wa.me/923127803616?text=${text}`, '_blank', 'noopener,noreferrer')
+                const subject = encodeURIComponent(`EduFlow Demo Request - ${school}`)
+                const body = encodeURIComponent(`Hello EduFlow Team,\n\nI am ${name} from ${school} (${city}) with ~${students} students. I would like to schedule an EduFlow demo walkthrough.\n\nThank you!`)
+                window.location.href = `mailto:demo@eduflow.pk?subject=${subject}&body=${body}`
                 setIsDemoModalOpen(false)
               }}
               className="mt-4 space-y-3 text-xs"
@@ -617,9 +616,9 @@ export function PublicLanding() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 font-bold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
                 >
-                  <MessageCircle className="size-4" /> Schedule WhatsApp Demo
+                  <Mail className="size-4" /> Request Demo Walkthrough
                 </button>
               </div>
             </form>

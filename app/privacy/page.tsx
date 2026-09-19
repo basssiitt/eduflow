@@ -68,7 +68,7 @@ export default function PrivacyPage() {
               <ul className="list-disc list-inside space-y-1.5 pl-2 text-slate-700">
                 <li><strong>Institutional Information:</strong> School name, campus address, city, province, authorized administrator contact, and bank account parameters for 3-copy challan printing.</li>
                 <li><strong>Student &amp; Academic Data:</strong> Full name, roll number, assigned grade/class, section, attendance timestamps (Haziri), examination marks, and report cards.</li>
-                <li><strong>Parent &amp; Guardian Contact:</strong> Guardian name, mobile phone/WhatsApp number for delivery of automated absent notices and fee receipts.</li>
+                <li><strong>Parent &amp; Guardian Contact:</strong> Guardian name, mobile phone number for delivery of automated absent notices and fee receipts.</li>
                 <li><strong>Voice Homework Diaries:</strong> Encrypted audio recordings submitted by classroom teachers for homework explanation and parent review.</li>
               </ul>
             </div>
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
               Contact Our Data Protection Officer
             </h2>
             <p>
-              If you have inquiries regarding privacy practices or student data handling, contact us at <a href="mailto:privacy@eduflow.pk" className="text-blue-600 font-semibold underline">privacy@eduflow.pk</a> or via WhatsApp at <a href="https://wa.me/923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.
+              If you have inquiries regarding privacy practices or student data handling, contact us at <a href="mailto:privacy@eduflow.pk" className="text-blue-600 font-semibold underline">privacy@eduflow.pk</a> or phone at <a href="tel:+923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.
             </p>
           </section>
 

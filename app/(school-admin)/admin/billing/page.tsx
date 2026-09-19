@@ -13,7 +13,7 @@ import {
   Download,
   ExternalLink,
   HelpCircle,
-  MessageCircle,
+  Mail,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -32,7 +32,7 @@ export default function BillingPage() {
   const [renewalDate, setRenewalDate] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
-  const whatsappConcierge = 'https://wa.me/923127803616?text=Hello%20EduFlow%2C%20I%20want%20to%20inquire%20about%20our%20campus%20subscription%20billing.'
+  const supportConcierge = 'mailto:billing@eduflow.pk?subject=Campus%20Subscription%20Inquiry'
 
   useEffect(() => {
     async function initBilling() {
@@ -91,7 +91,7 @@ export default function BillingPage() {
     features: [
       '1-Click Digital Haziri Attendance',
       '3-Copy Bank Fee Challans & PDF Generator',
-      'WhatsApp Absent & Fee Notification Alerts',
+      'SMS Absent & Bell Notification Alerts',
       'Urdu & English Audio Voice Diaries',
       'Full Student Roster & Academic Register',
     ],
@@ -131,12 +131,10 @@ export default function BillingPage() {
         </div>
         <div className="flex items-center gap-2">
           <a
-            href={whatsappConcierge}
-            target="_blank"
-            rel="noreferrer"
+            href={supportConcierge}
             className="inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-xs"
           >
-            <MessageCircle className="mr-2 size-4 text-white" />
+            <Mail className="mr-2 size-4 text-white" />
             Contact Billing Concierge
           </a>
         </div>
@@ -184,9 +182,7 @@ export default function BillingPage() {
               </div>
             </div>
             <a
-              href={whatsappConcierge}
-              target="_blank"
-              rel="noreferrer"
+              href={supportConcierge}
               className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-xs"
             >
               Upgrade to Enterprise <Sparkles className="ml-1.5 size-3.5 text-blue-600" />
@@ -221,12 +217,10 @@ export default function BillingPage() {
               For tax withholding certificates, customized billing cycles, or adding multi-branch campuses, contact support.
             </p>
             <a
-              href={whatsappConcierge}
-              target="_blank"
-              rel="noreferrer"
+              href={supportConcierge}
               className="mt-4 flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-xs"
             >
-              WhatsApp Account Manager <ExternalLink className="ml-1.5 size-3 text-slate-400" />
+              Contact Account Manager <ExternalLink className="ml-1.5 size-3 text-slate-400" />
             </a>
           </div>
         </div>
@@ -248,7 +242,7 @@ export default function BillingPage() {
               title="No Invoices or Billing Charges Yet"
               description="Your school is currently on the 30-day Free Trial. Subscription invoices and receipts will appear here once your account transitions to paid billing."
               actionLabel="Contact Billing Concierge"
-              onAction={() => window.open(whatsappConcierge, '_blank', 'noopener,noreferrer')}
+              onAction={() => window.location.href = supportConcierge}
             />
           </div>
         ) : (

@@ -349,6 +349,20 @@ export type TeacherRecord = {
 }
 
 export async function fetchTeachers(): Promise<{ data: TeacherRecord[]; error: Error | null }> {
+  // 1. Fetch from server API endpoint
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/admin/teachers', { cache: 'no-store' })
+      if (res.ok) {
+        const json = await res.json()
+        if (json.success && Array.isArray(json.data)) {
+          return { data: json.data, error: null }
+        }
+      }
+    } catch {}
+  }
+
+  // 2. Query Supabase directly if available
   if (supabaseClient) {
     try {
       const { data, error } = await supabaseClient
@@ -367,7 +381,7 @@ export async function fetchTeachers(): Promise<{ data: TeacherRecord[]; error: E
             qualification: t.qualification || 'Educator',
             department: t.department || 'Academics',
             subject: t.subject || 'General',
-            classes: Array.isArray(t.classes) ? t.classes : (t.classes ? String(t.classes).split(',').map(s => s.trim()) : []),
+            classes: Array.isArray(t.classes) ? t.classes : (t.classes ? String(t.classes).split(',').map((s: string) => s.trim()) : []),
             salary: Number(t.salary) || 0,
             joining_date: t.joining_date || '',
             status: t.status || 'Active',
@@ -375,114 +389,50 @@ export async function fetchTeachers(): Promise<{ data: TeacherRecord[]; error: E
           error: null,
         }
       }
-    } catch {
-      // Fall through to check storage or empty
-    }
-  }
-
-  // Session persistence for newly onboarded faculty
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('eduflow_teachers')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) {
-          return { data: parsed, error: null }
-        }
-      } catch {}
-    }
+    } catch {}
   }
 
   return { data: [], error: null }
 }
 
 export async function createTeacher(
-  payload: Omit<TeacherRecord, 'id'>
+  payload: Omit<TeacherRecord, 'id'> & { tempPassword?: string }
 ): Promise<{ data: TeacherRecord | null; error: Error | null }> {
-  const newTeacher: TeacherRecord = {
-    ...payload,
-    id: `tch-${Date.now()}`,
-  }
-
-  if (supabaseClient) {
+  // 1. Call server API endpoint which registers teacher in Supabase Auth and database
+  if (typeof window !== 'undefined') {
     try {
-      const { data, error } = await supabaseClient
-        .from('teachers')
-        .insert([{
-          name: payload.name,
-          email: payload.email,
-          phone: payload.phone,
-          employee_code: payload.employee_code,
-          qualification: payload.qualification,
-          department: payload.department,
-          subject: payload.subject,
-          classes: payload.classes,
-          salary: payload.salary,
-          joining_date: payload.joining_date,
-          status: payload.status,
-        }])
-        .select()
-        .single()
-
-      if (!error && data) {
-        return {
-          data: {
-            id: data.id,
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            employee_code: data.employee_code,
-            qualification: data.qualification,
-            department: data.department,
-            subject: data.subject,
-            classes: Array.isArray(data.classes) ? data.classes : [data.classes],
-            salary: Number(data.salary) || payload.salary,
-            joining_date: data.joining_date,
-            status: data.status,
-          },
-          error: null,
-        }
+      const res = await fetch('/api/admin/teachers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json()
+      if (res.ok && json.success && json.teacher) {
+        return { data: json.teacher, error: null }
+      } else if (!res.ok) {
+        return { data: null, error: new Error(json.error || 'Failed to onboard teacher') }
       }
-    } catch {
-      // Fall through to local storage save
+    } catch (err: any) {
+      return { data: null, error: err }
     }
   }
 
-  if (typeof window !== 'undefined') {
-    try {
-      const current = localStorage.getItem('eduflow_teachers')
-      const list: TeacherRecord[] = current ? JSON.parse(current) : []
-      const updated = [newTeacher, ...list]
-      localStorage.setItem('eduflow_teachers', JSON.stringify(updated))
-    } catch {}
-  }
-
-  return { data: newTeacher, error: null }
+  return { data: null, error: new Error('Cannot onboard teacher outside browser environment') }
 }
 
 export async function deleteTeacher(id: string | number): Promise<{ success: boolean; error: Error | null }> {
-  if (supabaseClient) {
-    try {
-      const { error } = await supabaseClient
-        .from('teachers')
-        .delete()
-        .eq('id', id)
-
-      if (!error) {
-        return { success: true, error: null }
-      }
-    } catch {
-      // Fall through
-    }
-  }
-
   if (typeof window !== 'undefined') {
     try {
-      const current = localStorage.getItem('eduflow_teachers')
-      const list: TeacherRecord[] = current ? JSON.parse(current) : []
-      const updated = list.filter((t) => String(t.id) !== String(id))
-      localStorage.setItem('eduflow_teachers', JSON.stringify(updated))
-    } catch {}
+      const res = await fetch(`/api/admin/teachers?id=${encodeURIComponent(String(id))}`, {
+        method: 'DELETE',
+      })
+      const json = await res.json()
+      if (res.ok && json.success) {
+        return { success: true, error: null }
+      }
+    } catch (err: any) {
+      return { success: false, error: err }
+    }
   }
 
   return { success: true, error: null }

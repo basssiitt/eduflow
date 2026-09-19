@@ -19,7 +19,7 @@ import {
   Download,
   GraduationCap,
   Mail,
-  MessageCircle,
+  Phone,
   Plus,
   Search,
   Trash2,
@@ -44,9 +44,9 @@ function AddTeacherModal({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [employeeCode, setEmployeeCode] = useState(
-    `TCH-2026-${String(existingCount + 1).padStart(3, '0')}`
-  )
+  const [tempPassword, setTempPassword] = useState('Teach#2026!')
+  const [showTempPassword, setShowTempPassword] = useState(false)
+  const autoEmployeeCode = `TCH-2026-${String(existingCount + 1).padStart(3, '0')}`
   const [qualification, setQualification] = useState('M.Sc / M.A Master Degree')
   const [department, setDepartment] = useState('Science & Math')
   const [subject, setSubject] = useState('Mathematics')
@@ -78,7 +78,11 @@ function AddTeacherModal({
       return
     }
     if (!phone.trim()) {
-      setError('Please provide a contact phone / WhatsApp number.')
+      setError('Please provide a contact phone number.')
+      return
+    }
+    if (!tempPassword.trim() || tempPassword.trim().length < 6) {
+      setError('Please provide a temporary login password of at least 6 characters.')
       return
     }
 
@@ -94,7 +98,8 @@ function AddTeacherModal({
       name: name.trim(),
       email: email.trim().toLowerCase(),
       phone: phone.trim(),
-      employee_code: employeeCode.trim() || `TCH-${Date.now()}`,
+      tempPassword: tempPassword.trim(),
+      employee_code: autoEmployeeCode,
       qualification: qualification.trim(),
       department,
       subject: subject.trim(),
@@ -181,7 +186,7 @@ function AddTeacherModal({
           </label>
 
           <label className="text-xs font-semibold text-slate-700">
-            Phone / WhatsApp Number *
+            Phone Number *
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -191,14 +196,52 @@ function AddTeacherModal({
             />
           </label>
 
-          <label className="text-xs font-semibold text-slate-700">
-            Employee Code
-            <Input
-              value={employeeCode}
-              onChange={(e) => setEmployeeCode(e.target.value)}
-              placeholder="TCH-2026-008"
-              className="mt-1 font-mono text-xs border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
-            />
+          <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 flex flex-col justify-center">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700">
+                  Employee Code
+                </span>
+                <p className="font-mono text-xs font-bold text-slate-900">{autoEmployeeCode}</p>
+              </div>
+              <Badge className="bg-blue-600 text-white text-[10px]">Auto-Assigned</Badge>
+            </div>
+            <p className="mt-1 text-[10px] text-slate-500">
+              System auto-generates unique faculty codes.
+            </p>
+          </div>
+
+          <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
+            Temporary Login Password *
+            <div className="relative mt-1">
+              <Input
+                type={showTempPassword ? 'text' : 'password'}
+                value={tempPassword}
+                onChange={(e) => setTempPassword(e.target.value)}
+                placeholder="Initial password for teacher login"
+                required
+                className="border-slate-200 pr-24 font-mono text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowTempPassword(!showTempPassword)}
+                  className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                >
+                  {showTempPassword ? 'Hide' : 'Show'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTempPassword(`Tch#${Math.floor(1000 + Math.random() * 9000)}!`)}
+                  className="rounded bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-600 hover:bg-blue-100"
+                >
+                  Generate
+                </button>
+              </div>
+            </div>
+            <span className="text-[11px] text-slate-500 font-normal">
+              The teacher will use their email ({email || 'email address'}) and this password to sign in directly to the Teacher Portal.
+            </span>
           </label>
 
           <label className="text-xs font-semibold text-slate-700">
@@ -783,20 +826,15 @@ export default function TeachersPage() {
 
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
-
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* WhatsApp contact */}
+                          {/* Direct phone call */}
                           {teacher.phone && (
                             <a
-                              href={`https://wa.me/${teacher.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                                `Assalam-o-Alaikum ${teacher.name}, message from EduFlow School Administration.`
-                              )}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              title="Message teacher on WhatsApp"
+                              href={`tel:${teacher.phone}`}
+                              title="Call teacher"
                               className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:text-emerald-600 transition"
                             >
-                              <MessageCircle className="size-3.5" />
+                              <Phone className="size-3.5" />
                             </a>
                           )}
 

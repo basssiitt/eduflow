@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
-import { ArrowRight, Building2, Check, Eye, EyeOff, LockKeyhole, Mail, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react'
+import { ArrowRight, Building2, Check, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Sparkles } from 'lucide-react'
 import { AcademicCrest } from '@/components/academic-crest'
 
 function GoogleIcon() {
@@ -315,7 +315,7 @@ export default function SignUpPage() {
                   <span>Pro Plan 30-Day Free Trial Included</span>
                 </div>
                 <p className="mt-1 text-[11px] text-slate-600">
-                  Includes 1-Click Haziri, 3-Copy Fee Challans, WhatsApp reminders, and complete portal access. No credit card required.
+                  Includes 1-Click Haziri, 3-Copy Fee Challans, SMS &amp; Portal notices, and complete portal access. No credit card required.
                 </p>
               </div>
 
@@ -561,12 +561,10 @@ export default function SignUpPage() {
           <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
             <span>Need assistance?</span>
             <a
-              href="https://wa.me/923127803616?text=Hi%20EduFlow%2C%20I%20need%20help%20signing%20up%20my%20school."
-              target="_blank"
-              rel="noreferrer"
+              href="mailto:support@eduflow.pk?subject=School%20Signup%20Assistance"
               className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline"
             >
-              <MessageCircle className="size-3.5" /> WhatsApp Support
+              <Mail className="size-3.5" /> Campus Support Desk
             </a>
           </div>
         </footer>

@@ -21,32 +21,40 @@ export function RoleGate({
     let mounted = true
 
     const checkAccess = async () => {
-      // 1. Check for demo / standalone session fallback first
+      // 1. Check for authenticated session cookies or demo session
       if (typeof window !== 'undefined') {
-        const isDemoUser = sessionStorage.getItem('eduflow-demo-user') === 'true'
+        const cookieEmailMatch = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('eduflow-user-email='))
+        const cookieUserEmail = cookieEmailMatch ? decodeURIComponent(cookieEmailMatch.split('=')[1]).toLowerCase().trim() : null
+
         const cookieRoleMatch = document.cookie
           .split('; ')
-          .find((row) => row.startsWith('eduflow-demo-role='))
-        const demoCookieRole = cookieRoleMatch ? cookieRoleMatch.split('=')[1] : null
-        const sessionRole = sessionStorage.getItem('eduflow-demo-role')
-        const activeDemoRole = sessionRole || demoCookieRole
+          .find((row) => row.startsWith('eduflow-user-role=') || row.startsWith('eduflow-demo-role='))
+        const cookieUserRole = cookieRoleMatch ? decodeURIComponent(cookieRoleMatch.split('=')[1]).toLowerCase().trim() : null
 
-        if (isDemoUser || activeDemoRole) {
-          const normalizedDemo = normalizeRole(activeDemoRole || 'school_admin')
+        const isDemoUser = sessionStorage.getItem('eduflow-demo-user') === 'true'
+        const sessionRole = sessionStorage.getItem('eduflow-demo-role')
+        const activeRole = cookieUserRole || sessionRole
+
+        const isSuper = isSuperAdminEmail(cookieUserEmail)
+
+        if (activeRole || isSuper) {
+          const normalizedActive = normalizeRole(activeRole)
           const normalizedTarget = normalizeRole(role)
 
-          let demoAuthorized = false
+          let authorized = false
           if (normalizedTarget === 'super_admin') {
-            demoAuthorized = false
+            authorized = isSuper
           } else if (normalizedTarget === 'school_admin') {
-            demoAuthorized = ['school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+            authorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedActive)
           } else if (normalizedTarget === 'teacher') {
-            demoAuthorized = ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+            authorized = isSuper || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedActive)
           } else if (normalizedTarget === 'parent') {
-            demoAuthorized = ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedDemo)
+            authorized = isSuper || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedActive)
           }
 
-          if (demoAuthorized) {
+          if (authorized) {
             if (mounted) {
               setAllowed(true)
               setChecking(false)

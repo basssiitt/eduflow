@@ -63,6 +63,8 @@ export function SuperAdminPortal() {
   const [licenseBypass, setLicenseBypass] = useState(false)
   const [rawDbOpen, setRawDbOpen] = useState(false)
   const [rawTable, setRawTable] = useState<'campuses' | 'students' | 'expenses'>('campuses')
+  const [dbStudents, setDbStudents] = useState<any[]>([])
+  const [dbExpenses, setDbExpenses] = useState<any[]>([])
   const [toastMsg, setToastMsg] = useState('')
 
   const triggerGodMode = (role: string, targetPath: string, campusName = 'Beacon Scholars Academy') => {
@@ -138,6 +140,25 @@ export function SuperAdminPortal() {
   useEffect(() => {
     loadCampuses()
   }, [])
+
+  useEffect(() => {
+    if (rawDbOpen && isSupabaseConfigured && supabaseClient) {
+      supabaseClient
+        .from('students')
+        .select('*')
+        .limit(50)
+        .then(({ data }) => {
+          if (data) setDbStudents(data)
+        })
+      supabaseClient
+        .from('expenses')
+        .select('*')
+        .limit(50)
+        .then(({ data }) => {
+          if (data) setDbExpenses(data)
+        })
+    }
+  }, [rawDbOpen])
 
   const slug = useMemo(() => school.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 24) || 'campus-slug', [school])
   const activeCount = campuses.filter((campus) => campus.status === 'Active').length
@@ -758,17 +779,10 @@ export function SuperAdminPortal() {
                 <pre>{JSON.stringify(campuses, null, 2)}</pre>
               )}
               {rawTable === 'students' && (
-                <pre>{JSON.stringify([
-                  { id: 1, name: 'Ali Khan', roll_no: '2026-001', class: 'Class 5', section: 'A', tuition_fee: 4500, guardian_phone: '+923001234567' },
-                  { id: 2, name: 'Zainab Fatima', roll_no: '2026-002', class: 'Class 5', section: 'A', tuition_fee: 4500, guardian_phone: '+923012345678' },
-                  { id: 3, name: 'Hamza Bilal', roll_no: '2026-003', class: 'Class 6', section: 'B', tuition_fee: 5000, guardian_phone: '+923023456789' },
-                ], null, 2)}</pre>
+                <pre>{JSON.stringify(dbStudents.length > 0 ? dbStudents : [{ status: 'No student records in Supabase database yet.' }], null, 2)}</pre>
               )}
               {rawTable === 'expenses' && (
-                <pre>{JSON.stringify([
-                  { id: 101, category: 'Payroll', description: 'Faculty Salary - Muhammad Asad', amount: -80000, date: '2026-10-01' },
-                  { id: 102, category: 'Fee collection', description: 'October Tuition Recovery', amount: 485000, date: '2026-10-02' },
-                ], null, 2)}</pre>
+                <pre>{JSON.stringify(dbExpenses.length > 0 ? dbExpenses : [{ status: 'No expense records in Supabase database yet.' }], null, 2)}</pre>
               )}
             </div>
 

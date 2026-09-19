@@ -71,7 +71,7 @@ export default function TermsPage() {
               <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
                 <li>Every newly registered school campus automatically receives a <strong>full 30-day Pro Plan trial for free</strong> upon signup.</li>
                 <li><strong>No Credit Card Required:</strong> You do not need to provide banking or card details to commence your 30-day trial.</li>
-                <li><strong>Full Feature Access:</strong> During the trial, you enjoy uninhibited access to 1-Click Haziri Attendance, 3-Copy Fee Bank Challans, Urdu Voice Homework Diaries, WhatsApp reminders, and reporting modules.</li>
+                <li><strong>Full Feature Access:</strong> During the trial, you enjoy uninhibited access to 1-Click Haziri Attendance, 3-Copy Fee Bank Challans, Urdu Voice Homework Diaries, automated SMS reminders, and reporting modules.</li>
                 <li><strong>Trial Expiration:</strong> When the 30-day trial period ends, the administrative dashboard transitions to subscription renewal mode. To continue utilizing the platform and generating live challans, the institution must subscribe to a plan (Starter, Pro, or Enterprise).</li>
                 <li><strong>Data Retention Post-Trial:</strong> Your school data, enrolled student rosters, and fee ledgers are securely retained for sixty (60) days after trial expiration, allowing you to subscribe and resume without data loss.</li>
               </ul>
@@ -114,7 +114,7 @@ export default function TermsPage() {
               Modifications &amp; Inquiries
             </h2>
             <p>
-              We reserve the right to revise these terms to align with emerging educational legislation and technological enhancements. For questions regarding institutional licensing or agreements, contact us at <a href="mailto:support@eduflow.pk" className="text-blue-600 font-semibold underline">support@eduflow.pk</a> or WhatsApp at <a href="https://wa.me/923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.
+              We reserve the right to revise these terms to align with emerging educational legislation and technological enhancements. For questions regarding institutional licensing or agreements, contact us at <a href="mailto:support@eduflow.pk" className="text-blue-600 font-semibold underline">support@eduflow.pk</a> or phone at <a href="tel:+923127803616" className="text-blue-600 font-semibold underline">+92 312 7803616</a>.
             </p>
           </section>
 

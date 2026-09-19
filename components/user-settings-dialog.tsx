@@ -266,7 +266,7 @@ export function UserSettingsDialog({
                   <p>✓ Complete 3-Copy Bank Challan Generator</p>
                   <p>✓ 1-Click Haziri &amp; Attendance Registers</p>
                   <p>✓ Full Accounting Ledger &amp; Student Management</p>
-                  <p>✓ WhatsApp Automated Broadcasts</p>
+                  <p>✓ Automated SMS Broadcasts</p>
                 </div>
               </div>
 
