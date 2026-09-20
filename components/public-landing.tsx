@@ -33,6 +33,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { AcademicCrest } from '@/components/academic-crest'
+import { supabaseClient } from '@/lib/supabaseClient'
 
 const plans = [
   {
@@ -119,12 +120,13 @@ export function PublicLanding() {
           >
             Log In
           </Link>
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition"
-          >
-            Sign Up
-          </Link>
+  <button
+  type="button"
+  onClick={async () => { await supabaseClient?.auth.signOut(); window.location.assign('/signup') }}
+  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition"
+  >
+  Sign Up
+  </button>
         </div>
       </nav>
 

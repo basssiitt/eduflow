@@ -74,19 +74,12 @@ export async function updateSession(request: NextRequest) {
   }
 
   const userEmail = (user.email || '').toLowerCase().trim()
-  let role = (user.app_metadata?.role || user.user_metadata?.role || '') as string
-  if (!role) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      if (profile?.role) {
-        role = profile.role
-      }
-    } catch {}
-  }
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle()
+  const role = profile?.role || ''
   let normalizedRole = normalizeRole(role)
   const isSuperAdmin = isSuperAdminEmail(userEmail) || normalizedRole === 'super_admin'
   if (isSuperAdmin) {
