@@ -99,8 +99,8 @@ export function PublicLanding() {
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-slate-200/90 bg-white/95 px-6 backdrop-blur-md lg:px-12">
         <Link href="/" className="flex items-center gap-3 no-underline">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-            <AcademicCrest className="size-6" />
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-blue-600 shadow-xs">
+            <Image src="/eduflow-logo.svg" alt="EduFlow" width={40} height={40} className="size-10" />
           </div>
           <span className="text-xl font-black tracking-tight text-slate-900">EduFlow</span>
         </Link>
