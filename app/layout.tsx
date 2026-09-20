@@ -23,7 +23,7 @@ export const metadata: Metadata = {
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
+        url: '/eduflow-logo.svg',
         type: 'image/svg+xml',
       },
     ],

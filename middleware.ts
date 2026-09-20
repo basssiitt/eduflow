@@ -80,18 +80,14 @@ export async function middleware(request: NextRequest) {
   const cookieRole = request.cookies.get('eduflow-user-role')?.value?.toLowerCase().trim()
 
   const effectiveEmail = (user?.email || cookieEmail || '').toLowerCase().trim()
-  let role = (user?.app_metadata?.role || user?.user_metadata?.role || '') as string
-  if (!role && user) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      if (profile?.role) {
-        role = profile.role
-      }
-    } catch {}
+  let role = ''
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+    role = profile?.role || ''
   }
   if (!role && cookieRole) {
     role = cookieRole
