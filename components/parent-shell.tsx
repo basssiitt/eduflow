@@ -157,8 +157,12 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
   const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
-    const demoEmail = sessionStorage.getItem('eduflow-demo-email')
-    if (demoEmail) setUserEmail(demoEmail)
+    const cookieMatch = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find((r) => r.startsWith('eduflow-user-email='))
+      : null
+    if (cookieMatch) {
+      setUserEmail(decodeURIComponent(cookieMatch.split('=')[1] || ''))
+    }
 
     if (isSupabaseConfigured && supabaseClient) {
       supabaseClient.auth.getUser().then(({ data }) => {

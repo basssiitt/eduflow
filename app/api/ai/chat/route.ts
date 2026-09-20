@@ -31,63 +31,71 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Message exceeds maximum length of 2,000 characters.' }, { status: 400 })
   }
 
-  const context = body.context ?? {
-    name: 'Ali Khan',
-    grade: 'Class 5-A',
-    roll: '2026-001',
-    attendance: '94%',
-    feeDue: 'PKR 4,500',
-    feeDueDate: '10-Oct-2026',
-    examDate: 'Monday, 12-Oct-2026',
-    marks: 'Mathematics: 88/100 (A), Science: 92/100 (A*), English: 81/100 (A). Overall: 88.3% (3rd Position in Class).',
-    remarks: 'Consistent in analytical thinking. Recommended to revise Urdu grammar before exams.',
+  const context = body.context
+
+  if (!context || !context.name || context.name === 'No Child Selected') {
+    return NextResponse.json({
+      text: 'Assalam-o-Alaikum! Aap ke account se filhaal koi student record link nahi hai. Baraye meherbani school administration se rabta karein taake bachay ka admission profile activate ho sake.',
+    })
   }
 
-  // Quota Protection: If unauthenticated demo role or GEMINI_API_KEY is not set, use high-fidelity simulation
+  const studentName = context.name || 'Student'
+  const studentGrade = context.class || context.grade || 'Enrolled Class'
+  const studentRoll = context.roll || '—'
+  const studentAttendance = context.attendance || '0%'
+  const studentFeeDue = context.feeDue || (context.feeAmount ? `PKR ${Number(context.feeAmount).toLocaleString()}` : 'PKR 0')
+  const studentFeeDueDate = context.feeDueDate || context.dueDate || 'Current Session'
+  const studentExamDate = context.examDate || 'Schedule announced soon'
+  const studentMarks = context.marks || 'Term results pending'
+  const studentRemarks = context.remarks || 'Regular classroom conduct.'
+
   const apiKey = process.env.GEMINI_API_KEY
-  if (!authenticatedUser || !apiKey) {
-    const lower = prompt.toLowerCase()
-    let text = ''
-    if (lower.includes('attendance') || lower.includes('haziri') || lower.includes('present') || lower.includes('absent')) {
-      text = `Ali Khan ki overall attendance ${context.attendance} hai. Aaj wo classroom mein Present mark hain aur unka attendance record regular hai.`
-    } else if (lower.includes('fee') || lower.includes('fees') || lower.includes('challan') || lower.includes('dues') || lower.includes('paisa')) {
-      text = `Ali Khan ka current session ka fee balance ${context.feeDue} hai jo ${context.feeDueDate} tak payable hai. Aap Parent Portal ke "Pay Online" button se 1Link ya EasyPaisa/JazzCash ke zariye direct pay kar sakte hain.`
-    } else if (lower.includes('grade') || lower.includes('mark') || lower.includes('result') || lower.includes('math') || lower.includes('science') || lower.includes('report')) {
-      text = `Ali Khan ne term evaluation mein 88.3% (Grade A*) score kiya hai aur class mein 3rd position hasil ki hai. Marks: ${context.marks}`
-    } else if (lower.includes('exam') || lower.includes('date sheet') || lower.includes('schedule') || lower.includes('test') || lower.includes('paper')) {
-      text = `Mid-Term Examinations ${context.examDate} se shuru ho rahe hain. Pehla paper Mathematics ka subah 08:30 AM Room 102 mein hoga. Date Sheet tab mein mukammal schedule available hai.`
-    } else {
-      text = `Assalam-o-Alaikum! Ali Khan (${context.grade}) ka academic record bohat acha hai. Unki attendance ${context.attendance} hai aur unho ne term exams mein 88.3% (Grade A*) score kiya hai. Unke Mid-term papers ${context.examDate} se start ho rahe hain. Agar koi mazeed sawal ho to zaroor batayein!`
-    }
-    return NextResponse.json({ text })
-  }
 
-  try {
-    const ai = new GoogleGenAI({ apiKey })
-    const systemPrompt = `You are the EduFlow AI Parent Companion for Pakistani schools.
-You have real, authoritative student records:
-- Student: ${context.name} (${context.grade}, Roll #${context.roll})
-- Attendance: ${context.attendance}
-- Fees: ${context.feeDue} due on ${context.feeDueDate}
-- Academic Marks: ${context.marks}
-- Upcoming Exams: Mid-Terms commence ${context.examDate}
-- Teacher Note: ${context.remarks}
+  if (apiKey) {
+    try {
+      const ai = new GoogleGenAI({ apiKey })
+      const systemPrompt = `You are the EduFlow AI Parent Companion for Pakistani schools.
+You have authoritative, real student records:
+- Student: ${studentName} (${studentGrade}, Roll #${studentRoll})
+- Attendance: ${studentAttendance}
+- Fees: ${studentFeeDue} (Due: ${studentFeeDueDate})
+- Academic Marks: ${studentMarks}
+- Upcoming Exams: ${studentExamDate}
+- Teacher Note: ${studentRemarks}
 
 Instructions:
-- Answer the parent's query factually based on the child's real records.
+- Answer the parent's question factually based strictly on the child's records.
+- If a record is 0 or pending, state that factually without fabricating numbers or achievements.
 - Reply in the language used by the parent (English, Urdu, or Roman Urdu).
-- Keep answers warm, encouraging, concise, and structured.`
+- Keep responses warm, encouraging, concise, and structured.`
 
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: `${systemPrompt}\n\nParent Question: ${prompt}`,
-    })
-    return NextResponse.json({ text: result.text ?? 'Main aap ke sawal ka jawab talaash kar raha hoon. Baraye meherbani dobarah poochhein.' })
-  } catch (err: unknown) {
-    console.error('EduFlow AI Parent Companion upstream generation error:', err)
-    return NextResponse.json({
-      text: `Ali Khan (${context.grade}) ki attendance ${context.attendance} hai aur unke term exam marks 88.3% (Grade A*) hain. Upcoming Mid-Term exams ${context.examDate} se start honge.`,
-      fallback: true,
-    }, { status: 200 })
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `${systemPrompt}\n\nParent Question: ${prompt}`,
+      })
+
+      return NextResponse.json({
+        text: result.text ?? `Records verified for ${studentName}. Attendance: ${studentAttendance}, Fee Balance: ${studentFeeDue}.`,
+      })
+    } catch (err: unknown) {
+      console.warn('Google GenAI generation note, using verified record fallback:', err)
+    }
   }
+
+  // Factual deterministic reply based exclusively on authentic student records
+  const lower = prompt.toLowerCase()
+  let text = ''
+  if (lower.includes('attendance') || lower.includes('haziri') || lower.includes('present') || lower.includes('absent')) {
+    text = `${studentName} ki overall attendance ${studentAttendance} hai.`
+  } else if (lower.includes('fee') || lower.includes('fees') || lower.includes('challan') || lower.includes('dues') || lower.includes('paisa')) {
+    text = `${studentName} ka current fee balance ${studentFeeDue} hai (${studentFeeDueDate} tak payable).`
+  } else if (lower.includes('grade') || lower.includes('mark') || lower.includes('result') || lower.includes('score')) {
+    text = `${studentName} ke academic term evaluation records: ${studentMarks}.`
+  } else if (lower.includes('exam') || lower.includes('date sheet') || lower.includes('schedule') || lower.includes('paper')) {
+    text = `${studentName} ke exams schedule: ${studentExamDate}.`
+  } else {
+    text = `Assalam-o-Alaikum! ${studentName} (${studentGrade}, Roll #${studentRoll}) ki attendance ${studentAttendance} hai. Current fee balance ${studentFeeDue} hai.`
+  }
+
+  return NextResponse.json({ text })
 }

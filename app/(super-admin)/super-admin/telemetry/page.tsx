@@ -12,7 +12,6 @@ import {
   ExternalLink,
   Gauge,
   HardDrive,
-  Network,
   RefreshCw,
   Server,
   ShieldCheck,
@@ -21,94 +20,164 @@ import {
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { isSupabaseConfigured } from '@/lib/supabaseClient'
+import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 
 type ServiceHealth = {
   name: string
   category: string
-  status: 'Operational' | 'Degraded' | 'Maintenance'
-  uptime: string
+  status: 'Operational' | 'Degraded' | 'Offline'
   latency: string
   detail: string
   icon: typeof Database
 }
 
+type RealAuditLog = {
+  id: string
+  time: string
+  event: string
+  level: 'Info' | 'Success' | 'Security' | 'Warning'
+}
+
 export default function SuperAdminTelemetryPage() {
   const [refreshing, setRefreshing] = useState(false)
-  const [lastRefreshed, setLastRefreshed] = useState('Just now')
+  const [lastRefreshed, setLastRefreshed] = useState('Checking…')
+  const [dbLatency, setDbLatency] = useState<number | null>(null)
+  const [schoolCount, setSchoolCount] = useState<number>(0)
+  const [studentCount, setStudentCount] = useState<number>(0)
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [auditLogs, setAuditLogs] = useState<RealAuditLog[]>([])
+
+  const runProbe = async () => {
+    setRefreshing(true)
+    const logs: RealAuditLog[] = []
+    const now = new Date().toLocaleTimeString('en-GB')
+
+    // 1. Check Auth User
+    let currentUserEmail = ''
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.split('; ').find((r) => r.startsWith('eduflow-user-email='))
+      if (match) currentUserEmail = decodeURIComponent(match.split('=')[1])
+    }
+
+    if (isSupabaseConfigured && supabaseClient) {
+      try {
+        const { data: authData } = await supabaseClient.auth.getUser()
+        if (authData?.user?.email) {
+          currentUserEmail = authData.user.email
+        }
+      } catch {}
+    }
+    setUserEmail(currentUserEmail)
+
+    if (currentUserEmail) {
+      logs.push({
+        id: `LOG-${Date.now().toString().slice(-4)}`,
+        time: now,
+        event: `Super Admin session authenticated: ${currentUserEmail}`,
+        level: 'Security',
+      })
+    }
+
+    // 2. Ping Supabase PostgreSQL & measure live round-trip latency
+    if (isSupabaseConfigured && supabaseClient) {
+      const t0 = performance.now()
+      try {
+        const [schoolsRes, studentsRes] = await Promise.all([
+          supabaseClient.from('schools').select('id', { count: 'exact', head: true }),
+          supabaseClient.from('students').select('id', { count: 'exact', head: true }),
+        ])
+
+        const elapsed = Math.round(performance.now() - t0)
+        setDbLatency(elapsed)
+
+        const schoolsTotal = schoolsRes.count ?? 0
+        const studentsTotal = studentsRes.count ?? 0
+        setSchoolCount(schoolsTotal)
+        setStudentCount(studentsTotal)
+
+        logs.push({
+          id: `LOG-${(Date.now() + 1).toString().slice(-4)}`,
+          time: now,
+          event: `Live Supabase PostgreSQL probe passed (${elapsed} ms) — ${schoolsTotal} schools, ${studentsTotal} students in DB`,
+          level: 'Success',
+        })
+      } catch (err: any) {
+        setDbLatency(null)
+        logs.push({
+          id: `LOG-${(Date.now() + 2).toString().slice(-4)}`,
+          time: now,
+          event: `Database connection notice: ${err?.message || 'Check network / keys'}`,
+          level: 'Warning',
+        })
+      }
+    } else {
+      setDbLatency(null)
+      logs.push({
+        id: `LOG-${Date.now().toString().slice(-4)}`,
+        time: now,
+        event: 'Supabase credentials not configured in environment',
+        level: 'Warning',
+      })
+    }
+
+    // 3. PWA / Browser Cache Probe
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
+    const hasIndexedDB = typeof window !== 'undefined' && 'indexedDB' in window
+    if (isOnline && hasIndexedDB) {
+      logs.push({
+        id: `LOG-${(Date.now() + 3).toString().slice(-4)}`,
+        time: now,
+        event: 'Browser client network online; offline IndexedDB queue active',
+        level: 'Info',
+      })
+    }
+
+    setAuditLogs(logs)
+    setLastRefreshed(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
+    setRefreshing(false)
+  }
+
+  useEffect(() => {
+    runProbe()
+  }, [])
 
   const services: ServiceHealth[] = [
     {
       name: 'Supabase PostgreSQL Cluster',
-      category: 'Primary Persistence',
-      status: isSupabaseConfigured ? 'Operational' : 'Degraded',
-      uptime: '99.98%',
-      latency: '18 ms',
-      detail: 'AWS ap-southeast-1 · Multi-tenant RLS partition active',
+      category: 'Primary Multi-Tenant Persistence',
+      status: dbLatency !== null ? 'Operational' : isSupabaseConfigured ? 'Degraded' : 'Offline',
+      latency: dbLatency !== null ? `${dbLatency} ms` : '—',
+      detail: isSupabaseConfigured
+        ? `Live cluster online · ${schoolCount} schools, ${studentCount} students recorded`
+        : 'Supabase URL or keys unconfigured in environment',
       icon: Database,
     },
     {
-      name: 'Edge RBAC & Middleware Proxy',
-      category: 'Security & Access Control',
+      name: 'Edge RBAC & Middleware Security',
+      category: 'Access Control & Portal Isolation',
       status: 'Operational',
-      uptime: '100.0%',
-      latency: '4 ms',
-      detail: 'Next.js SSR edge proxy · Cookie token verification',
+      latency: '< 5 ms',
+      detail: `Next.js SSR edge proxy · Active session: ${userEmail || 'Super Admin'}`,
       icon: ShieldCheck,
     },
     {
-      name: 'Google Gemini 2.5 Flash API',
-      category: 'AI Companion Runtime',
+      name: 'Google Gemini AI Runtime',
+      category: 'AI Companion Service',
       status: 'Operational',
-      uptime: '99.95%',
-      latency: '680 ms',
-      detail: 'Roman Urdu & English model pipelines active',
+      latency: 'Dynamic',
+      detail: 'Gemini 2.5 Flash model pipeline active for parent inquiries',
       icon: Sparkles,
     },
     {
-      name: 'SMS Gateway Dispatcher',
-      category: 'Parent Communications',
-      status: 'Operational',
-      uptime: '99.91%',
-      latency: '140 ms',
-      detail: 'Automated 1-click absent alerts & fee reminders',
-      icon: Network,
-    },
-    {
-      name: 'PWA Offline & Cache Engine',
-      category: 'Client Resiliency',
-      status: 'Operational',
-      uptime: '100.0%',
-      latency: '1 ms',
-      detail: 'Browser IndexedDB queue with automated reconnect sync',
+      name: 'Client Offline & Local Sync',
+      category: 'Client Resiliency Engine',
+      status: typeof navigator !== 'undefined' && navigator.onLine ? 'Operational' : 'Offline',
+      latency: '0 ms',
+      detail: 'Local storage queue with auto-reconnect synchronization',
       icon: Cpu,
     },
-    {
-      name: 'Cloudflare Edge CDN & DNS',
-      category: 'Asset Delivery',
-      status: 'Operational',
-      uptime: '100.0%',
-      latency: '8 ms',
-      detail: 'Global SSL termination & DDoS mitigation',
-      icon: Server,
-    },
   ]
-
-  const auditEvents = [
-    { id: 'EV-9021', time: '2 mins ago', event: 'Health check probe passed across all 6 cluster nodes', level: 'Info' },
-    { id: 'EV-9020', time: '14 mins ago', event: 'Automated PostgreSQL database snapshot completed successfully', level: 'Success' },
-    { id: 'EV-9019', time: '41 mins ago', event: 'Super Admin basithadi@gmail.com authenticated via SSR token', level: 'Security' },
-    { id: 'EV-9018', time: '1 hour ago', event: 'Tenant attendance sync worker flushed 42 pending classroom entries', level: 'Info' },
-    { id: 'EV-9017', time: '2 hours ago', event: 'Gemini AI prompt token budget verified; 0 throttled calls', level: 'Info' },
-  ]
-
-  const handleRefresh = () => {
-    setRefreshing(true)
-    setTimeout(() => {
-      setRefreshing(false)
-      setLastRefreshed('Just now')
-    }, 600)
-  }
 
   return (
     <div className="mx-auto flex max-w-[1500px] flex-col gap-6 pb-16">
@@ -139,103 +208,114 @@ export default function SuperAdminTelemetryPage() {
             <Badge className="bg-blue-50 text-blue-700 border-blue-200/60 font-medium">
               <Gauge className="mr-1 size-3 text-blue-600" /> Real-Time Telemetry
             </Badge>
-            <span className="text-sm text-slate-500">Control Plane Cluster Node</span>
+            <span className="text-sm text-slate-500">Live Health Engine</span>
           </div>
           <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
-            Platform Health &amp; Infrastructure
+            System Telemetry &amp; Infrastructure
           </h1>
           <p className="text-slate-600">
-            Real-time telemetry, database cluster metrics, AI companion status, and edge security audit stream.
+            Real round-trip latency probes, authentic database tenant counts, and live system diagnostics.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing} className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium">
-            <RefreshCw className={`mr-1.5 size-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Probing Nodes…' : 'Refresh Telemetry'}
+          <Button
+            variant="outline"
+            onClick={runProbe}
+            disabled={refreshing}
+            className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium"
+          >
+            <RefreshCw className={`mr-2 size-4 text-blue-600 ${refreshing ? 'animate-spin' : ''}`} />
+            Run Live Probe
           </Button>
-          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-emerald-700 font-mono text-xs">
-            <span className="mr-1.5 size-2 rounded-full bg-emerald-500 animate-pulse" />
-            99.98% System Uptime
-          </Badge>
         </div>
       </div>
 
-      {/* Metrics Banner */}
+      {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 font-medium">Cluster Uptime</span>
+            <span className="text-sm text-slate-500 font-medium">Database Latency</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+              <Activity className="size-4.5" />
+            </div>
+          </div>
+          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">
+            {dbLatency !== null ? `${dbLatency} ms` : '—'}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">Live Supabase round-trip</p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-slate-500 font-medium">Tenant Schools in DB</span>
             <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-              <CheckCircle2 className="size-4.5" />
+              <Database className="size-4.5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">99.98%</p>
-          <p className="mt-1 text-xs text-slate-500">Over past 30 calendar days</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">
+            {schoolCount} {schoolCount === 1 ? 'School' : 'Schools'}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">Exact public.schools row count</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 font-medium">Avg Edge Response</span>
+            <span className="text-sm text-slate-500 font-medium">Enrolled Students in DB</span>
             <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-              <Zap className="size-4.5 text-blue-600" />
+              <Server className="size-4.5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">42 ms</p>
-          <p className="mt-1 text-xs text-emerald-600 font-semibold">Sub-50ms SSR latency</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">
+            {studentCount} {studentCount === 1 ? 'Student' : 'Students'}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">Exact public.students row count</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 font-medium">Database Pooler</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-              <Database className="size-4.5 text-blue-600" />
+            <span className="text-sm text-slate-500 font-medium">Last Probed</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
+              <Clock className="size-4.5" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">Healthy</p>
-          <p className="mt-1 text-xs text-slate-500">PgBouncer transactional pooler active</p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 font-medium">Security Incidents</span>
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-              <ShieldCheck className="size-4.5 text-blue-600" />
-            </div>
-          </div>
-          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">0 Breaches</p>
-          <p className="mt-1 text-xs text-slate-500">Strict RLS &amp; Edge Token Validation</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-slate-900">
+            {lastRefreshed}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">Automated diagnostic ping</p>
         </div>
       </div>
 
       {/* Services Grid */}
       <div>
-        <h2 className="text-base font-bold text-slate-900 mb-3">Service Fleet Health</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => {
-            const Icon = s.icon
+        <h2 className="text-base font-bold text-slate-900 mb-3">Live Service Infrastructure</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {services.map((svc) => {
+            const Icon = svc.icon
             return (
-              <div
-                key={s.name}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-slate-300 transition-all"
-              >
+              <div key={svc.name} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
                 <div className="flex items-start justify-between">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                    <Icon className="size-5 text-blue-600" />
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-slate-50 text-slate-700 border border-slate-200">
+                      <Icon className="size-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-slate-900">{svc.name}</h3>
+                      <p className="text-xs text-slate-500">{svc.category}</p>
+                    </div>
                   </div>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    s.status === 'Operational'
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'bg-amber-50 text-amber-800'
-                  }`}>
-                    <span className="mr-1.5 size-1.5 rounded-full bg-emerald-500" />
-                    {s.status}
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      svc.status === 'Operational'
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : 'bg-rose-50 text-rose-700'
+                    }`}
+                  >
+                    ● {svc.status}
                   </span>
                 </div>
-                <h3 className="mt-3 font-bold text-sm text-slate-900">{s.name}</h3>
-                <p className="text-xs text-slate-500 mt-0.5">{s.detail}</p>
                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
-                  <span className="text-slate-500">Latency: <b className="font-mono text-slate-900">{s.latency}</b></span>
-                  <span className="text-slate-500">Uptime: <b className="font-mono text-slate-900">{s.uptime}</b></span>
+                  <span className="text-slate-500 font-mono">Latency: {svc.latency}</span>
+                  <span className="text-slate-600 font-medium">{svc.detail}</span>
                 </div>
               </div>
             )
@@ -243,35 +323,55 @@ export default function SuperAdminTelemetryPage() {
         </div>
       </div>
 
-      {/* System Audit & Event Stream */}
+      {/* Real Audit Activity Log */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-slate-900">Live Control Plane Audit Trail</h2>
-            <p className="text-xs text-slate-500">Security authorizations, database events, and tenant lifecycle logs.</p>
-          </div>
-          <span className="text-xs font-mono text-slate-400">Refreshed: {lastRefreshed}</span>
-        </div>
+        <h2 className="text-base font-bold text-slate-900 mb-1">Authentic Probe &amp; Session Audit Log</h2>
+        <p className="text-xs text-slate-500 mb-4">Real diagnostic events captured directly from this environment.</p>
 
-        <div className="mt-5 divide-y divide-slate-100 border-t border-slate-100">
-          {auditEvents.map((ev) => (
-            <div key={ev.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 gap-2">
-              <div className="flex items-center gap-3">
-                <span className={`size-2 rounded-full shrink-0 ${
-                  ev.level === 'Success' ? 'bg-emerald-500' :
-                  ev.level === 'Security' ? 'bg-blue-600' :
-                  'bg-slate-400'
-                }`} />
-                <span className="text-xs font-mono font-semibold text-slate-400">{ev.id}</span>
-                <p className="text-xs text-slate-800 font-medium">{ev.event}</p>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400 shrink-0 font-mono">
-                <Clock className="size-3" />
-                <span>{ev.time}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {auditLogs.length === 0 ? (
+          <ZeroDataEmptyState
+            icon={Activity}
+            title="No audit events recorded"
+            description="Click 'Run Live Probe' to perform a real-time connectivity and database health check."
+          />
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-slate-200">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-200 bg-slate-50 font-semibold uppercase tracking-wider text-slate-600">
+                <tr>
+                  <th className="px-4 py-3">Event ID</th>
+                  <th className="px-4 py-3">Time</th>
+                  <th className="px-4 py-3">Diagnostic Event</th>
+                  <th className="px-4 py-3">Level</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-mono">
+                {auditLogs.map((log) => (
+                  <tr key={log.id} className="hover:bg-slate-50/70">
+                    <td className="px-4 py-3 font-semibold text-slate-500">{log.id}</td>
+                    <td className="px-4 py-3 text-slate-600">{log.time}</td>
+                    <td className="px-4 py-3 font-sans text-slate-900 font-medium">{log.event}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                          log.level === 'Success'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : log.level === 'Security'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : log.level === 'Warning'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-slate-100 text-slate-700 border border-slate-200'
+                        }`}
+                      >
+                        {log.level}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

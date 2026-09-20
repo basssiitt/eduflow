@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { fetchStudents, saveAttendance, uploadVoiceDiary } from '@/lib/live-data'
-import { isSupabaseConfigured } from '@/lib/supabaseClient'
+import { supabaseClient, isSupabaseConfigured } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import { Award, ArrowRight, BookOpen, Check, CircleCheck, Mic, Pause, Save, Send, UserRound, Volume2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -13,7 +13,7 @@ import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 import { cn } from '@/lib/utils'
 
 type Status = 'Present' | 'Absent' | 'Leave'
-type Student = { id: number | string; name: string; father: string; status: Status; note: string }
+type Student = { id: number | string; name: string; father: string; status: Status; note: string; class?: string }
 
 const subjects = ['English', 'Urdu', 'Mathematics', 'Science', 'Islamiat']
 const statusStyles: Record<Status, string> = {
@@ -24,6 +24,7 @@ const statusStyles: Record<Status, string> = {
 
 export function TeacherPortal() {
   const [students, setStudents] = useState<Student[]>([])
+  const [teacherName, setTeacherName] = useState('Teacher')
   const [subject, setSubject] = useState('Mathematics')
   const [diary, setDiary] = useState('')
   const [recording, setRecording] = useState(false)
@@ -33,6 +34,26 @@ export function TeacherPortal() {
   const [loading, setLoading] = useState(true)
   const { isOnline, queueAction, pendingActions } = useEduFlow()
   const audioRef = useRef<Blob | null>(null)
+
+  useEffect(() => {
+    if (isSupabaseConfigured && supabaseClient) {
+      const client = supabaseClient
+      client.auth.getUser().then(async ({ data }) => {
+        if (data.user?.id) {
+          const { data: profile } = await client
+            .from('profiles')
+            .select('full_name')
+            .eq('id', data.user.id)
+            .maybeSingle()
+          if (profile?.full_name) {
+            setTeacherName(profile.full_name)
+          } else if (data.user.user_metadata?.full_name) {
+            setTeacherName(data.user.user_metadata.full_name)
+          }
+        }
+      }).catch(() => {})
+    }
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -45,6 +66,7 @@ export function TeacherPortal() {
             id: row.id ?? index + 1,
             name: row.name ?? 'Student',
             father: row.father_name ?? '',
+            class: row.class || 'General',
             status: 'Present' as Status,
             note: '',
           }))
@@ -58,6 +80,19 @@ export function TeacherPortal() {
       active = false
     }
   }, [])
+
+  const assignedClasses = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const s of students) {
+      const cls = s.class || 'General'
+      map[cls] = (map[cls] || 0) + 1
+    }
+    return Object.entries(map).map(([name, count]) => ({
+      name,
+      count,
+      tag: name.replace(/[^A-Za-z0-9]/g, '').slice(0, 4).toUpperCase() || 'CLS',
+    }))
+  }, [students])
 
   const counts = useMemo(
     () => ({
@@ -123,7 +158,9 @@ export function TeacherPortal() {
       {/* Header matching Screen 2 */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">Welcome, Professor Carter</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+            Welcome, {teacherName}
+          </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500">Today&apos;s Dashboard · Academic Session 2026–2027</p>
         </div>
         <div className="flex items-center gap-3">
@@ -152,47 +189,67 @@ export function TeacherPortal() {
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Assigned Classes</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">2 Active</span>
+            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">
+              {assignedClasses.length > 0 ? `${assignedClasses.length} Active` : '0 Active'}
+            </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">2</p>
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">{assignedClasses.length}</p>
             <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 25 Q 30 15, 60 20 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {assignedClasses.length > 0 ? (
+                <path d="M0 25 Q 30 15, 60 20 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
-          <p className="mt-1 text-[11px] text-slate-400">Class 10 &amp; Class 8</p>
+          <p className="mt-1 text-[11px] text-slate-400">
+            {assignedClasses.length > 0 ? assignedClasses.map((c) => c.name).slice(0, 2).join(' & ') : 'No classes assigned'}
+          </p>
         </div>
 
         {/* Metric 2: Total Students */}
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Total Students</span>
-            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Online</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+              {students.length > 0 ? 'Enrolled' : '0'}
+            </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
-              {students.length > 0 ? students.length : '15,442'}
+              {students.length}
             </p>
             <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 20 Q 35 5, 65 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {students.length > 0 ? (
+                <path d="M0 20 Q 35 5, 65 18 T 100 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <p className="mt-1 text-[11px] text-slate-400">Enrolled Roster</p>
         </div>
 
-        {/* Metric 3: Average Progress */}
+        {/* Metric 3: Present Today */}
         <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Average Progress</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">Term 1</span>
+            <span className="text-xs font-semibold text-slate-500">Present Today</span>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '0%'}
+            </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">76%</p>
+            <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">{counts.Present}</p>
             <svg className="h-6 w-16 text-emerald-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 22 Q 25 10, 50 16 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {counts.Present > 0 ? (
+                <path d="M0 22 Q 25 10, 50 16 T 100 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
-          <p className="mt-1 text-[11px] text-slate-400">Syllabus Completion</p>
+          <p className="mt-1 text-[11px] text-slate-400">Marked In Classroom</p>
         </div>
 
         {/* Metric 4: Attendance Rate */}
@@ -200,15 +257,19 @@ export function TeacherPortal() {
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Attendance Rate</span>
             <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
-              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '76%'}
+              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '0%'}
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
-              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '76%'}
+              {students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '0%'}
             </p>
             <svg className="h-6 w-16 text-blue-500 shrink-0" viewBox="0 0 100 30" fill="none">
-              <path d="M0 18 Q 30 8, 60 15 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              {students.length > 0 ? (
+                <path d="M0 18 Q 30 8, 60 15 T 100 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              ) : (
+                <line x1="0" y1="24" x2="100" y2="24" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3 3" />
+              )}
             </svg>
           </div>
           <p className="mt-1 text-[11px] text-slate-400">Daily Class Attendance</p>
@@ -224,55 +285,60 @@ export function TeacherPortal() {
               <h2 className="text-sm font-bold text-slate-900">Assigned Classes</h2>
               <p className="text-xs text-slate-500">Class sections and active subjects</p>
             </div>
-            <span className="text-xs text-blue-600 font-semibold">Active Term</span>
+            <Link href="/teacher/classes" className="text-xs text-blue-600 font-semibold hover:underline">
+              View Schedule →
+            </Link>
           </div>
 
-          <div className="space-y-2.5">
-            {[
-              { title: 'Class 10 Matric In-Home Development', desc: 'Assigned Science · 39 Students', tag: 'CS550' },
-              { title: 'Class 200 Basic Science & Computing', desc: 'Assigned Science · 57 Students', tag: 'CE596' },
-              { title: 'Class 255 Advanced Chemistry', desc: 'Assigned Science · 28 Students', tag: 'CS250' },
-            ].map((cls, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3 hover:bg-slate-50 hover:border-slate-200 transition cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                    {cls.tag.slice(0, 2)}
+          {assignedClasses.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+              <p className="text-xs font-semibold text-slate-700">No classes assigned yet</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Students enrolled by the administrator will automatically appear here grouped by class.</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {assignedClasses.map((cls, idx) => (
+                <Link
+                  key={idx}
+                  href="/teacher/classes"
+                  className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3 hover:bg-slate-50 hover:border-slate-200 transition cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
+                      {cls.tag}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">{cls.name}</h4>
+                      <p className="text-[11px] text-slate-500">{cls.count} Enrolled Student{cls.count === 1 ? '' : 's'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{cls.title}</h4>
-                    <p className="text-[11px] text-slate-500">{cls.desc}</p>
-                  </div>
-                </div>
-                <ArrowRight className="size-4 text-slate-400" />
-              </div>
-            ))}
-          </div>
+                  <ArrowRight className="size-4 text-slate-400" />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Right Column: 2x2 Course Stats Cards (5 cols) */}
+        {/* Right Column: 2x2 Attendance Summary Cards (5 cols) */}
         <div className="lg:col-span-5 grid grid-cols-2 gap-3">
           {[
-            { code: 'CS550', name: 'Total Present', value: '27.4%', badge: 'ACTIVE' },
-            { code: 'CE596', name: 'Total Average', value: '84%', badge: 'ACTIVE' },
-            { code: 'CS250', name: 'Pass Rate', value: '76.3%', badge: 'ACTIVE' },
-            { code: 'CS540', name: 'Overall Score', value: '76.7%', badge: 'ACTIVE' },
-          ].map((course, idx) => (
+            { label: 'Present Today', value: String(counts.Present), pct: students.length > 0 ? `${Math.round((counts.Present / students.length) * 100)}%` : '0%', tone: 'bg-emerald-50 text-emerald-700' },
+            { label: 'Absent Today', value: String(counts.Absent), pct: students.length > 0 ? `${Math.round((counts.Absent / students.length) * 100)}%` : '0%', tone: 'bg-rose-50 text-rose-700' },
+            { label: 'Leave Today', value: String(counts.Leave), pct: students.length > 0 ? `${Math.round((counts.Leave / students.length) * 100)}%` : '0%', tone: 'bg-amber-50 text-amber-700' },
+            { label: 'Total Enrolled', value: String(students.length), pct: students.length > 0 ? '100%' : '0%', tone: 'bg-blue-50 text-blue-700' },
+          ].map((item, idx) => (
             <div key={idx} className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-2xs flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-slate-900">{course.code}</span>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
-                  {course.badge}
+                <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.tone}`}>
+                  {item.pct}
                 </span>
               </div>
               <div className="mt-3">
-                <div className="text-[10px] text-slate-400">{course.name}</div>
-                <div className="text-lg font-black text-slate-900">{course.value}</div>
+                <div className="text-lg font-black text-slate-900">{item.value}</div>
               </div>
               <div className="mt-2 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full" style={{ width: course.value.replace('%', '') + '%' }} />
+                <div className="h-full bg-blue-600 rounded-full" style={{ width: item.pct }} />
               </div>
             </div>
           ))}
@@ -283,53 +349,74 @@ export function TeacherPortal() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Upcoming Notes (5 cols) */}
         <div className="lg:col-span-5 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
-          <h3 className="text-sm font-bold text-slate-900 mb-1">Upcoming Attendance &amp; Notes</h3>
-          <p className="text-xs text-slate-500 mb-4">Scheduled periods and assignments</p>
-          <div className="space-y-3">
-            {[
-              { time: 'Period 1 · 08:30', title: 'Upcoming Staff Notes', sub: 'Operating Systems, Room 31' },
-              { time: 'Period 3 · 10:15', title: 'Class Test AP Math', sub: 'Midterm Revision, Hall 24' },
-              { time: 'Period 5 · 12:00', title: 'Integrated Modules', sub: 'Laboratory Section B' },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3 text-xs border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
-                <div className="size-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-slate-900">{item.title}</div>
-                  <div className="text-[11px] text-slate-500">{item.sub}</div>
-                  <div className="text-[10px] font-semibold text-blue-600 mt-0.5">{item.time}</div>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Today&apos;s Schedule &amp; Notes</h3>
+              <p className="text-xs text-slate-500">Scheduled classroom periods</p>
+            </div>
+            <Link href="/teacher/classes" className="text-xs font-semibold text-blue-600 hover:underline">
+              Full Schedule →
+            </Link>
           </div>
+          {assignedClasses.length === 0 ? (
+            <div className="py-6 text-center text-xs text-slate-400">
+              No periods scheduled for today.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {assignedClasses.slice(0, 3).map((cls, idx) => (
+                <div key={idx} className="flex items-start gap-3 text-xs border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
+                  <div className="size-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-slate-900">{cls.name}</div>
+                    <div className="text-[11px] text-slate-500">{cls.count} registered learners</div>
+                    <div className="text-[10px] font-semibold text-blue-600 mt-0.5">Session 2026–2027</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Student Breakdown Table (7 cols) */}
         <div className="lg:col-span-7 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs">
-          <h3 className="text-sm font-bold text-slate-900 mb-1">Student Breakdown</h3>
-          <p className="text-xs text-slate-500 mb-4">Class-level pass and attendance rates</p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Class Enrollment Breakdown</h3>
+              <p className="text-xs text-slate-500">Class-level student distribution</p>
+            </div>
+            <Link href="/teacher/classes" className="text-xs font-semibold text-blue-600 hover:underline">
+              Manage Classes →
+            </Link>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-100 text-slate-400 uppercase font-semibold">
-                  <th className="pb-2">Class</th>
-                  <th className="pb-2">Students</th>
-                  <th className="pb-2 text-center">Pass %</th>
-                  <th className="pb-2 text-right">Attendance %</th>
+                  <th className="pb-2">Class Section</th>
+                  <th className="pb-2 text-center">Learners</th>
+                  <th className="pb-2 text-right">Share of Roster</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {[
-                  { cls: 'CS550', count: '15.35', pass: '76.5%', att: '91.8%' },
-                  { cls: 'CE596', count: '15.0%', pass: '16.5%', att: '88.6%' },
-                  { cls: 'CS250', count: '10.0%', pass: '16.6%', att: '91.0%' },
-                ].map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/80 transition">
-                    <td className="py-2.5 font-bold text-slate-800">{row.cls}</td>
-                    <td className="py-2.5 text-slate-600 font-semibold">{row.count}</td>
-                    <td className="py-2.5 text-center font-bold text-emerald-600">{row.pass}</td>
-                    <td className="py-2.5 text-right font-bold text-blue-600">{row.att}</td>
+                {assignedClasses.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="py-6 text-center text-slate-400">
+                      No active classes or enrolled students found.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  assignedClasses.map((row, idx) => {
+                    const share = students.length > 0 ? Math.round((row.count / students.length) * 100) : 0
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50/80 transition">
+                        <td className="py-2.5 font-bold text-slate-800">{row.name}</td>
+                        <td className="py-2.5 text-center font-semibold text-slate-700">{row.count}</td>
+                        <td className="py-2.5 text-right font-bold text-blue-600">{share}%</td>
+                      </tr>
+                    )
+                  })
+                )}
               </tbody>
             </table>
           </div>

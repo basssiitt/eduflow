@@ -301,8 +301,12 @@ export function ParentPortal() {
 
   useEffect(() => {
     let active = true
-    const demoEmail = sessionStorage.getItem('eduflow-demo-email')
-    if (demoEmail && active) setParentEmail(demoEmail)
+    const cookieMatch = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find((r) => r.startsWith('eduflow-user-email='))
+      : null
+    if (cookieMatch && active) {
+      setParentEmail(decodeURIComponent(cookieMatch.split('=')[1] || ''))
+    }
 
     if (isSupabaseConfigured && supabaseClient) {
       const client = supabaseClient
