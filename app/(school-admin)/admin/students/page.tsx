@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchStudents } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
+import { admitStudentAction } from '@/app/actions/students'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,6 +48,8 @@ function AddStudentModal({
     }
 
     setSaving(true)
+    setError('')
+
     const randomArray = new Uint16Array(1)
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
       crypto.getRandomValues(randomArray)
@@ -56,55 +59,30 @@ function AddStudentModal({
     const randomSuffix = (randomArray[0] % 900) + 100
     const rollNo = `2026-${String(randomSuffix)}`
 
-    if (isSupabaseConfigured && supabaseClient) {
-      try {
-        let userSchoolId: string | null = null
-        const { data: userData } = await supabaseClient.auth.getUser()
-        if (userData?.user) {
-          const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('school_id')
-            .eq('id', userData.user.id)
-            .single()
-          if (profile?.school_id) {
-            userSchoolId = profile.school_id
-          }
-        }
-        if (!userSchoolId) {
-          const { data: schools } = await supabaseClient.from('schools').select('id').limit(1)
-          if (schools && schools.length > 0) {
-            userSchoolId = schools[0].id
-          }
-        }
+    try {
+      const res = await admitStudentAction({
+        fullName: name.trim(),
+        fatherName: fatherName.trim(),
+        grade: className,
+        section: section,
+        guardianPhone: phone.trim() || undefined,
+        monthlyFee: Number(fee) || 15000,
+        rollNumber: rollNo,
+      })
 
-        const { error: insertError } = await supabaseClient.from('students').insert([
-          {
-            full_name: name.trim(),
-            father_name: fatherName.trim(),
-            class_name: className,
-            section: section,
-            monthly_fee: Number(fee) || 15000,
-            roll_number: rollNo,
-            status: 'active',
-            ...(userSchoolId ? { school_id: userSchoolId } : {}),
-          },
-        ])
-
-        if (insertError) {
-          setError(insertError.message)
-          setSaving(false)
-          return
-        }
-      } catch (err: any) {
-        setError(err?.message || 'Failed to save student')
+      if (!res.success) {
+        setError('Failed to admit student. Please try again.')
         setSaving(false)
         return
       }
-    }
 
-    setSaving(false)
-    onAdded()
-    onClose()
+      setSaving(false)
+      onAdded()
+      onClose()
+    } catch (err: any) {
+      setError(err?.message || 'Failed to save student')
+      setSaving(false)
+    }
   }
 
   return (
