@@ -63,14 +63,30 @@ export async function POST(request: NextRequest) {
     // 2. If Supabase Auth authenticated the user
     if (authUser) {
       let role = (authUser.app_metadata?.role || authUser.user_metadata?.role || '') as string
+      let isSetupComplete = false
+
       try {
         const { data: profile } = await client
           .from('profiles')
-          .select('role')
+          .select('role, school_setup_complete, onboarding_completed, school_id')
           .eq('id', authUser.id)
-          .single()
+          .maybeSingle()
+
         if (profile?.role) {
           role = profile.role
+        }
+        if (profile?.school_setup_complete || profile?.onboarding_completed) {
+          isSetupComplete = true
+        }
+        if (!isSetupComplete && profile?.school_id) {
+          const { data: school } = await client
+            .from('schools')
+            .select('school_setup_complete')
+            .eq('id', profile.school_id)
+            .maybeSingle()
+          if (school?.school_setup_complete) {
+            isSetupComplete = true
+          }
         }
       } catch {}
 
@@ -81,7 +97,10 @@ export async function POST(request: NextRequest) {
         normalizedRole = 'school_admin'
       }
 
-      const destination = getHomeRoute(normalizedRole, cleanEmail)
+      let destination = getHomeRoute(normalizedRole, cleanEmail)
+      if (normalizedRole === 'school_admin') {
+        destination = isSetupComplete ? '/admin/dashboard' : '/onboarding'
+      }
 
       cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })

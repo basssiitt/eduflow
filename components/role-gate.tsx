@@ -46,9 +46,9 @@ export function RoleGate({
           } else if (normalizedTarget === 'school_admin') {
             authorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedActive)
           } else if (normalizedTarget === 'teacher') {
-            authorized = isSuper || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedActive)
+            authorized = isSuper || ['teacher', 'super_admin'].includes(normalizedActive)
           } else if (normalizedTarget === 'parent') {
-            authorized = isSuper || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedActive)
+            authorized = isSuper || ['parent', 'super_admin'].includes(normalizedActive)
           }
 
           if (authorized) {
@@ -114,9 +114,9 @@ export function RoleGate({
         } else if (normalizedTargetRole === 'school_admin') {
           isAuthorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'teacher') {
-          isAuthorized = isSuper || ['teacher', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuper || ['teacher', 'super_admin'].includes(normalizedUserRole)
         } else if (normalizedTargetRole === 'parent') {
-          isAuthorized = isSuper || ['parent', 'school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          isAuthorized = isSuper || ['parent', 'super_admin'].includes(normalizedUserRole)
         }
 
         if (!isAuthorized) {

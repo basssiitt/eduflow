@@ -78,12 +78,24 @@ export default function OnboardingPage() {
         setUserEmail(user.email ?? '')
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role, onboarding_completed')
+          .select('role, school_id, onboarding_completed, school_setup_complete')
           .eq('id', user.id)
           .maybeSingle()
 
-        if (profile?.onboarding_completed) {
-          router.replace('/admin')
+        let isSetupComplete = Boolean(profile?.school_setup_complete || profile?.onboarding_completed)
+        if (!isSetupComplete && profile?.school_id) {
+          const { data: school } = await supabase
+            .from('schools')
+            .select('school_setup_complete')
+            .eq('id', profile.school_id)
+            .maybeSingle()
+          if (school?.school_setup_complete) {
+            isSetupComplete = true
+          }
+        }
+
+        if (isSetupComplete) {
+          router.replace('/admin/dashboard')
           return
         }
       }
@@ -190,6 +202,7 @@ export default function OnboardingPage() {
         try {
           const profileUpdate: Record<string, any> = {
             onboarding_completed: true,
+            school_setup_complete: true,
             updated_at: new Date().toISOString(),
           }
           if (schoolId) profileUpdate.school_id = schoolId
@@ -199,6 +212,13 @@ export default function OnboardingPage() {
             .from('profiles')
             .update(profileUpdate)
             .eq('id', user.id)
+
+          if (schoolId) {
+            await supabase
+              .from('schools')
+              .update({ school_setup_complete: true, updated_at: new Date().toISOString() })
+              .eq('id', schoolId)
+          }
         } catch {}
       }
 
@@ -224,8 +244,8 @@ export default function OnboardingPage() {
       document.cookie = `eduflow-user-email=${encodeURIComponent(effectiveEmail)}; path=/; max-age=86400; SameSite=Lax`
       document.cookie = 'eduflow-user-role=school_admin; path=/; max-age=86400; SameSite=Lax'
 
-      // 6. Done — send to admin portal
-      router.push('/admin')
+      // 6. Done — send directly to admin dashboard
+      router.push('/admin/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
       setSubmitting(false)

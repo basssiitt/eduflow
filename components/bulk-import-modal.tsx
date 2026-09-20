@@ -2,7 +2,8 @@
 
 import { useRef, useState } from 'react'
 import Papa from 'papaparse'
-import { Check, Copy, Download, FileSpreadsheet, Upload, X } from 'lucide-react'
+import { AlertCircle, Check, Copy, Download, FileSpreadsheet, Loader2, Upload, X } from 'lucide-react'
+import { bulkUploadStudentsAction } from '@/app/actions/students'
 
 const headers = ['Roll Number', 'Student Name', 'Parent Phone', 'Parent Email']
 type StudentRow = [string, string, string, string]
@@ -26,10 +27,13 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
   const [complete, setComplete] = useState(false)
   const [credentials, setCredentials] = useState<Credential[]>([])
   const [copied, setCopied] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const parseFile = (file: File) => {
     if (!file.name.toLowerCase().endsWith('.csv')) return
     setFileName(file.name)
+    setError(null)
     Papa.parse<string[]>(file, {
       skipEmptyLines: true,
       complete: ({ data }) => {
@@ -39,9 +43,28 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
     })
   }
 
-  const showSuccess = () => {
-    setCredentials(rows.map((row, index) => ({ row, temporaryPassword: `EF${String(1000 + index * 17)}!` })))
-    setComplete(true)
+  const handleImport = async () => {
+    if (rows.length === 0 || loading) return
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await bulkUploadStudentsAction(rows)
+      if (result.success && result.credentials) {
+        setCredentials(
+          result.credentials.map((c) => ({
+            row: [c.rollNumber, c.studentName, c.parentPhone, c.parentEmail],
+            temporaryPassword: c.temporaryPassword,
+          }))
+        )
+        setComplete(true)
+      } else {
+        setError('Failed to import student records. Please check your data and try again.')
+      }
+    } catch (err: any) {
+      setError(err?.message || 'An error occurred during bulk import.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const copyCredentials = async () => {
@@ -69,7 +92,30 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
           </div>
           <div className="template-row"><span><FileSpreadsheet /> Columns: Roll Number, Student Name, Parent Phone, Parent Email</span><button className="download-template" onClick={() => downloadCsv('eduflow-student-parent-template.csv', [headers, ['2026-001', 'Ayesha Khan', '+92 300 1234567', 'parent@example.com']])}><Download /> Download template</button></div>
           {rows.length > 0 && <section className="preview-section"><div className="preview-heading"><div><span className="eyebrow">FILE PREVIEW</span><h3>{rows.length} records ready</h3></div><span className="valid-count"><Check /> Columns mapped</span></div><div className="import-table-wrap"><table className="import-table"><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.slice(0, 8).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}><input aria-label={`${headers[cellIndex]} row ${rowIndex + 1}`} value={cell} onChange={(event) => setRows((current) => current.map((currentRow, index) => index === rowIndex ? currentRow.map((value, innerIndex) => innerIndex === cellIndex ? event.target.value : value) as StudentRow : currentRow))} /></td>)}</tr>)}</tbody></table></div><p className="preview-note">Showing the first {Math.min(rows.length, 8)} records. All {rows.length} rows will be prepared.</p></section>}
-          <footer className="import-footer"><button className="admin-btn admin-btn-ghost" onClick={onClose}>Cancel</button><button className="admin-btn admin-btn-primary import-action" disabled={rows.length === 0} onClick={showSuccess}><Check /> Prepare parent access ({rows.length})</button></footer>
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 p-3 my-3 text-xs text-red-700 flex items-center gap-2" role="alert">
+              <AlertCircle className="size-4 shrink-0 text-red-600" />
+              <span>{error}</span>
+            </div>
+          )}
+          <footer className="import-footer">
+            <button className="admin-btn admin-btn-ghost" onClick={onClose} disabled={loading}>Cancel</button>
+            <button
+              className="admin-btn admin-btn-primary import-action"
+              disabled={rows.length === 0 || loading}
+              onClick={handleImport}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin size-4" /> Creating accounts...
+                </>
+              ) : (
+                <>
+                  <Check /> Prepare parent access ({rows.length})
+                </>
+              )}
+            </button>
+          </footer>
         </>}
       </div>
     </div>

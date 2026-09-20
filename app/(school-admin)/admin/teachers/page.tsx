@@ -8,6 +8,7 @@ import {
   deleteTeacher,
   TeacherRecord,
 } from '@/lib/live-data'
+import { addTeacher } from '@/app/actions/teachers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -109,9 +110,21 @@ function AddTeacherModal({
       status,
     }
 
-    const res = await createTeacher(payload)
-    if (res.error) {
-      setError(res.error.message || 'Failed to onboard teacher')
+    try {
+      await addTeacher({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        tempPassword: tempPassword.trim(),
+        qualification: qualification.trim(),
+        department,
+        subject: subject.trim(),
+        classes: classesArray.length > 0 ? classesArray : ['Class 5'],
+        salary: Number(salary) || 65000,
+        joining_date: joiningDate,
+      })
+    } catch (err: any) {
+      setError(err?.message || 'Failed to onboard teacher')
       setSaving(false)
       return
     }

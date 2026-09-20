@@ -94,6 +94,25 @@ export function PublicLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
 
+  const handleSignUpClick = async (e?: React.MouseEvent, targetUrl: string = '/signup') => {
+    if (e) e.preventDefault()
+    try {
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut({ scope: 'global' })
+      }
+    } catch {}
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.clear()
+        localStorage.removeItem('eduflow-user-email')
+        localStorage.removeItem('eduflow-user-role')
+        document.cookie = 'eduflow-user-email=; path=/; max-age=0'
+        document.cookie = 'eduflow-user-role=; path=/; max-age=0'
+      } catch {}
+      window.location.assign(targetUrl)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
       {/* Top Navigation Bar */}
@@ -120,13 +139,13 @@ export function PublicLanding() {
           >
             Log In
           </Link>
-  <button
-  type="button"
-  onClick={async () => { await supabaseClient?.auth.signOut(); window.location.assign('/signup') }}
-  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition"
-  >
-  Sign Up
-  </button>
+          <button
+            type="button"
+            onClick={handleSignUpClick}
+            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
+          >
+            Sign Up
+          </button>
         </div>
       </nav>
 
@@ -152,12 +171,13 @@ export function PublicLanding() {
 
               {/* Action Buttons */}
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link 
-                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-blue-700 transition hover:shadow-lg"
-                  href="/signup"
+                <button
+                  type="button"
+                  onClick={handleSignUpClick}
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-blue-700 transition hover:shadow-lg cursor-pointer"
                 >
                   Start 30-Day Free Trial <ArrowRight className="ml-2 size-4" />
-                </Link>
+                </button>
                 <Link
                   className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-xs hover:bg-slate-50 transition"
                   href="/login?force=1"
@@ -393,16 +413,17 @@ export function PublicLanding() {
                   ))}
                 </ul>
 
-                <Link
-                  href={`/signup?plan=${plan.name}`}
-                  className={`mt-8 flex w-full items-center justify-center rounded-xl py-3 text-xs font-bold transition ${
+                <button
+                  type="button"
+                  onClick={(e) => handleSignUpClick(e, `/signup?plan=${encodeURIComponent(plan.name)}`)}
+                  className={`mt-8 flex w-full items-center justify-center rounded-xl py-3 text-xs font-bold transition cursor-pointer ${
                     plan.popular
                       ? 'bg-blue-600 text-white shadow-xs hover:bg-blue-700'
                       : 'border border-slate-200 bg-white text-slate-800 hover:bg-slate-50'
                   }`}
                 >
                   Start 30-Day Free Trial
-                </Link>
+                </button>
               </div>
             ))}
           </div>
@@ -482,7 +503,7 @@ export function PublicLanding() {
                 <li><Link href="/teacher" className="hover:text-blue-600">Teacher Console</Link></li>
                 <li><Link href="/parent" className="hover:text-blue-600">Parent Portal</Link></li>
                 <li><Link href="/pricing" className="hover:text-blue-600">Pricing &amp; Calculator</Link></li>
-                <li><Link href="/signup" className="hover:text-blue-600 font-semibold text-blue-600">30-Day Free Pro Trial</Link></li>
+                <li><button type="button" onClick={(e) => handleSignUpClick(e)} className="hover:text-blue-600 font-semibold text-blue-600 cursor-pointer bg-transparent border-0 p-0 text-xs">30-Day Free Pro Trial</button></li>
               </ul>
             </div>
 
@@ -523,7 +544,7 @@ export function PublicLanding() {
               <Link href="/privacy" className="hover:text-blue-600 transition">Privacy</Link>
               <Link href="/refund-policy" className="hover:text-blue-600 transition">Refunds</Link>
               <Link href="/pricing" className="hover:text-blue-600 transition">Pricing</Link>
-              <Link href="/signup" className="hover:text-blue-600 transition font-semibold text-blue-600">Start 30-Day Free Trial</Link>
+              <button type="button" onClick={(e) => handleSignUpClick(e)} className="hover:text-blue-600 transition font-semibold text-blue-600 cursor-pointer bg-transparent border-0 p-0 text-xs">Start 30-Day Free Trial</button>
             </div>
           </div>
         </div>

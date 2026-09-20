@@ -17,6 +17,7 @@ export const schools = pgTable('schools', {
   lastPaidAt: timestamp('last_paid_at', { withTimezone: true }),
   nextBillingDate: timestamp('next_billing_date', { withTimezone: true }).notNull(),
   monthlyAmount: numeric('monthly_amount', { precision: 12, scale: 2 }).default('5000.00').notNull(),
+  schoolSetupComplete: boolean('school_setup_complete').default(false),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
@@ -53,6 +54,7 @@ export const profiles = pgTable('profiles', {
   role: text('role').notNull().default('school_admin'),
   schoolId: uuid('school_id').references(() => schools.id),
   onboardingCompleted: boolean('onboarding_completed').default(false),
+  schoolSetupComplete: boolean('school_setup_complete').default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
@@ -61,6 +63,7 @@ export const students = pgTable('students', {
   id: uuid('id').defaultRandom().primaryKey(),
   schoolId: uuid('school_id').references(() => schools.id),
   campusId: uuid('campus_id').references(() => campuses.id),
+  parentId: uuid('parent_id'),
   fullName: text('full_name').notNull(),
   rollNumber: varchar('roll_number', { length: 50 }).notNull(),
   grade: varchar('grade', { length: 20 }).notNull(),
@@ -68,6 +71,7 @@ export const students = pgTable('students', {
   gender: varchar('gender', { length: 10 }),
   guardianName: text('guardian_name'),
   guardianPhone: varchar('guardian_phone', { length: 30 }),
+  guardianEmail: text('guardian_email'),
   monthlyFee: numeric('monthly_fee', { precision: 10, scale: 2 }).default('0.00'),
   status: varchar('status', { length: 20 }).default('active'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

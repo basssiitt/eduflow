@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
             trial_ends_at: trialEnd,
             next_billing_date: trialEnd,
             monthly_amount: 5000,
+            school_setup_complete: true,
           },
         ])
         .select()
@@ -117,6 +118,7 @@ export async function POST(request: NextRequest) {
             full_name: cleanOwner,
             role: 'school_admin',
             onboarding_completed: true,
+            school_setup_complete: true,
             school_id: schoolId || campusId || null,
             phone_number: cleanPhone,
             updated_at: nowIso,

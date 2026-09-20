@@ -54,15 +54,46 @@ export async function POST(request: NextRequest) {
   if (error || !data.user) return NextResponse.json({ error: error?.message || 'Unable to create teacher account.' }, { status: 400 })
 
   const employeeCode = `TCH-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`
-  const [teacher] = await db.insert(schema.teachers).values({
-    fullName: name,
-    employeeCode,
-    email,
-    phone: phone || null,
-    department: String(body?.department ?? '').trim() || null,
-    specialization: String(body?.subject ?? '').trim() || null,
-    schoolId: auth.profile.school_id,
-  }).returning()
+  let teacher: any = null
+  try {
+    const [inserted] = await db.insert(schema.teachers).values({
+      fullName: name,
+      employeeCode,
+      email,
+      phone: phone || null,
+      department: String(body?.department ?? '').trim() || null,
+      specialization: String(body?.subject ?? '').trim() || null,
+      schoolId: auth.profile.school_id,
+    }).returning()
+    teacher = inserted
+  } catch (drizzleErr) {
+    const { data: sbTeacher, error: sbErr } = await admin.from('teachers').insert([{
+      full_name: name,
+      employee_code: employeeCode,
+      email,
+      phone: phone || null,
+      department: String(body?.department ?? '').trim() || null,
+      specialization: String(body?.subject ?? '').trim() || null,
+      school_id: auth.profile.school_id,
+    }]).select().single()
+    if (sbErr) {
+      return NextResponse.json({ error: sbErr.message }, { status: 500 })
+    }
+    teacher = sbTeacher
+  }
+
+  // Upsert profile
+  try {
+    await admin.from('profiles').upsert([{
+      id: data.user.id,
+      email,
+      full_name: name,
+      role: 'teacher',
+      school_id: auth.profile.school_id,
+      phone_number: phone || null,
+      updated_at: new Date().toISOString(),
+    }])
+  } catch {}
 
   return NextResponse.json({ success: true, teacher, temporaryPassword: password })
 }

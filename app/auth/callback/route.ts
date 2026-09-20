@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         // ── Step 1: Email-first profile lookup (prevents duplicate accounts) ─
         const { data: existingByEmail } = await supabase
           .from('profiles')
-          .select('id, role, onboarding_completed, school_id')
+          .select('id, role, onboarding_completed, school_setup_complete, school_id')
           .eq('email', userEmail)
           .maybeSingle()
 
@@ -30,9 +30,29 @@ export async function GET(request: Request) {
             normalizedRole = 'super_admin'
           }
 
+          let isSetupComplete = Boolean(existingByEmail.school_setup_complete || existingByEmail.onboarding_completed)
+          if (!isSetupComplete && existingByEmail.school_id) {
+            const { data: school } = await supabase
+              .from('schools')
+              .select('school_setup_complete')
+              .eq('id', existingByEmail.school_id)
+              .maybeSingle()
+            if (school?.school_setup_complete) {
+              isSetupComplete = true
+            }
+          }
+
           // School admins who haven't finished onboarding → wizard
-          if (normalizedRole === 'school_admin' && !existingByEmail.onboarding_completed) {
+          if (normalizedRole === 'school_admin' && !isSetupComplete) {
             const redirectRes = NextResponse.redirect(new URL('/onboarding', request.url))
+            redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
+            redirectRes.cookies.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+            return redirectRes
+          }
+
+          // If school_setup_complete is true, bypass /onboarding and redirect directly to /admin/dashboard
+          if (normalizedRole === 'school_admin' && isSetupComplete && (!next || next === '/onboarding' || next === '/admin')) {
+            const redirectRes = NextResponse.redirect(new URL('/admin/dashboard', request.url))
             redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
             redirectRes.cookies.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
             return redirectRes
