@@ -152,17 +152,17 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // Guard /teacher
+  // Portals are role-scoped. Administrators may manage the admin portal only;
+  // they are not granted access to teacher or parent personal portals.
   if (pathname === '/teacher' || pathname.startsWith('/teacher/')) {
-    if (!isSuperAdmin && !['teacher', 'school_admin', 'admin'].includes(normalizedRole)) {
+    if (!isSuperAdmin && normalizedRole !== 'teacher') {
       return safeRedirect(homeUrl)
     }
     return response
   }
 
-  // Guard /parent
   if (pathname === '/parent' || pathname.startsWith('/parent/')) {
-    if (!isSuperAdmin && !['parent', 'school_admin', 'admin'].includes(normalizedRole)) {
+    if (!isSuperAdmin && normalizedRole !== 'parent') {
       return safeRedirect(homeUrl)
     }
     return response

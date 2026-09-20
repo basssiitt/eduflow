@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react'
 import Papa from 'papaparse'
 import { Check, Download, FileSpreadsheet, Upload, X } from 'lucide-react'
-import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 
 const headers = ['Full Name', 'Father Name', 'Class', 'Section', 'Parent Phone', 'Monthly Tuition Fee']
 
@@ -46,41 +45,31 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
   const importAll = async () => {
     setImporting(true)
     const records = allData.length > 0 ? allData : rows
-    if (isSupabaseConfigured && supabaseClient && records.length > 0) {
+    if (records.length > 0) {
       try {
-        let userSchoolId: string | null = null
-        const { data: userData } = await supabaseClient.auth.getUser()
-        if (userData?.user) {
-          const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('school_id')
-            .eq('id', userData.user.id)
-            .single()
-          if (profile?.school_id) {
-            userSchoolId = profile.school_id
-          }
-        }
-        if (!userSchoolId) {
-          const { data: schools } = await supabaseClient.from('schools').select('id').limit(1)
-          if (schools && schools.length > 0) {
-            userSchoolId = schools[0].id
-          }
-        }
-
-        const payload = records.map((r, i) => ({
-          full_name: r[0] || `Student ${i + 1}`,
-          father_name: r[1] || '',
-          class_name: r[2] || 'Class 5',
-          section: r[3] || 'A',
-          monthly_fee: Number(r[5]) || 15000,
-          roll_number: `2026-${String(i + 1).padStart(3, '0')}`,
-          status: 'active',
-          ...(userSchoolId ? { school_id: userSchoolId } : {}),
-        }))
-        await supabaseClient.from('students').insert(payload)
-      } catch {}
+        const response = await fetch('/api/admin/students/import', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ rows: records.map((r, i) => ({
+            full_name: r[0],
+            guardian_name: r[1],
+            grade: r[2],
+            section: r[3],
+            guardian_phone: r[4],
+            monthly_fee: r[5],
+            roll_number: `2026-${String(i + 1).padStart(3, '0')}`,
+          })) }),
+        })
+        const result = await response.json()
+        if (!response.ok) throw new Error(result.error || 'Import failed')
+        setImportedCount(result.imported ?? 0)
+      } catch (error) {
+        setImporting(false)
+        return
+      }
+    } else {
+      setImportedCount(0)
     }
-    setImportedCount(records.length)
     setImporting(false)
     setComplete(true)
   }
