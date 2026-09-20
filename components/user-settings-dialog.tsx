@@ -49,15 +49,30 @@ export function UserSettingsDialog({
   // Subscription state (Admins only)
   const [currentPlan, setCurrentPlan] = useState('Pro')
   const [trialDays, setTrialDays] = useState('30')
+  const [isTrialActive, setIsTrialActive] = useState(true)
+  const [nextRenewal, setNextRenewal] = useState('')
 
   useEffect(() => {
-    if (isAdmin) {
-      const plan = sessionStorage.getItem('eduflow-demo-plan')
-      const days = sessionStorage.getItem('eduflow-trial-days')
-      if (plan) setCurrentPlan(plan)
-      if (days) setTrialDays(days)
+    if (isAdmin && open) {
+      fetch('/api/admin/subscription')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.success && json?.subscription) {
+            const sub = json.subscription
+            setCurrentPlan(sub.planTier.toUpperCase())
+            setTrialDays(String(sub.daysRemaining))
+            setIsTrialActive(sub.isTrial)
+            if (sub.nextBillingDate) {
+              const d = new Date(sub.nextBillingDate)
+              if (!isNaN(d.getTime())) {
+                setNextRenewal(new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(d))
+              }
+            }
+          }
+        })
+        .catch(() => {})
     }
-  }, [isAdmin])
+  }, [isAdmin, open])
 
   if (!open) return null
 
@@ -254,12 +269,14 @@ export function UserSettingsDialog({
                     <div>
                       <h3 className="font-bold text-slate-900">{currentPlan} Plan</h3>
                       <p className="text-xs text-slate-500 font-medium">
-                        30-Day Free Trial Active ({trialDays} days remaining)
+                        {isTrialActive
+                          ? `30-Day Free Trial Active (${trialDays} days remaining)`
+                          : `Active Subscription · Next payment: ${nextRenewal}`}
                       </p>
                     </div>
                   </div>
                   <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs">
-                    Trial Active
+                    {isTrialActive ? 'Trial Active' : 'Active'}
                   </Badge>
                 </div>
                 <div className="mt-3 text-xs text-slate-600 space-y-1">

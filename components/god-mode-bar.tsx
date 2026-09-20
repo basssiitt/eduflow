@@ -35,13 +35,13 @@ export function GodModeBar() {
     sessionStorage.removeItem('eduflow-god-role')
     sessionStorage.removeItem('eduflow-god-campus')
     document.cookie = 'eduflow-god-mode=; path=/; max-age=0'
-    document.cookie = 'eduflow-demo-role=; path=/; max-age=0'
+    document.cookie = 'eduflow-user-role=super_admin; path=/; max-age=86400'
     router.push('/super-admin')
   }
 
   const switchContext = (role: string, targetPath: string) => {
     sessionStorage.setItem('eduflow-god-role', role)
-    document.cookie = `eduflow-demo-role=${role.toLowerCase().replace(' ', '_')}; path=/; max-age=86400`
+    document.cookie = `eduflow-user-role=${role.toLowerCase().replace(' ', '_')}; path=/; max-age=86400`
     router.push(targetPath)
   }
 

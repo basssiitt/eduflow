@@ -66,13 +66,10 @@ export default function OnboardingPage() {
   /* ── Guard: if not school_admin or already onboarded, redirect ── */
   useEffect(() => {
     const check = async () => {
-      const isDemo =
-        typeof window !== 'undefined' &&
-        (sessionStorage.getItem('eduflow-demo-user') === 'true' ||
-          document.cookie.includes('eduflow-demo-role='))
+      const hasSessionCookie = document.cookie.includes('eduflow-user-email=')
 
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user && !isDemo) {
+      if (!user && !hasSessionCookie) {
         router.replace('/login')
         return
       }
@@ -89,8 +86,6 @@ export default function OnboardingPage() {
           router.replace('/admin')
           return
         }
-      } else if (isDemo) {
-        setUserEmail(sessionStorage.getItem('eduflow-demo-email') || 'admin@school.edu.pk')
       }
     }
     check()
@@ -207,15 +202,29 @@ export default function OnboardingPage() {
         } catch {}
       }
 
-      // 4. Ensure demo cookies and session state are active as fallback insurance
-      document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
-      sessionStorage.setItem('eduflow-demo-user', 'true')
-      sessionStorage.setItem('eduflow-demo-role', 'school_admin')
-      sessionStorage.setItem('eduflow-demo-email', effectiveEmail)
-      sessionStorage.setItem('eduflow-demo-school', form.schoolName.trim())
-      sessionStorage.setItem('eduflow-demo-plan', 'Pro')
+      // 4. Provision school trial via real database backend
+      try {
+        await fetch('/api/auth/setup-school', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user?.id,
+            email: effectiveEmail,
+            schoolName: form.schoolName.trim(),
+            city: form.city.trim(),
+            ownerName: user?.user_metadata?.full_name || effectiveEmail.split('@')[0] || 'School Administrator',
+            phone: form.phone.trim(),
+          }),
+        })
+      } catch (e) {
+        console.warn('Backend school provisioning notice:', e)
+      }
 
-      // 5. Done — send to admin portal
+      // 5. Set authenticated session cookies
+      document.cookie = `eduflow-user-email=${encodeURIComponent(effectiveEmail)}; path=/; max-age=86400; SameSite=Lax`
+      document.cookie = 'eduflow-user-role=school_admin; path=/; max-age=86400; SameSite=Lax'
+
+      // 6. Done — send to admin portal
       router.push('/admin')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')

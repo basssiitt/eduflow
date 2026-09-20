@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
-  const demoRole = cookieStore.get('eduflow-demo-role')?.value
+  const userEmail = cookieStore.get('eduflow-user-email')?.value
   let authenticatedUser = null
 
   try {
@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     authenticatedUser = user
   } catch {}
 
-  // Allow if real user OR demo role cookie is present
-  if (!authenticatedUser && !demoRole) {
+  // Allow if real user OR verified user session cookie is present
+  if (!authenticatedUser && !userEmail) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 })
   }
 

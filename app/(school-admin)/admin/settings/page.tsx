@@ -69,15 +69,25 @@ export default function AdminSettingsPage() {
             initialPhone = meta.phone || meta.contact_phone || user.phone || ''
             initialCode = meta.campus_code || meta.school_code || ''
             initialAddress = meta.address || meta.campus_address || ''
-
-            if (user.created_at) {
-              const regDate = new Date(user.created_at).getTime()
-              const elapsedDays = Math.floor((Date.now() - regDate) / (1000 * 60 * 60 * 24))
-              setTrialDaysRemaining(Math.max(0, 30 - elapsedDays))
-            }
           }
         } catch {}
       }
+
+      // Fetch live subscription status from DB
+      try {
+        const subRes = await fetch('/api/admin/subscription')
+        if (subRes.ok) {
+          const subData = await subRes.json()
+          if (subData?.subscription) {
+            const tier = subData.subscription.planTier || 'pro'
+            setPlan(tier.charAt(0).toUpperCase() + tier.slice(1))
+            setTrialDaysRemaining(subData.subscription.daysRemaining ?? 30)
+            if (!initialName && subData.subscription.name) {
+              initialName = subData.subscription.name
+            }
+          }
+        }
+      } catch {}
 
       // 2. Check local storage overrides
       if (typeof window !== 'undefined') {
@@ -373,12 +383,21 @@ export default function AdminSettingsPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-slate-900">{plan} Plan</h3>
-                  <Badge variant="outline" className="text-[10px] font-semibold text-emerald-700 border-emerald-300 bg-emerald-50">
-                    30-Day Free Trial
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] font-semibold ${
+                      trialDaysRemaining > 0
+                        ? 'text-emerald-700 border-emerald-300 bg-emerald-50'
+                        : 'text-blue-700 border-blue-300 bg-blue-50'
+                    }`}
+                  >
+                    {trialDaysRemaining > 0 ? '30-Day Free Trial' : 'Subscription Active'}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-slate-600">
-                  {trialDaysRemaining} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and SMS broadcasts.
+                  {trialDaysRemaining > 0
+                    ? `${trialDaysRemaining} days remaining on your promotional trial period. Full access to 3-Copy Challans, Haziri, and SMS broadcasts.`
+                    : 'Your promotional trial period has concluded. Full access is active on your campus plan.'}
                 </p>
               </div>
             </div>

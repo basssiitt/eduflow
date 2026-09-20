@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
 
       cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-demo-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
 
       return NextResponse.json({
         success: true,
@@ -104,7 +103,6 @@ export async function POST(request: NextRequest) {
     if (matchingTeacher && matchingTeacher.tempPassword && matchingTeacher.tempPassword === password) {
       cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-user-role', 'teacher', { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-demo-role', 'teacher', { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-teacher-code', matchingTeacher.employee_code, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-teacher-name', matchingTeacher.name, { path: '/', maxAge: 86400, sameSite: 'lax' })
 
@@ -122,7 +120,6 @@ export async function POST(request: NextRequest) {
     if (isSuperAdminEmail(cleanEmail)) {
       cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-user-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-demo-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
 
       return NextResponse.json({
         success: true,

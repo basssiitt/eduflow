@@ -73,7 +73,7 @@ export function SuperAdminPortal() {
       sessionStorage.setItem('eduflow-god-role', role)
       sessionStorage.setItem('eduflow-god-campus', campusName)
       document.cookie = 'eduflow-god-mode=true; path=/; max-age=86400'
-      document.cookie = `eduflow-demo-role=${role.toLowerCase().replace(' ', '_')}; path=/; max-age=86400`
+      document.cookie = `eduflow-user-role=${role.toLowerCase().replace(' ', '_')}; path=/; max-age=86400`
       window.location.href = targetPath
     }
   }

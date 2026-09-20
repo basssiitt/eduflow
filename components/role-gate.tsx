@@ -30,13 +30,10 @@ export function RoleGate({
 
         const cookieRoleMatch = document.cookie
           .split('; ')
-          .find((row) => row.startsWith('eduflow-user-role=') || row.startsWith('eduflow-demo-role='))
+          .find((row) => row.startsWith('eduflow-user-role='))
         const cookieUserRole = cookieRoleMatch ? decodeURIComponent(cookieRoleMatch.split('=')[1]).toLowerCase().trim() : null
 
-        const isDemoUser = sessionStorage.getItem('eduflow-demo-user') === 'true'
-        const sessionRole = sessionStorage.getItem('eduflow-demo-role')
-        const activeRole = cookieUserRole || sessionRole
-
+        const activeRole = cookieUserRole
         const isSuper = isSuperAdminEmail(cookieUserEmail)
 
         if (activeRole || isSuper) {

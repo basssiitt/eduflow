@@ -74,55 +74,14 @@ export default function SignUpPage() {
         if (oauthError) throw oauthError
         return
       } catch (err: any) {
-        setError(err?.message || 'Google sign-in could not be initiated. You can register using the form below.')
+        setError(err?.message || 'Google sign-in could not be initiated.')
         setGoogleLoading(false)
         return
       }
+    } else {
+      setError('Authentication service is not configured.')
+      setGoogleLoading(false)
     }
-
-    // Demo Mode Google Simulator - set both cookie and sessionStorage
-    const now = Date.now()
-    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
-    const trialEnds = now + thirtyDaysMs
-
-    document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
-    sessionStorage.setItem('eduflow-demo-user', 'true')
-    sessionStorage.setItem('eduflow-demo-role', 'school_admin')
-    sessionStorage.setItem('eduflow-demo-email', 'admin.google@school.edu.pk')
-    sessionStorage.setItem('eduflow-demo-school', schoolName || 'Beacon Scholars Academy')
-    sessionStorage.setItem('eduflow-demo-plan', 'Pro')
-    sessionStorage.setItem('eduflow-trial-days', '30')
-    sessionStorage.setItem('eduflow_trial_start', String(now))
-    sessionStorage.setItem('eduflow_trial_ends', String(trialEnds))
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('eduflow_trial_start', String(now))
-      localStorage.setItem('eduflow_trial_ends', String(trialEnds))
-      localStorage.setItem('eduflow_school_reg_date', String(now))
-    }
-    window.location.href = '/admin'
-  }
-
-  const enterDemoWorkspace = (cleanEmail: string, cleanSchool: string, cleanName: string) => {
-    const now = Date.now()
-    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
-    const trialEnds = now + thirtyDaysMs
-
-    document.cookie = 'eduflow-demo-role=school_admin; path=/; max-age=86400; SameSite=Lax'
-    sessionStorage.setItem('eduflow-demo-user', 'true')
-    sessionStorage.setItem('eduflow-demo-role', 'school_admin')
-    sessionStorage.setItem('eduflow-demo-email', cleanEmail)
-    sessionStorage.setItem('eduflow-demo-school', cleanSchool)
-    sessionStorage.setItem('eduflow-demo-owner', cleanName)
-    sessionStorage.setItem('eduflow-demo-plan', 'Pro')
-    sessionStorage.setItem('eduflow-trial-days', '30')
-    sessionStorage.setItem('eduflow_trial_start', String(now))
-    sessionStorage.setItem('eduflow_trial_ends', String(trialEnds))
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('eduflow_trial_start', String(now))
-      localStorage.setItem('eduflow_trial_ends', String(trialEnds))
-      localStorage.setItem('eduflow_school_reg_date', String(now))
-    }
-    window.location.replace('/admin')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -146,6 +105,7 @@ export default function SignUpPage() {
     }
 
     setLoading(true)
+
     const cleanEmail = email.trim().toLowerCase()
     const cleanSchool = schoolName.trim()
     const cleanName = fullName.trim()
@@ -185,63 +145,43 @@ export default function SignUpPage() {
           return
         }
 
-        // If email confirmation is required by Supabase settings:
-        if (data?.user && !data?.session) {
-          setEmailSent(true)
-          setLoading(false)
-          return
-        }
-
-        // If session created immediately (auto-confirm enabled):
-        if (data?.session && data.user) {
-          // 1. Provision profile in database
+        // Atomically provision school tenant in Supabase with real 30-day trial
+        if (data?.user) {
           try {
-            await supabaseClient.from('profiles').upsert([
-              {
-                id: data.user.id,
+            await fetch('/api/auth/setup-school', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: data.user.id,
                 email: cleanEmail,
-                full_name: cleanName,
-                role: 'school_admin',
-                onboarding_completed: true,
-                school_id: cleanSchool,
-                updated_at: new Date().toISOString(),
-              },
-            ])
-          } catch {}
-
-          // 2. Provision campus in database
-          try {
-            await supabaseClient.from('campuses').insert([
-              {
-                name: cleanSchool,
+                schoolName: cleanSchool,
                 city,
-                owner: cleanName,
-                plan: 'Pro',
-                students: 0,
-                status: 'Active',
-                admin_email: cleanEmail,
-                slug: cleanSchool.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 24),
-              },
-            ])
-          } catch {}
+                ownerName: cleanName,
+                phone: '',
+              }),
+            })
+          } catch (setupErr) {
+            console.warn('School tenant setup notice:', setupErr)
+          }
 
-          // 3. Set cookie and session storage for smooth hydration
-          enterDemoWorkspace(cleanEmail, cleanSchool, cleanName)
+          // If email confirmation is required by Supabase:
+          if (!data?.session) {
+            setEmailSent(true)
+            setLoading(false)
+            return
+          }
+
+          // If session created immediately:
+          window.location.replace('/admin')
           return
         }
       } catch (err: any) {
-        console.warn('Supabase sign-up failed, offering local workspace entry:', err)
         setError(err?.message || 'Registration failed. Please try again.')
         setLoading(false)
         return
       }
-    }
-
-    // 2. Demo / Standalone Mode
-    try {
-      enterDemoWorkspace(cleanEmail, cleanSchool, cleanName)
-    } catch {
-      setError('Unable to initialize demo workspace.')
+    } else {
+      setError('Database is not connected. Please check configuration.')
       setLoading(false)
     }
   }
@@ -463,19 +403,9 @@ export default function SignUpPage() {
                         Go to Sign In Page →
                       </Link>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          enterDemoWorkspace(
-                            email || 'admin@school.edu.pk',
-                            schoolName || 'Beacon Scholars Academy',
-                            fullName || 'School Administrator'
-                          )
-                        }
-                        className="mt-1.5 block text-[11px] font-bold text-blue-700 hover:underline"
-                      >
-                        ⚡ Open School Workspace in Instant Preview Mode →
-                      </button>
+                      <Link href="/login" className="mt-1.5 inline-block font-medium text-slate-600 hover:text-blue-600 underline">
+                        Already have an account? Sign in here →
+                      </Link>
                     )}
                   </div>
                 )}

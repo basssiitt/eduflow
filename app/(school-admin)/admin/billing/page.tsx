@@ -5,10 +5,16 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
-import { supabaseClient } from '@/lib/supabaseClient'
+import {
+  SchoolSubscription,
+  SubscriptionPaymentRecord,
+  formatFriendlyDate,
+} from '@/lib/subscription'
 import {
   ArrowLeft,
+  Calendar,
   Check,
+  Clock,
   CreditCard,
   Download,
   ExternalLink,
@@ -19,74 +25,50 @@ import {
   Zap,
 } from 'lucide-react'
 
-interface InvoiceRecord {
-  id: string
-  date: string
-  plan: string
-  amount: string
-  status: string
-}
-
 export default function BillingPage() {
-  const [invoices, setInvoices] = useState<InvoiceRecord[]>([])
-  const [renewalDate, setRenewalDate] = useState<string>('')
+  const [subscription, setSubscription] = useState<SchoolSubscription | null>(null)
+  const [payments, setPayments] = useState<SubscriptionPaymentRecord[]>([])
   const [loading, setLoading] = useState(true)
 
   const supportConcierge = 'mailto:billing@eduflow.pk?subject=Campus%20Subscription%20Inquiry'
 
   useEffect(() => {
-    async function initBilling() {
+    async function loadBilling() {
       setLoading(true)
-      let registrationTimestamp = Date.now()
-
-      // 1. Try to get created_at from Supabase Auth
-      if (supabaseClient) {
-        try {
-          const { data } = await supabaseClient.auth.getUser()
-          if (data?.user?.created_at) {
-            registrationTimestamp = new Date(data.user.created_at).getTime()
+      try {
+        const res = await fetch('/api/admin/subscription')
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.subscription) {
+            setSubscription(data.subscription)
           }
-        } catch {}
+          if (data?.payments && Array.isArray(data.payments)) {
+            setPayments(data.payments)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load subscription data:', err)
+      } finally {
+        setLoading(false)
       }
-
-      // 2. Check local storage if not available from Supabase
-      if (typeof window !== 'undefined') {
-        try {
-          const cachedReg = localStorage.getItem('eduflow_school_reg_date')
-          if (cachedReg) {
-            registrationTimestamp = Number(cachedReg)
-          } else {
-            localStorage.setItem('eduflow_school_reg_date', String(registrationTimestamp))
-          }
-
-          // Check stored invoices
-          const storedInvoices = localStorage.getItem('eduflow_subscription_invoices')
-          if (storedInvoices) {
-            const parsed = JSON.parse(storedInvoices)
-            if (Array.isArray(parsed)) setInvoices(parsed)
-          }
-        } catch {}
-      }
-
-      // Compute trial auto-renewal date: registration + 30 days
-      const renew = new Date(registrationTimestamp + 30 * 24 * 60 * 60 * 1000)
-      const formatted = new Intl.DateTimeFormat('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(renew)
-      setRenewalDate(formatted)
-      setLoading(false)
     }
 
-    initBilling()
+    loadBilling()
   }, [])
 
+  const planTierName = subscription?.planTier
+    ? subscription.planTier.charAt(0).toUpperCase() + subscription.planTier.slice(1)
+    : 'Pro'
+
+  const isTrial = subscription?.isTrial ?? true
+  const daysRemaining = subscription?.daysRemaining ?? 30
+  const isExpired = subscription?.isExpired ?? false
+
   const currentPlan = {
-    name: 'Pro Campus Suite (Trial Active)',
-    price: 'PKR 5,000 / month',
-    status: 'Active Trial',
-    nextBillingDate: renewalDate || 'In 30 days',
+    name: `${planTierName} Campus Suite (${isTrial ? (isExpired ? 'Trial Expired' : '30-Day Trial Active') : 'Active Subscription'})`,
+    price: `PKR ${(subscription?.monthlyAmount || 5000).toLocaleString()} / month`,
+    status: isTrial ? (isExpired ? 'Trial Expired' : `${daysRemaining} Days Left in Trial`) : 'Active Paid',
+    nextBillingDate: formatFriendlyDate(subscription?.nextBillingDate),
     studentsEnrolled: 'Up to 2,500 Students',
     features: [
       '1-Click Digital Haziri Attendance',
@@ -121,13 +103,27 @@ export default function BillingPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">
-              30-Day Free Trial
-            </Badge>
-            <span className="text-sm text-slate-500">Campus Account</span>
+            {isTrial ? (
+              <Badge
+                className={
+                  isExpired
+                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                }
+              >
+                {isExpired ? 'Trial Expired' : `${daysRemaining} Days Left in Free Trial`}
+              </Badge>
+            ) : (
+              <Badge className="bg-blue-50 text-blue-700 border-blue-200">
+                Active Paid Subscription
+              </Badge>
+            )}
+            <span className="text-sm text-slate-500">
+              {subscription?.name || 'Campus Account'}
+            </span>
           </div>
           <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Billing &amp; Subscription</h1>
-          <p className="text-slate-500">Manage your EduFlow OS subscription tier, invoices, and payment receipts.</p>
+          <p className="text-slate-500">Database-backed subscription tracking, real trial lifecycle, and payment receipts.</p>
         </div>
         <div className="flex items-center gap-2">
           <a
@@ -137,6 +133,49 @@ export default function BillingPage() {
             <Mail className="mr-2 size-4 text-white" />
             Contact Billing Concierge
           </a>
+        </div>
+      </div>
+
+      {/* Trial Lifecycle Tracking Card */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+        <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <Clock className="size-4 text-blue-600" />
+          Real 30-Day Trial &amp; Billing Lifecycle (Supabase PostgreSQL)
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
+            <span className="text-xs font-semibold text-slate-500">Account Registered</span>
+            <p className="mt-1 text-sm font-bold text-slate-900">
+              {subscription?.createdAt ? formatFriendlyDate(subscription.createdAt) : '—'}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">DB: schools.created_at</p>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
+            <span className="text-xs font-semibold text-slate-500">Trial Valid Until</span>
+            <p className="mt-1 text-sm font-bold text-slate-900">
+              {subscription?.trialEndsAt ? formatFriendlyDate(subscription.trialEndsAt) : '—'}
+            </p>
+            <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
+              {daysRemaining > 0 ? `${daysRemaining} days remaining` : 'Trial concluded'}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
+            <span className="text-xs font-semibold text-slate-500">First Subscription Paid</span>
+            <p className="mt-1 text-sm font-bold text-slate-900">
+              {subscription?.firstPaidAt ? formatFriendlyDate(subscription.firstPaidAt) : 'Not paid yet'}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">DB: schools.first_paid_at</p>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
+            <span className="text-xs font-semibold text-slate-500">Next Billing Renewal</span>
+            <p className="mt-1 text-sm font-bold text-slate-900">
+              {subscription?.nextBillingDate ? formatFriendlyDate(subscription.nextBillingDate) : '—'}
+            </p>
+            <p className="text-[11px] text-blue-600 font-semibold mt-0.5">Auto-calculated +1 month</p>
+          </div>
         </div>
       </div>
 
@@ -157,7 +196,7 @@ export default function BillingPage() {
             </div>
             <div className="text-left sm:text-right">
               <span className="text-2xl font-black text-slate-900">{currentPlan.price}</span>
-              <p className="text-xs text-emerald-700 font-semibold mt-0.5">● Auto-renews on {currentPlan.nextBillingDate}</p>
+              <p className="text-xs text-emerald-700 font-semibold mt-0.5">● Renews on {currentPlan.nextBillingDate}</p>
             </div>
           </div>
 
@@ -195,7 +234,7 @@ export default function BillingPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
               <CreditCard className="size-4 text-blue-600" />
-              <span>Payment Details</span>
+              <span>Official Payment Details</span>
             </div>
             <p className="mt-2 text-xs text-slate-500">
               Official school subscription fees are settled via Direct IBAN Bank Transfer or PayFast.
@@ -214,7 +253,7 @@ export default function BillingPage() {
               <span>Need Invoice Assistance?</span>
             </div>
             <p className="mt-2 text-xs text-slate-500">
-              For tax withholding certificates, customized billing cycles, or adding multi-branch campuses, contact support.
+              For tax withholding certificates, customized billing cycles, or adding multi-branch campuses, contact billing support.
             </p>
             <a
               href={supportConcierge}
@@ -230,17 +269,21 @@ export default function BillingPage() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Subscription Invoices</h2>
-            <p className="text-xs text-slate-500">Past billing records and verified payment receipts.</p>
+            <h2 className="text-lg font-bold text-slate-900">Subscription Invoices &amp; Receipts</h2>
+            <p className="text-xs text-slate-500">Verified payment receipts recorded from Supabase PostgreSQL.</p>
           </div>
         </div>
 
-        {invoices.length === 0 ? (
+        {payments.length === 0 ? (
           <div className="p-4">
             <ZeroDataEmptyState
               icon={CreditCard}
               title="No Invoices or Billing Charges Yet"
-              description="Your school is currently on the 30-day Free Trial. Subscription invoices and receipts will appear here once your account transitions to paid billing."
+              description={
+                isTrial
+                  ? `Your school is currently on the 30-day Free Trial (${daysRemaining} days remaining). Receipts will appear here once your first subscription payment is recorded.`
+                  : 'No subscription payments have been recorded yet.'
+              }
               actionLabel="Contact Billing Concierge"
               onAction={() => window.location.href = supportConcierge}
             />
@@ -251,24 +294,32 @@ export default function BillingPage() {
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
                   <tr>
-                    <th className="px-4 py-3.5">Invoice #</th>
-                    <th className="px-4 py-3.5">Billing Date</th>
-                    <th className="px-4 py-3.5">Plan Description</th>
+                    <th className="px-4 py-3.5">Receipt #</th>
+                    <th className="px-4 py-3.5">Payment Date</th>
+                    <th className="px-4 py-3.5">Plan / Cycle</th>
                     <th className="px-4 py-3.5">Amount</th>
                     <th className="px-4 py-3.5">Status</th>
                     <th className="px-4 py-3.5 text-right">Receipt</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {invoices.map((inv) => (
-                    <tr key={inv.id} className="hover:bg-slate-50/70">
-                      <td className="px-4 py-3.5 font-mono text-xs font-medium text-slate-500">{inv.id}</td>
-                      <td className="px-4 py-3.5 text-xs text-slate-600">{inv.date}</td>
-                      <td className="px-4 py-3.5 font-semibold text-slate-900">{inv.plan}</td>
-                      <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">{inv.amount}</td>
+                  {payments.map((pmt) => (
+                    <tr key={pmt.id} className="hover:bg-slate-50/70">
+                      <td className="px-4 py-3.5 font-mono text-xs font-medium text-slate-500">
+                        {pmt.referenceNo || pmt.id.slice(0, 10)}
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-slate-600">
+                        {formatFriendlyDate(pmt.paidAt)}
+                      </td>
+                      <td className="px-4 py-3.5 font-semibold text-slate-900 capitalize">
+                        {pmt.billingCycle} Subscription
+                      </td>
+                      <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">
+                        {pmt.currency} {pmt.amount.toLocaleString()}
+                      </td>
                       <td className="px-4 py-3.5">
                         <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                          {inv.status}
+                          {pmt.status}
                         </span>
                       </td>
                       <td className="px-4 py-3.5 text-right">

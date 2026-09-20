@@ -189,12 +189,31 @@ function SettingsModal({
   // Subscription state
   const [currentPlan, setCurrentPlan] = useState('Pro')
   const [trialDays, setTrialDays] = useState('30')
+  const [isTrialActive, setIsTrialActive] = useState(true)
+  const [nextRenewal, setNextRenewal] = useState('')
 
   useEffect(() => {
-    const plan = sessionStorage.getItem('eduflow-demo-plan')
-    const days = sessionStorage.getItem('eduflow-trial-days')
-    if (plan) setCurrentPlan(plan)
-    if (days) setTrialDays(days)
+    async function loadSub() {
+      try {
+        const res = await fetch('/api/admin/subscription')
+        if (res.ok) {
+          const json = await res.json()
+          if (json.success && json.subscription) {
+            const sub = json.subscription
+            setCurrentPlan(sub.planTier.toUpperCase())
+            setTrialDays(String(sub.daysRemaining))
+            setIsTrialActive(sub.isTrial)
+            if (sub.nextBillingDate) {
+              const d = new Date(sub.nextBillingDate)
+              if (!isNaN(d.getTime())) {
+                setNextRenewal(new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(d))
+              }
+            }
+          }
+        }
+      } catch {}
+    }
+    loadSub()
   }, [])
 
   const handleSave = () => {
@@ -358,12 +377,14 @@ function SettingsModal({
                     <div>
                       <h3 className="font-bold text-slate-900 dark:text-slate-100">{currentPlan} Plan</h3>
                       <p className="text-xs text-blue-600 font-medium">
-                        30-Day Free Trial Active ({trialDays} days remaining)
+                        {isTrialActive
+                          ? `30-Day Free Trial Active (${trialDays} days remaining)`
+                          : `Active Subscription · Next payment: ${nextRenewal}`}
                       </p>
                     </div>
                   </div>
                   <Badge className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs">
-                    Trial Active
+                    {isTrialActive ? 'Trial Active' : 'Active'}
                   </Badge>
                 </div>
                 <div className="mt-3 text-xs text-slate-600 dark:text-slate-300 space-y-1">

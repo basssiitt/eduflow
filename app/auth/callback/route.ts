@@ -33,14 +33,16 @@ export async function GET(request: Request) {
           // School admins who haven't finished onboarding → wizard
           if (normalizedRole === 'school_admin' && !existingByEmail.onboarding_completed) {
             const redirectRes = NextResponse.redirect(new URL('/onboarding', request.url))
-            redirectRes.cookies.set('eduflow-demo-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+            redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
+            redirectRes.cookies.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
             return redirectRes
           }
 
           // Route to the dedicated portal
           const destination = resolveDestination(normalizedRole, userEmail, next)
           const redirectRes = NextResponse.redirect(new URL(destination, request.url))
-          redirectRes.cookies.set('eduflow-demo-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+          redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
+          redirectRes.cookies.set('eduflow-user-role', normalizedRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
           return redirectRes
         }
 
@@ -93,13 +95,15 @@ export async function GET(request: Request) {
 
         if (initialRole === 'super_admin') {
           const redirectRes = NextResponse.redirect(new URL('/super-admin/dashboard', request.url))
-          redirectRes.cookies.set('eduflow-demo-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
+          redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
+          redirectRes.cookies.set('eduflow-user-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
           return redirectRes
         }
 
         // New school admin → onboarding wizard
         const redirectRes = NextResponse.redirect(new URL('/onboarding', request.url))
-        redirectRes.cookies.set('eduflow-demo-role', 'school_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
+        redirectRes.cookies.set('eduflow-user-email', userEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
+        redirectRes.cookies.set('eduflow-user-role', 'school_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
         return redirectRes
       }
     } catch {}

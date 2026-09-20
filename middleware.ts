@@ -78,7 +78,6 @@ export async function middleware(request: NextRequest) {
   // 1. Check session cookies
   const cookieEmail = request.cookies.get('eduflow-user-email')?.value?.toLowerCase().trim()
   const cookieRole = request.cookies.get('eduflow-user-role')?.value?.toLowerCase().trim()
-  const demoRole = request.cookies.get('eduflow-demo-role')?.value?.toLowerCase().trim()
 
   const effectiveEmail = (user?.email || cookieEmail || '').toLowerCase().trim()
   let role = (user?.app_metadata?.role || user?.user_metadata?.role || '') as string
@@ -97,9 +96,6 @@ export async function middleware(request: NextRequest) {
   if (!role && cookieRole) {
     role = cookieRole
   }
-  if (!role && demoRole) {
-    role = demoRole
-  }
 
   let normalizedRole = normalizeRole(role)
   const isSuperAdmin = isSuperAdminEmail(effectiveEmail) || normalizedRole === 'super_admin'
@@ -108,7 +104,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Unauthenticated handling
-  if (!user && !cookieEmail && !demoRole) {
+  if (!user && !cookieEmail) {
     if (isProtected) {
       if (pathname === '/login' || pathname.startsWith('/login/')) {
         return response
