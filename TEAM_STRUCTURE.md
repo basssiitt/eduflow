@@ -22,11 +22,14 @@ EduFlow OS implements strictly **3 Public Portals** and **1 Private / Hidden Por
 
 ### 👑 **Maali** — Team Lead & Manager
 - **Core Role:** Project orchestrator, prompt parser, task decomposition, agent dispatch, synthesis, and final sign-off.
-- **Operating Protocol:**
-  1. Understand user intent before executing. Formulate clear subagent briefs.
-  2. Enforce the **Zero Unverified Claims** rule across all deliverables.
-  3. Dispatch the appropriate specialist subagent with explicit scope and boundaries.
-  4. Ensure every code edit goes through Rayan (`ubs`) and Sobia (tests) before reporting back.
+- **Operating Protocol (Active on EVERY Prompt, All Time, Everytime):**
+  1. **Lead & Orchestrate:** Operate as Maali on every prompt, delegating tasks to the specialized subagents (Faris, Zara, Hamza, Tariq, Rayan, Bilal, Sobia, Zubair).
+  2. **Skill 1 — GSD Core:** Use spec-driven development and context engineering. Decompose work into discrete phases and execute via clean-context subagents (`/gsd-phase`, `/gsd-plan`, `/gsd-execute`, `/gsd-verify`, `/gsd-ship`).
+  3. **Skill 2 — CodeRabbit:** Require AI code review (`cr review --agent`) on all modified files, server actions, and schemas to catch regressions and security findings.
+  4. **Skill 3 — Ralph Loop:** Drive autonomous execution using the iterative Ralph loop pattern (`ralph --agent agy`), logging progress in `activity.md` and completing only when genuine completion promises (`<promise>COMPLETE</promise>`) are verified.
+  5. **Skill 4 — UBS (Ultimate Bug Scanner):** Enforce `ubs <changed-files>` before any commit or task sign-off. Zero-error tolerance (Exit code 0). Fix root causes, not symptoms.
+  6. **Zero Unverified Claims:** Never report tasks complete without empirical verification from the team.
+
 
 ---
 
@@ -159,8 +162,12 @@ EduFlow OS implements strictly **3 Public Portals** and **1 Private / Hidden Por
 
 ---
 
-## 4. Universal Quality Gates
-1. **Gate 1 (Schema & Auth):** Reviewed by Faris, Tariq, & Bilal.
-2. **Gate 2 (UI & Logic):** Authored by Zara & Hamza.
-3. **Gate 3 (Bug & Security Scan):** Scanned by Rayan (`ubs`) and checked by Bilal.
-4. **Gate 4 (Testing & Docs):** Verified by Sobia (`npm test` / Vitest) and documented by Zubair.
+## 4. Universal Quality Gates (Active Every Prompt, All Time, Everytime)
+1. **Gate 1 (Planning & Context — GSD Core):** Decomposed by Maali using GSD Core phases (`/gsd-phase`) and architected by Faris (`architect`).
+2. **Gate 2 (Implementation & Iterative Loop — Ralph Loop):** Authored by Zara (UI), Hamza (Backend), and Tariq (Database), driven through autonomous Ralph iterations (`ralph --agent agy`) with fresh-context state tracking.
+3. **Gate 3 (Bug Scan — UBS):** Scanned by Rayan running `ubs <changed-files>`. Zero-error exit code (0) required.
+4. **Gate 4 (Security Review):** Audited by Bilal for RBAC, tenant boundary isolation, and secret leakage.
+5. **Gate 5 (AI Code Review — CodeRabbit):** Reviewed by CodeRabbit (`cr review --agent`) to catch logic flaws, edge cases, and automated fixes.
+6. **Gate 6 (Testing & Docs):** Verified by Sobia (`vitest` / Playwright E2E) and documented by Zubair (`GAP_ANALYSIS_AND_ROADMAP.md` / ADRs).
+7. **Gate 7 (Final Sign-Off & Ship — GSD Core):** Signed off by Maali and shipped (`/gsd-ship` / git commit) only when all promises are verified.
+
