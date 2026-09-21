@@ -33,11 +33,11 @@ export async function GET(req: NextRequest) {
       reason: decision.reason,
     })
   } catch (error) {
+    console.error('Arcjet check failure:', error)
     return NextResponse.json(
       {
         status: 'fallback',
-        message: 'Arcjet bypassed in local evaluation mode.',
-        error: String(error),
+        message: 'Arcjet evaluated in fallback mode.',
       },
       { status: 200 }
     )

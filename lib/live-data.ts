@@ -206,7 +206,24 @@ export async function fetchCurrentParentData() {
 
 export async function fetchParentData(studentId: string | number) {
   if (!supabaseClient) return { data: null, error: new Error('Supabase is not configured') }
-  const [attendance, fees, diaries] = await Promise.all([
+
+  let feeQuery = await supabaseClient
+    .from('fee_vouchers')
+    .select('id,status,due_date,challan_number,amount')
+    .eq('student_id', studentId)
+    .order('due_date', { ascending: false })
+    .limit(12)
+
+  if (feeQuery.error) {
+    feeQuery = await supabaseClient
+      .from('fee_invoices')
+      .select('id,status,due_date,challan_number,amount')
+      .eq('student_id', studentId)
+      .order('due_date', { ascending: false })
+      .limit(12)
+  }
+
+  const [attendance, diaries] = await Promise.all([
     supabaseClient
       .from('attendance')
       .select('date,status,remarks')
@@ -214,24 +231,19 @@ export async function fetchParentData(studentId: string | number) {
       .order('date', { ascending: false })
       .limit(30),
     supabaseClient
-      .from('fee_invoices')
-      .select('id,status,due_date,challan_number')
-      .eq('student_id', studentId)
-      .order('due_date', { ascending: false })
-      .limit(12),
-    supabaseClient
       .from('diaries')
       .select('id,audio_url,created_at')
       .order('created_at', { ascending: false })
       .limit(1),
   ])
+
   return {
     data: {
       attendance: attendance.data ?? [],
-      fees: fees.data ?? [],
+      fees: feeQuery.data ?? [],
       diary: diaries.data?.[0] ?? null,
     },
-    error: attendance.error || fees.error || diaries.error,
+    error: attendance.error || feeQuery.error || diaries.error,
   }
 }
 
@@ -254,18 +266,7 @@ export async function fetchCurrentStudentData() {
   }
 
   if (!studentId) {
-    const { data: anyStudent } = await supabaseClient
-      .from('students')
-      .select('id, full_name, roll_number, class_name, section, father_name')
-      .limit(1)
-      .maybeSingle()
-    if (anyStudent?.id) {
-      studentId = anyStudent.id
-    }
-  }
-
-  if (!studentId) {
-    return { data: null, error: new Error('No student record found') }
+    return { data: null, error: new Error('No student record is linked to your account.') }
   }
 
   const [studentInfo, attendance, diaries] = await Promise.all([

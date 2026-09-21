@@ -78,13 +78,13 @@ export function AdminPortal() {
           const student = inv.students || {}
           return {
             id: inv.id,
-            challan: `CH-2026-${String(idx + 100).padStart(3, '0')}`,
-            name: student.name || `Student #${inv.student_id}`,
-            cls: student.class ? `${student.class} · ${student.section || 'A'}` : 'Enrolled',
+            challan: inv.challan_number || inv.challan || `CH-2026-${String(idx + 100).padStart(3, '0')}`,
+            name: student.name || student.full_name || `Student #${inv.student_id}`,
+            cls: student.class ? `${student.class} · ${student.section || 'A'}` : (student.grade ? `${student.grade} · ${student.section || 'A'}` : 'Enrolled'),
             tuition: Number(inv.amount) || 0,
             arrears: 0,
             due: inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-GB') : "10-Aug-2026",
-            status: (inv.status || "Pending") as Status,
+            status: (inv.status ? inv.status.charAt(0).toUpperCase() + inv.status.slice(1).toLowerCase() : "Pending") as Status,
           }
         })
       )
@@ -131,7 +131,7 @@ export function AdminPortal() {
         studentList.map((s: any) =>
           createInvoice({
             student_id: s.id,
-            amount: Number(s.tuition_fee) || 15000,
+            amount: Number(s.tuition_fee || s.monthly_fee) || 15000,
             status: 'Pending',
             month: currentMonth,
             due_date: dueDate,
@@ -157,7 +157,10 @@ export function AdminPortal() {
     setData((current) => current.map((x) => (x.challan === r.challan ? { ...x, status: nextStatus } : x)))
     if (isSupabaseConfigured && supabaseClient && r.id) {
       try {
-        await supabaseClient.from('fee_invoices').update({ status: nextStatus }).eq('id', r.id)
+        const { error } = await supabaseClient.from('fee_vouchers').update({ status: nextStatus.toLowerCase() }).eq('id', r.id)
+        if (error) {
+          await supabaseClient.from('fee_invoices').update({ status: nextStatus }).eq('id', r.id)
+        }
       } catch {}
     }
   }

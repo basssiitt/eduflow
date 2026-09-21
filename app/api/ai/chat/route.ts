@@ -14,7 +14,16 @@ export async function POST(request: Request) {
     authenticatedUser = user
   } catch {}
 
-  // Allow if real user OR verified user session cookie is present
+  const isSupabaseConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && 
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+  )
+
+  if (isSupabaseConfigured && !authenticatedUser) {
+    return NextResponse.json({ error: 'Authentication required. Please log in.' }, { status: 401 })
+  }
+
   if (!authenticatedUser && !userEmail) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 })
   }

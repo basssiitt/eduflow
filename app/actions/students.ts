@@ -45,13 +45,13 @@ async function resolveAdminSchoolId(
   const adminClient = getAdminClient()
   let schoolSlug = 'school'
 
-  // 3. Query schools table where caller is admin or owner
-  if (!schoolId) {
+  // 3. Query schools table where caller is registered as admin
+  if (!schoolId && currentUser.email) {
     try {
       const { data: userSchool } = await adminClient
         .from('schools')
         .select('id, name, slug')
-        .or(`admin_id.eq.${currentUser.id},owner_id.eq.${currentUser.id}`)
+        .eq('admin_email', currentUser.email.toLowerCase())
         .limit(1)
         .maybeSingle()
       if (userSchool?.id) {
@@ -61,8 +61,7 @@ async function resolveAdminSchoolId(
     } catch {}
   }
 
-
-  // 5. Fallback: Auto-provision a default school tenant record if completely empty
+  // 4. Fallback: Auto-provision a default school tenant record if completely empty
   if (!schoolId) {
     try {
       const schoolName = currentUser.user_metadata?.school_name || 'My Campus'
@@ -74,7 +73,7 @@ async function resolveAdminSchoolId(
         .insert({
           name: schoolName,
           slug: generatedSlug,
-          admin_id: currentUser.id,
+          admin_email: currentUser.email?.toLowerCase() || null,
           school_setup_complete: true,
         })
         .select('id, slug')

@@ -21,7 +21,81 @@ export function RoleGate({
     let mounted = true
 
     const checkAccess = async () => {
-      // 1. Check for authenticated session cookies or demo session
+      // 1. When Supabase is configured, always verify authentic user session with Supabase
+      if (isSupabaseConfigured && supabaseClient) {
+        try {
+          const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+
+          if (authError || !user) {
+            if (mounted) {
+              router.replace(`/login?next=${encodeURIComponent(pathname)}`)
+            }
+            return
+          }
+
+          const userEmail = (user.email || '').toLowerCase().trim()
+          const isSuper = isSuperAdminEmail(userEmail)
+
+          // Query user's role strictly from the `profiles` table
+          let userRole = ''
+          try {
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('role')
+              .eq('id', user.id)
+              .maybeSingle()
+
+            if (profile?.role) {
+              userRole = profile.role
+            }
+          } catch {}
+
+          if (!userRole) {
+            userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
+          }
+
+          let normalizedUserRole = normalizeRole(userRole)
+          if (isSuper || normalizedUserRole === 'super_admin') {
+            normalizedUserRole = 'super_admin'
+          }
+
+          const normalizedTargetRole = normalizeRole(role)
+
+          let isAuthorized = false
+
+          // Super Admin route is strictly guarded: exclusive to verified Super Admin emails
+          if (normalizedTargetRole === 'super_admin') {
+            isAuthorized = isSuper
+          } else if (normalizedTargetRole === 'school_admin') {
+            isAuthorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
+          } else if (normalizedTargetRole === 'teacher') {
+            isAuthorized = isSuper || ['teacher', 'super_admin'].includes(normalizedUserRole)
+          } else if (normalizedTargetRole === 'parent') {
+            isAuthorized = isSuper || ['parent', 'super_admin'].includes(normalizedUserRole)
+          }
+
+          if (!isAuthorized) {
+            const destination = getHomeRoute(normalizedUserRole, userEmail)
+            if (mounted) {
+              router.replace(destination)
+            }
+            return
+          }
+
+          if (mounted) {
+            setAllowed(true)
+            setChecking(false)
+          }
+          return
+        } catch {
+          if (mounted) {
+            router.replace(`/login?next=${encodeURIComponent(pathname)}`)
+          }
+          return
+        }
+      }
+
+      // 2. Offline / unconfigured development mode fallback ONLY when Supabase is NOT configured
       if (typeof window !== 'undefined') {
         const cookieEmailMatch = document.cookie
           .split('; ')
@@ -42,13 +116,14 @@ export function RoleGate({
 
           let authorized = false
           if (normalizedTarget === 'super_admin') {
-            authorized = isSuper
+            // Super Admin routes strictly require authentic Supabase session verification - never client cookies
+            authorized = false
           } else if (normalizedTarget === 'school_admin') {
-            authorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedActive)
+            authorized = ['school_admin', 'admin'].includes(normalizedActive)
           } else if (normalizedTarget === 'teacher') {
-            authorized = isSuper || ['teacher', 'super_admin'].includes(normalizedActive)
+            authorized = ['teacher'].includes(normalizedActive)
           } else if (normalizedTarget === 'parent') {
-            authorized = isSuper || ['parent', 'super_admin'].includes(normalizedActive)
+            authorized = ['parent'].includes(normalizedActive)
           }
 
           if (authorized) {
@@ -61,80 +136,8 @@ export function RoleGate({
         }
       }
 
-      if (!isSupabaseConfigured || !supabaseClient) {
-        if (mounted) {
-          router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-        }
-        return
-      }
-
-      try {
-        const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
-
-        if (authError || !user) {
-          if (mounted) {
-            router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-          }
-          return
-        }
-
-        const userEmail = (user.email || '').toLowerCase().trim()
-        const isSuper = isSuperAdminEmail(userEmail)
-
-        // Query user's role strictly from the `profiles` table
-        let userRole = ''
-        try {
-          const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-          if (profile?.role) {
-            userRole = profile.role
-          }
-        } catch {}
-
-        if (!userRole) {
-          userRole = (user.app_metadata?.role || user.user_metadata?.role || '') as string
-        }
-
-        let normalizedUserRole = normalizeRole(userRole)
-        if (isSuper || normalizedUserRole === 'super_admin') {
-          normalizedUserRole = 'super_admin'
-        }
-
-        const normalizedTargetRole = normalizeRole(role)
-
-        let isAuthorized = false
-
-        // Super Admin route is strictly guarded: exclusive to basithunyawrr@gmail.com
-        if (normalizedTargetRole === 'super_admin') {
-          isAuthorized = isSuper
-        } else if (normalizedTargetRole === 'school_admin') {
-          isAuthorized = isSuper || ['school_admin', 'admin', 'super_admin'].includes(normalizedUserRole)
-        } else if (normalizedTargetRole === 'teacher') {
-          isAuthorized = isSuper || ['teacher', 'super_admin'].includes(normalizedUserRole)
-        } else if (normalizedTargetRole === 'parent') {
-          isAuthorized = isSuper || ['parent', 'super_admin'].includes(normalizedUserRole)
-        }
-
-        if (!isAuthorized) {
-          const destination = getHomeRoute(normalizedUserRole, userEmail)
-          if (mounted) {
-            router.replace(destination)
-          }
-          return
-        }
-
-        if (mounted) {
-          setAllowed(true)
-          setChecking(false)
-        }
-      } catch {
-        if (mounted) {
-          router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-        }
+      if (mounted) {
+        router.replace(`/login?next=${encodeURIComponent(pathname)}`)
       }
     }
 

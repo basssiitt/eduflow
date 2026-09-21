@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "scan": "ubs app components lib",
-    "test": "vitest run",
+    "test": "vitest run --pool=threads",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",

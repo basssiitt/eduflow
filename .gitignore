@@ -154,3 +154,5 @@ litellm*.yml
 .antigravity/
 .gemini/*
 !.gemini/rules
+brag-output/
+

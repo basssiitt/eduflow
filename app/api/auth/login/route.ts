@@ -5,16 +5,12 @@ import fs from 'fs'
 import path from 'path'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
-import { timingSafeEqual } from 'crypto'
+import { createHash, timingSafeEqual } from 'crypto'
 
 function safeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a)
-  const bufB = Buffer.from(b)
-  if (bufA.length !== bufB.length) {
-    timingSafeEqual(bufA, bufA)
-    return false
-  }
-  return timingSafeEqual(bufA, bufB)
+  const hashA = createHash('sha256').update(a).digest()
+  const hashB = createHash('sha256').update(b).digest()
+  return timingSafeEqual(hashA, hashB)
 }
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'teachers.json')

@@ -57,11 +57,11 @@ export async function addTeacher(input: AddTeacherInput) {
   }
 
   let schoolId = callerProfile?.school_id || null
-  if (!schoolId) {
+  if (!schoolId && currentUser.email) {
     const { data: userSchool } = await supabase
       .from('schools')
       .select('id')
-      .or(`admin_id.eq.${currentUser.id},owner_id.eq.${currentUser.id}`)
+      .eq('admin_email', currentUser.email.toLowerCase())
       .limit(1)
       .maybeSingle()
     if (userSchool?.id) {
