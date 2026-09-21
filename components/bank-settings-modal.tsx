@@ -11,6 +11,7 @@ export interface BankSettings {
   iban: string
   psidPrefix: string
   easypaisa: string
+  jazzcash?: string
 }
 
 interface BankSettingsModalProps {

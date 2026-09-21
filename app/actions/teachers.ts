@@ -58,9 +58,19 @@ export async function addTeacher(input: AddTeacherInput) {
 
   let schoolId = callerProfile?.school_id || null
   if (!schoolId) {
-    // If profile doesn't have school_id, query first school
-    const { data: firstSchool } = await supabase.from('schools').select('id').limit(1).maybeSingle()
-    if (firstSchool) schoolId = firstSchool.id
+    const { data: userSchool } = await supabase
+      .from('schools')
+      .select('id')
+      .or(`admin_id.eq.${currentUser.id},owner_id.eq.${currentUser.id}`)
+      .limit(1)
+      .maybeSingle()
+    if (userSchool?.id) {
+      schoolId = userSchool.id
+    }
+  }
+
+  if (!schoolId) {
+    throw new Error('No school attached to this administrator account. Please complete school onboarding first.')
   }
 
   // 3. Strict field extraction & validation - NEVER generate fake teacher.test emails

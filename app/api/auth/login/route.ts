@@ -5,6 +5,18 @@ import fs from 'fs'
 import path from 'path'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
 
+import { timingSafeEqual } from 'crypto'
+
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA)
+    return false
+  }
+  return timingSafeEqual(bufA, bufB)
+}
+
 const DATA_FILE = path.join(process.cwd(), 'data', 'teachers.json')
 
 function getStoredTeachers() {
@@ -119,7 +131,7 @@ export async function POST(request: NextRequest) {
       (t: any) => t.email && t.email.toLowerCase() === cleanEmail
     )
 
-    if (matchingTeacher && matchingTeacher.tempPassword && matchingTeacher.tempPassword === password) {
+    if (matchingTeacher && matchingTeacher.tempPassword && safeCompare(matchingTeacher.tempPassword, password)) {
       cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-user-role', 'teacher', { path: '/', maxAge: 86400, sameSite: 'lax' })
       cookieStore.set('eduflow-teacher-code', matchingTeacher.employee_code, { path: '/', maxAge: 86400, sameSite: 'lax' })
@@ -135,18 +147,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 4. Check Super Admin (Website Owner basithunyawrr@gmail.com)
-    if (isSuperAdminEmail(cleanEmail)) {
-      cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-user-role', 'super_admin', { path: '/', maxAge: 86400, sameSite: 'lax' })
-
-      return NextResponse.json({
-        success: true,
-        destination: '/super-admin',
-        role: 'super_admin',
-        email: cleanEmail,
-      })
-    }
+    // 3. Teacher Directory check completed above. If neither Supabase nor Teacher auth succeeded, reject.
 
     // Return friendly, exact error message
     const errorResponse = authErrorMsg.toLowerCase().includes('email not confirmed')

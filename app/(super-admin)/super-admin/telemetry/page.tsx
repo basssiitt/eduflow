@@ -47,6 +47,7 @@ export default function SuperAdminTelemetryPage() {
   const [studentCount, setStudentCount] = useState<number>(0)
   const [userEmail, setUserEmail] = useState<string>('')
   const [auditLogs, setAuditLogs] = useState<RealAuditLog[]>([])
+  const [isOnline, setIsOnline] = useState(true)
 
   const runProbe = async () => {
     setRefreshing(true)
@@ -140,6 +141,17 @@ export default function SuperAdminTelemetryPage() {
 
   useEffect(() => {
     runProbe()
+    if (typeof window !== 'undefined') {
+      setIsOnline(navigator.onLine)
+      const handleOnline = () => setIsOnline(true)
+      const handleOffline = () => setIsOnline(false)
+      window.addEventListener('online', handleOnline)
+      window.addEventListener('offline', handleOffline)
+      return () => {
+        window.removeEventListener('online', handleOnline)
+        window.removeEventListener('offline', handleOffline)
+      }
+    }
   }, [])
 
   const services: ServiceHealth[] = [
@@ -172,7 +184,7 @@ export default function SuperAdminTelemetryPage() {
     {
       name: 'Client Offline & Local Sync',
       category: 'Client Resiliency Engine',
-      status: typeof navigator !== 'undefined' && navigator.onLine ? 'Operational' : 'Offline',
+      status: isOnline ? 'Operational' : 'Offline',
       latency: '0 ms',
       detail: 'Local storage queue with auto-reconnect synchronization',
       icon: Cpu,

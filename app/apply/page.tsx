@@ -62,9 +62,7 @@ const GRADES = [
 ]
 
 export default function ApplyOnlinePage() {
-  React.useEffect(() => {
-    window.location.replace('/')
-  }, [])
+
   const [studentName, setStudentName] = useState('')
   const [dob, setDob] = useState('')
   const [gender, setGender] = useState<'Male' | 'Female'>('Male')

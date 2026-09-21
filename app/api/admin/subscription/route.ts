@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { isSuperAdminEmail } from '@/lib/config'
 import { cookies } from 'next/headers'
 import {
   parseSchoolSubscription,
@@ -21,10 +23,54 @@ function getSupabaseAdmin() {
   return createClient(url, anonKey)
 }
 
+async function getAuthenticatedUser() {
+  const supabase = await createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return {
+      user: null,
+      email: null,
+      role: null,
+      schoolId: null,
+      isSuperAdmin: false,
+    }
+  }
+
+  const email = user.email || null
+  const isSuperAdmin = isSuperAdminEmail(email)
+
+  let schoolId: string | null = null
+  let role: string | null = null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, school_id')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (profile) {
+    schoolId = profile.school_id || null
+    role = profile.role || null
+  }
+
+  return {
+    user,
+    email,
+    role,
+    schoolId,
+    isSuperAdmin,
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const userEmail = cookieStore.get('eduflow-user-email')?.value?.toLowerCase()
+    const auth = await getAuthenticatedUser()
+    if (!auth.user) {
+      return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 })
+    }
+
+    const userEmail = auth.email?.toLowerCase()
     const url = new URL(request.url)
     const schoolIdParam = url.searchParams.get('schoolId')
     const fetchAll = url.searchParams.get('all') === 'true'
@@ -33,6 +79,12 @@ export async function GET(request: NextRequest) {
 
     // 0. Super-Admin fetch all schools & subscriptions
     if (fetchAll) {
+      if (!auth.isSuperAdmin) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden: Super Admin access required to view all tenant subscriptions' },
+          { status: 403 }
+        )
+      }
       let schoolsList: any[] = []
       try {
         const { data: sData } = await client
@@ -107,10 +159,17 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    let schoolRow: any = null
-    let schoolId: string | null = schoolIdParam
+    if (!auth.isSuperAdmin && schoolIdParam && (!auth.schoolId || schoolIdParam !== auth.schoolId)) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: You cannot access another school\'s subscription' },
+        { status: 403 }
+      )
+    }
 
-    // 1. If schoolIdParam is supplied, fetch directly
+    let schoolRow: any = null
+    let schoolId: string | null = auth.isSuperAdmin ? schoolIdParam : (auth.schoolId || schoolIdParam)
+
+    // 1. If schoolId is supplied, fetch directly
     if (schoolId) {
       const { data: s } = await client
         .from('schools')
@@ -253,11 +312,23 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthenticatedUser()
+    if (!auth.user) {
+      return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { schoolId, amount, billingCycle, paymentMethod, referenceNo, notes } = body
 
     if (!schoolId) {
       return NextResponse.json({ success: false, error: 'schoolId is required' }, { status: 400 })
+    }
+
+    if (!auth.isSuperAdmin && (!auth.schoolId || auth.schoolId !== schoolId)) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: You cannot modify subscription for this school' },
+        { status: 403 }
+      )
     }
 
     const client = getSupabaseAdmin()

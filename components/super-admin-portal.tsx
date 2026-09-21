@@ -218,7 +218,10 @@ export function SuperAdminPortal() {
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        await supabaseClient.from('campuses').update({ status: nextStatus }).eq('id', id)
+        const { error: schoolErr } = await supabaseClient.from('schools').update({ status: nextStatus }).eq('id', id)
+        if (schoolErr) {
+          await supabaseClient.from('campuses').update({ status: nextStatus }).eq('id', id)
+        }
       } catch {}
     }
   }
@@ -230,7 +233,10 @@ export function SuperAdminPortal() {
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        await supabaseClient.from('campuses').update({ plan: nextPlan }).eq('id', id)
+        const { error: schoolErr } = await supabaseClient.from('schools').update({ plan: nextPlan, plan_tier: nextPlan.toLowerCase() }).eq('id', id)
+        if (schoolErr) {
+          await supabaseClient.from('campuses').update({ plan: nextPlan }).eq('id', id)
+        }
       } catch {}
     }
   }

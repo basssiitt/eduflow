@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { isSuperAdminEmail } from '@/lib/config'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !isSuperAdminEmail(user.email)) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Super Admin access is required to register schools.' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
     const { name, city, phone, owner, email, password, plan } = body
 

@@ -61,20 +61,6 @@ async function resolveAdminSchoolId(
     } catch {}
   }
 
-  // 4. Fallback to existing first school record in database
-  if (!schoolId) {
-    try {
-      const { data: firstSchool } = await adminClient
-        .from('schools')
-        .select('id, name, slug')
-        .limit(1)
-        .maybeSingle()
-      if (firstSchool?.id) {
-        schoolId = firstSchool.id
-        schoolSlug = (firstSchool.slug || firstSchool.name || 'school').toLowerCase().replace(/[^a-z0-9]/g, '')
-      }
-    } catch {}
-  }
 
   // 5. Fallback: Auto-provision a default school tenant record if completely empty
   if (!schoolId) {

@@ -119,7 +119,7 @@ export async function fetchFeeInvoices() {
   if (auth.error) return { data: null, error: auth.error }
 
   return supabaseClient
-    .from('fee_invoices')
+    .from('fee_vouchers')
     .select('id, student_id, amount, status, due_date, month, students(name, class, section, roll_no)')
     .order('due_date', { ascending: false })
 }
@@ -141,7 +141,7 @@ export async function createInvoice(payload: Record<string, unknown>) {
   if (auth.error || !supabaseClient) {
     return { data: null, error: auth.error ?? new Error('Supabase is not configured') }
   }
-  return supabaseClient.from('fee_invoices').insert(payload).select().single()
+  return supabaseClient.from('fee_vouchers').insert(payload).select().single()
 }
 
 export async function fetchParentStudents() {
@@ -170,23 +170,10 @@ export async function fetchParentStudents() {
     }
   }
 
-  // If no parent_id match, fetch real students from DB if any exist
-  const { data: allStudents, error } = await supabaseClient
-    .from('students')
-    .select('id, full_name, father_name, roll_number, class_name, section, monthly_fee, status, school_id')
-    .limit(10)
-
+  // If no parent_id match, return empty array (do NOT leak stranger students)
   return {
-    data: (allStudents || []).map((s: any) => ({
-      id: s.id,
-      name: s.full_name,
-      father_name: s.father_name || '',
-      roll: s.roll_number || '',
-      class: `${s.class_name || 'Class 5'} · Sec ${s.section || 'A'}`,
-      feeAmount: Number(s.monthly_fee) || 0,
-      school_id: s.school_id,
-    })),
-    error,
+    data: [],
+    error: null,
   }
 }
 
@@ -211,19 +198,7 @@ export async function fetchCurrentParentData() {
   }
 
   if (!studentId) {
-    const { data: anyStudent } = await supabaseClient
-      .from('students')
-      .select('id')
-      .limit(1)
-      .maybeSingle()
-
-    if (anyStudent?.id) {
-      studentId = anyStudent.id
-    }
-  }
-
-  if (!studentId) {
-    return { data: null, error: new Error('No student record found') }
+    return { data: null, error: new Error('No child enrolled under this parent account. Please link your child using admission voucher.') }
   }
 
   return fetchParentData(studentId)

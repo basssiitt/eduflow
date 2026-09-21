@@ -53,22 +53,21 @@ export function AdminPortal() {
   const [page, setPage] = useState(1)
   const pageSize = 10
   const [bankModalOpen, setBankModalOpen] = useState(false)
-  const [bankSettings, setBankSettings] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('eduflow-bank-settings')
-        if (saved) return JSON.parse(saved)
-      } catch {}
-    }
-    return {
-      bankName: 'Meezan Bank Ltd.',
-      accountTitle: 'EduFlow School Main Campus',
-      iban: 'PK92 MEZN 0001 2345 6789 0101',
-      psidPrefix: '1004',
-      easypaisa: '03001234567',
-      jazzcash: '03121234567',
-    }
+  const [bankSettings, setBankSettings] = useState<BankSettings>({
+    bankName: 'Meezan Bank Ltd.',
+    accountTitle: 'EduFlow School Main Campus',
+    iban: 'PK92 MEZN 0001 2345 6789 0101',
+    psidPrefix: '1004',
+    easypaisa: '03001234567',
+    jazzcash: '03121234567',
   })
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('eduflow-bank-settings')
+      if (saved) setBankSettings(JSON.parse(saved))
+    } catch {}
+  }, [])
 
   const loadInvoices = async () => {
     setLoading(true)

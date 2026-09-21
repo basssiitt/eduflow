@@ -140,3 +140,17 @@ __v0_jsx-dev-runtime.ts
 __pycache__/
 *.py[cod]
 *$py.class
+
+# ------------------------------------------------------------------------------
+# 10. AI Agent Workspaces, LLM Proxy Configs & System Metadata
+# ------------------------------------------------------------------------------
+.claude*
+*litellm*
+litellm*.yaml
+litellm*.yml
+*.secret.yaml
+*.secret.yml
+.directory
+.antigravity/
+.gemini/*
+!.gemini/rules

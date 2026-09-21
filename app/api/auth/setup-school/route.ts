@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
 function getSupabaseAdmin() {
@@ -17,17 +18,30 @@ function getSupabaseAdmin() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { userId, email, schoolName, city, ownerName, phone } = body
+    const supabase = await createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!email || !schoolName) {
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required to setup a school.' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { schoolName, city, ownerName, phone } = body
+
+    const effectiveUserId = user.id
+    const effectiveEmail = (user.email || '').trim().toLowerCase()
+
+    if (!effectiveEmail || !schoolName) {
       return NextResponse.json(
         { success: false, error: 'Email and School Name are required.' },
         { status: 400 }
       )
     }
 
-    const cleanEmail = email.trim().toLowerCase()
+    const cleanEmail = effectiveEmail
     const cleanSchool = schoolName.trim()
     const cleanCity = city ? city.trim() : 'Karachi'
     const cleanOwner = ownerName ? ownerName.trim() : 'School Admin'
@@ -109,11 +123,11 @@ export async function POST(request: NextRequest) {
     } catch {}
 
     // 3. Upsert Profile in public.profiles
-    if (userId) {
+    if (effectiveUserId) {
       try {
         await client.from('profiles').upsert([
           {
-            id: userId,
+            id: effectiveUserId,
             email: cleanEmail,
             full_name: cleanOwner,
             role: 'school_admin',

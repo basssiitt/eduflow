@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { db, schema } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
@@ -29,15 +29,33 @@ export async function GET() {
   return NextResponse.json({ success: true, data: rows })
 }
 
+const BLOCKED_PROPS = new Set(['__proto__', 'constructor', 'prototype'])
+
+function validatePrototypeKeys<T extends Record<string, unknown>>(obj: T): T {
+  const clean = Object.create(null)
+  if (obj && typeof obj === 'object') {
+    for (const prop of Object.keys(obj)) {
+      if (!BLOCKED_PROPS.has(prop)) {
+        clean[prop] = obj[prop]
+      }
+    }
+  }
+  return clean
+}
+
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin()
   if ('error' in auth) return auth.error
-  const body = await request.json().catch(() => null)
-  const name = String(body?.name ?? '').trim()
-  const email = String(body?.email ?? '').trim().toLowerCase()
-  const phone = String(body?.phone ?? '').trim()
-  const password = String(body?.tempPassword ?? '').trim()
-  if (!name || !email || !password || password.length < 6) {
+  const rawBody = (await request.json().catch(() => Object.create(null))) as Record<string, unknown>
+  const body = validatePrototypeKeys(rawBody || {})
+  const name = String(body.name || '').trim()
+  const email = String(body.email || '').trim().toLowerCase()
+  const phone = String(body.phone || '').trim()
+  const tempPassword = String(body.tempPassword || '').trim()
+  const department = String(body.department || '').trim() || null
+  const specialization = String(body.subject || '').trim() || null
+
+  if (!name || !email || !tempPassword || tempPassword.length < 6) {
     return NextResponse.json({ error: 'Name, email, and a password of at least 6 characters are required.' }, { status: 400 })
   }
   if (!auth.profile.school_id) return NextResponse.json({ error: 'No school is attached to this account.' }, { status: 400 })
@@ -45,7 +63,7 @@ export async function POST(request: NextRequest) {
   const admin = getAdminClient()
   const { data, error } = await admin.auth.admin.createUser({
     email,
-    password,
+    password: tempPassword,
     phone: phone || undefined,
     email_confirm: true,
     phone_confirm: Boolean(phone),
@@ -56,26 +74,28 @@ export async function POST(request: NextRequest) {
   const employeeCode = `TCH-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`
   let teacher: any = null
   try {
-    const [inserted] = await db.insert(schema.teachers).values({
+    const teacherRecord = {
       fullName: name,
       employeeCode,
       email,
       phone: phone || null,
-      department: String(body?.department ?? '').trim() || null,
-      specialization: String(body?.subject ?? '').trim() || null,
-      schoolId: auth.profile.school_id,
-    }).returning()
+      department,
+      specialization,
+      schoolId: String(auth.profile.school_id),
+    }
+    const [inserted] = await db.insert(schema.teachers).values(teacherRecord).returning()
     teacher = inserted
   } catch (drizzleErr) {
-    const { data: sbTeacher, error: sbErr } = await admin.from('teachers').insert([{
+    const sbRecord = {
       full_name: name,
       employee_code: employeeCode,
       email,
       phone: phone || null,
-      department: String(body?.department ?? '').trim() || null,
-      specialization: String(body?.subject ?? '').trim() || null,
-      school_id: auth.profile.school_id,
-    }]).select().single()
+      department,
+      specialization,
+      school_id: String(auth.profile.school_id),
+    }
+    const { data: sbTeacher, error: sbErr } = await admin.from('teachers').insert([sbRecord]).select().single()
     if (sbErr) {
       return NextResponse.json({ error: sbErr.message }, { status: 500 })
     }
@@ -95,7 +115,7 @@ export async function POST(request: NextRequest) {
     }])
   } catch {}
 
-  return NextResponse.json({ success: true, teacher, temporaryPassword: password })
+  return NextResponse.json({ success: true, teacher, temporaryPassword: tempPassword })
 }
 
 export async function DELETE(request: NextRequest) {
@@ -103,7 +123,21 @@ export async function DELETE(request: NextRequest) {
   if ('error' in auth) return auth.error
   const id = new URL(request.url).searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Teacher id is required.' }, { status: 400 })
-  await db.delete(schema.teachers).where(eq(schema.teachers.id, id))
+
+  if (auth.profile.role === 'super_admin') {
+    await db.delete(schema.teachers).where(eq(schema.teachers.id, id))
+  } else {
+    if (!auth.profile.school_id) {
+      return NextResponse.json({ error: 'No school associated with this administrator.' }, { status: 403 })
+    }
+    await db.delete(schema.teachers).where(
+      and(
+        eq(schema.teachers.id, id),
+        eq(schema.teachers.schoolId, auth.profile.school_id)
+      )
+    )
+  }
+
   return NextResponse.json({ success: true })
 }
 

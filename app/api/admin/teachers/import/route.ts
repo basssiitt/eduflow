@@ -24,7 +24,9 @@ export async function POST(request: Request) {
     email: String(row.email ?? '').trim().toLowerCase(),
     phone: String(row.phone ?? '').trim() || null,
     subject: String(row.subject ?? '').trim() || null,
-    schoolId: String(row.school_id ?? profile.school_id ?? '').trim(),
+    schoolId: profile.role === 'super_admin' && row.school_id
+      ? String(row.school_id).trim()
+      : String(profile.school_id ?? '').trim(),
   }))
   const invalid = normalized.findIndex((row) => !row.name || !emailPattern.test(row.email))
   if (invalid >= 0) return NextResponse.json({ error: `Row ${invalid + 1} needs a valid name and email.` }, { status: 400 })
