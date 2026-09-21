@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerSupabase } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import fs from 'fs'
 import path from 'path'
@@ -39,23 +40,15 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase()
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-
-    const client = serviceRoleKey
-      ? createClient(supabaseUrl, serviceRoleKey, {
-          auth: { autoRefreshToken: false, persistSession: false },
-        })
-      : createClient(supabaseUrl, anonKey)
-
     const cookieStore = await cookies()
 
-    // 1. Attempt Supabase Auth Sign In
+    // 1. Attempt Supabase Auth Sign In via SSR Server Client (persists session cookies)
+    const ssrClient = await createServerSupabase()
     let authUser: any = null
     let authErrorMsg = ''
+
     try {
-      const { data, error } = await client.auth.signInWithPassword({
+      const { data, error } = await ssrClient.auth.signInWithPassword({
         email: cleanEmail,
         password,
       })
@@ -68,33 +61,47 @@ export async function POST(request: NextRequest) {
       authErrorMsg = err?.message || 'Authentication error'
     }
 
+    // Fallback: If SSR client didn't match and a separate service role key or admin client is configured
+    if (!authUser) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+      if (serviceRoleKey) {
+        try {
+          const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+            auth: { autoRefreshToken: false, persistSession: false },
+          })
+          const { data, error } = await adminClient.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          })
+          if (!error && data?.user) {
+            authUser = data.user
+          }
+        } catch {}
+      }
+    }
+
     // 2. If Supabase Auth authenticated the user
     if (authUser) {
       let role = (authUser.app_metadata?.role || authUser.user_metadata?.role || '') as string
-      let isSetupComplete = false
+      let isSetupComplete = Boolean(
+        authUser.user_metadata?.school_id ||
+        authUser.user_metadata?.onboarding_completed
+      )
 
       try {
-        const { data: profile } = await client
+        // Query only verified columns in profiles table
+        const { data: profile } = await ssrClient
           .from('profiles')
-          .select('role, school_setup_complete, onboarding_completed, school_id')
+          .select('role, onboarding_completed, school_id')
           .eq('id', authUser.id)
           .maybeSingle()
 
         if (profile?.role) {
           role = profile.role
         }
-        if (profile?.school_setup_complete || profile?.onboarding_completed) {
+        if (profile?.onboarding_completed || profile?.school_id) {
           isSetupComplete = true
-        }
-        if (!isSetupComplete && profile?.school_id) {
-          const { data: school } = await client
-            .from('schools')
-            .select('school_setup_complete')
-            .eq('id', profile.school_id)
-            .maybeSingle()
-          if (school?.school_setup_complete) {
-            isSetupComplete = true
-          }
         }
       } catch {}
 

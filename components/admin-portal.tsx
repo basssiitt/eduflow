@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MoreHorizontal, Plus, Printer, ReceiptText, Search, TrendingUp, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
@@ -69,7 +69,7 @@ export function AdminPortal() {
     } catch {}
   }, [])
 
-  const loadInvoices = async () => {
+  const loadInvoices = useCallback(async () => {
     setLoading(true)
     const { data: invoices } = await fetchFeeInvoices()
     if (invoices && invoices.length > 0) {
@@ -92,11 +92,11 @@ export function AdminPortal() {
       setData([])
     }
     setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     loadInvoices()
-  }, [])
+  }, [loadInvoices])
 
   const shown = useMemo(() => {
     return data.filter(
@@ -251,45 +251,45 @@ export function AdminPortal() {
 
       {/* Metric Cards */}
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200">
+        <article className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-blue-200 dark:bg-slate-900/80 dark:border-slate-800 dark:hover:border-blue-800">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-600">Total Recoverable Fee</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Total Recoverable Fee</span>
+            <div className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-xs transition-transform duration-300 group-hover:scale-110 dark:bg-blue-950/50 dark:border-blue-900">
               <FileText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 tabular-nums">{money(totalRecoverable)}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 tabular-nums transition-colors">{money(totalRecoverable)}</p>
           <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
             <span>Across {data.length} active invoices</span>
-            <span className="font-medium text-slate-700">Session 2026–27</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Session 2026–27</span>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200">
+        <article className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-emerald-200 dark:bg-slate-900/80 dark:border-slate-800 dark:hover:border-emerald-800">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-600">Collected This Month</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Collected This Month</span>
+            <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs transition-transform duration-300 group-hover:scale-110 dark:bg-emerald-950/50 dark:border-emerald-900">
               <TrendingUp className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 tabular-nums">{money(totalCollected)}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 tabular-nums transition-colors">{money(totalCollected)}</p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 border border-emerald-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 border border-emerald-200/80 shadow-2xs dark:bg-emerald-950/40 dark:text-emerald-300">
               +{totalRecoverable > 0 ? `${Math.round((totalCollected / totalRecoverable) * 100)}%` : '0%'} recovery rate
             </span>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200">
+        <article className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-amber-200 dark:bg-slate-900/80 dark:border-slate-800 dark:hover:border-amber-800">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-600">Pending Invoices</span>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Pending Invoices</span>
+            <div className="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200/80 shadow-xs transition-transform duration-300 group-hover:scale-110 dark:bg-amber-950/50 dark:border-amber-900">
               <ReceiptText className="size-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 tabular-nums">{pendingCount}</p>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 tabular-nums transition-colors">{pendingCount}</p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200/80 shadow-2xs dark:bg-amber-950/40 dark:text-amber-300">
               {data.length > 0 ? `${Math.round((pendingCount / data.length) * 100)}%` : '0%'} uncollected
             </span>
           </div>
@@ -383,7 +383,7 @@ export function AdminPortal() {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {paginated.map((r) => (
-                    <tr key={r.challan} className="hover:bg-slate-50 transition-colors">
+                    <tr key={r.challan} className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors duration-150">
                       <td className="px-5 py-4">
                         <span className="font-mono text-xs font-bold text-slate-800 bg-slate-100 border border-slate-200 rounded-md px-2 py-1">
                           {r.challan}
@@ -391,7 +391,7 @@ export function AdminPortal() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-blue-700 transition-transform duration-200 hover:scale-105">
                             {r.name.split(" ").map((x) => x[0]).join("")}
                           </div>
                           <span className="font-semibold text-slate-900">{r.name}</span>
@@ -412,7 +412,7 @@ export function AdminPortal() {
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all duration-200 active:scale-95 shadow-2xs"
                             data-testid="btn-print-challan"
                             onClick={() => setSelected(r)}
                             title="Print challan"
@@ -420,7 +420,7 @@ export function AdminPortal() {
                             <Printer className="size-3.5" />
                           </button>
                           <button
-                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition"
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all duration-200 active:scale-95 shadow-2xs"
                             onClick={() => toggleStatus(r)}
                             title="Mark as paid / pending"
                           >
@@ -497,12 +497,14 @@ export function AdminPortal() {
       />
 
       {importOpen && (
-        <BulkImportModal
-          onClose={() => {
-            setImportOpen(false)
-            loadInvoices()
-          }}
-        />
+        <Suspense fallback={null}>
+          <BulkImportModal
+            onClose={() => {
+              setImportOpen(false)
+              loadInvoices()
+            }}
+          />
+        </Suspense>
       )}
     </div>
   )

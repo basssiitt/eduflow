@@ -28,7 +28,7 @@ function getAdminClient() {
  * by inspecting their profile, session metadata, or associated school record.
  */
 async function resolveAdminSchoolId(
-  currentUser: { id: string; user_metadata?: Record<string, any>; app_metadata?: Record<string, any> },
+  currentUser: { id: string; email?: string | null; user_metadata?: Record<string, any>; app_metadata?: Record<string, any> },
   callerProfile?: { school_id?: string | null; role?: string | null } | null
 ): Promise<{ schoolId: string; schoolSlug: string }> {
   // 1. Check profile in Supabase database
@@ -138,105 +138,110 @@ export interface AdmitStudentInput {
 }
 
 export async function admitStudent(input: AdmitStudentInput) {
-  // 1. Authenticate caller
-  const supabase = await createServerSupabase()
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
-
-  if (!currentUser) {
-    throw new Error('Authentication required to admit student.')
-  }
-
-  // 2. Authorize administrator role
-  const { data: callerProfile } = await supabase
-    .from('profiles')
-    .select('role, school_id')
-    .eq('id', currentUser.id)
-    .maybeSingle()
-
-  const callerRole = normalizeRole(
-    callerProfile?.role || currentUser.app_metadata?.role || currentUser.user_metadata?.role || ''
-  )
-  if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
-    throw new Error('Forbidden: Only school administrators can admit students.')
-  }
-
-  // 3. Retrieve currently logged-in admin's school_id (from session or profile in Supabase)
-  const { schoolId } = await resolveAdminSchoolId(currentUser, callerProfile)
-
-  const exactFullName = String(input.fullName || '').trim()
-  const exactGuardianName = String(input.fatherName || input.guardianName || '').trim()
-  const exactGrade = String(input.grade || 'Class 5').trim()
-  const exactSection = String(input.section || 'A').trim()
-  const exactPhone = String(input.guardianPhone || '').trim()
-  const exactEmail = String(input.guardianEmail || '').trim().toLowerCase()
-  const exactRollNumber = String(
-    input.rollNumber || `2026-${Math.floor(100 + Math.random() * 900)}`
-  ).trim()
-  const exactMonthlyFee = String(input.monthlyFee || '15000')
-
-  if (!exactFullName) {
-    throw new Error('Student full name is required.')
-  }
-
-  // 4. Explicitly include school_id in Drizzle ORM insert statement
-  const adminClient = getAdminClient()
-  let savedStudent: any = null
-
   try {
-    const inserted = await db
-      .insert(schema.students)
-      .values({
-        schoolId: schoolId, // explicitly included!
-        fullName: exactFullName,
-        rollNumber: exactRollNumber,
-        grade: exactGrade,
-        section: exactSection,
-        guardianName: exactGuardianName || null,
-        guardianPhone: exactPhone || null,
-        guardianEmail: exactEmail || null,
-        monthlyFee: exactMonthlyFee,
-        status: 'active',
-      })
-      .returning({
-        id: schema.students.id,
-        rollNumber: schema.students.rollNumber,
-      })
+    // 1. Authenticate caller
+    const supabase = await createServerSupabase()
+    const {
+      data: { user: currentUser },
+    } = await supabase.auth.getUser()
 
-    savedStudent = inserted?.[0] || { id: 'created', rollNumber: exactRollNumber }
-  } catch (drizzleErr) {
-    console.warn('Drizzle student insert failed, falling back to Supabase client:', drizzleErr)
-    const { data: sbData, error: sbErr } = await adminClient
-      .from('students')
-      .insert([
-        {
-          school_id: schoolId, // explicitly included!
-          full_name: exactFullName,
-          father_name: exactGuardianName || null,
-          roll_number: exactRollNumber,
-          class_name: exactGrade,
-          section: exactSection,
-          guardian_name: exactGuardianName || null,
-          guardian_phone: exactPhone || null,
-          guardian_email: exactEmail || null,
-          monthly_fee: Number(exactMonthlyFee) || 15000,
-          status: 'active',
-        },
-      ])
-      .select('id, roll_number')
-      .single()
-
-    if (sbErr) {
-      throw new Error(`Failed to admit student: ${sbErr.message}`)
+    if (!currentUser) {
+      return { success: false, error: 'Authentication required to admit student.' }
     }
-    savedStudent = sbData
-  }
 
-  return {
-    success: true,
-    student: savedStudent,
-    schoolId,
+    // 2. Authorize administrator role
+    const { data: callerProfile } = await supabase
+      .from('profiles')
+      .select('role, school_id')
+      .eq('id', currentUser.id)
+      .maybeSingle()
+
+    const callerRole = normalizeRole(
+      callerProfile?.role || currentUser.app_metadata?.role || currentUser.user_metadata?.role || ''
+    )
+    if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
+      return { success: false, error: 'Forbidden: Only school administrators can admit students.' }
+    }
+
+    // 3. Retrieve currently logged-in admin's school_id (from session or profile in Supabase)
+    const { schoolId } = await resolveAdminSchoolId(currentUser, callerProfile)
+
+    const exactFullName = String(input.fullName || '').trim()
+    const exactGuardianName = String(input.fatherName || input.guardianName || '').trim()
+    const exactGrade = String(input.grade || 'Class 5').trim()
+    const exactSection = String(input.section || 'A').trim()
+    const exactPhone = String(input.guardianPhone || '').trim()
+    const exactEmail = String(input.guardianEmail || '').trim().toLowerCase()
+    const exactRollNumber = String(
+      input.rollNumber || `2026-${Math.floor(100 + Math.random() * 900)}`
+    ).trim()
+    const exactMonthlyFee = String(input.monthlyFee || '15000')
+
+    if (!exactFullName) {
+      return { success: false, error: 'Student full name is required.' }
+    }
+
+    // 4. Explicitly include school_id in Drizzle ORM insert statement
+    const adminClient = getAdminClient()
+    let savedStudent: any = null
+
+    try {
+      const inserted = await db
+        .insert(schema.students)
+        .values({
+          schoolId: schoolId, // explicitly included!
+          fullName: exactFullName,
+          rollNumber: exactRollNumber,
+          grade: exactGrade,
+          section: exactSection,
+          guardianName: exactGuardianName || null,
+          guardianPhone: exactPhone || null,
+          guardianEmail: exactEmail || null,
+          monthlyFee: exactMonthlyFee,
+          status: 'active',
+        })
+        .returning({
+          id: schema.students.id,
+          rollNumber: schema.students.rollNumber,
+        })
+
+      savedStudent = inserted?.[0] || { id: 'created', rollNumber: exactRollNumber }
+    } catch (drizzleErr) {
+      console.warn('Drizzle student insert failed, falling back to Supabase client:', drizzleErr)
+      const { data: sbData, error: sbErr } = await adminClient
+        .from('students')
+        .insert([
+          {
+            school_id: schoolId, // explicitly included!
+            full_name: exactFullName,
+            father_name: exactGuardianName || null,
+            roll_number: exactRollNumber,
+            class_name: exactGrade,
+            section: exactSection,
+            guardian_name: exactGuardianName || null,
+            guardian_phone: exactPhone || null,
+            guardian_email: exactEmail || null,
+            monthly_fee: Number(exactMonthlyFee) || 15000,
+            status: 'active',
+          },
+        ])
+        .select('id, roll_number')
+        .single()
+
+      if (sbErr) {
+        return { success: false, error: `Failed to admit student: ${sbErr.message}` }
+      }
+      savedStudent = sbData
+    }
+
+    return {
+      success: true,
+      student: savedStudent,
+      schoolId,
+    }
+  } catch (err: any) {
+    console.error('admitStudent error:', err)
+    return { success: false, error: err?.message || 'An error occurred while admitting student.' }
   }
 }
 
@@ -290,32 +295,34 @@ export async function bulkUploadStudentsAction(
   success: boolean
   imported: number
   credentials: GeneratedParentCredential[]
+  error?: string
 }> {
-  if (!Array.isArray(rows) || rows.length === 0) {
-    return { success: true, imported: 0, credentials: [] }
-  }
+  try {
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return { success: true, imported: 0, credentials: [] }
+    }
 
-  // 1. Authenticate calling administrator
-  const supabase = await createServerSupabase()
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
+    // 1. Authenticate calling administrator
+    const supabase = await createServerSupabase()
+    const {
+      data: { user: currentUser },
+    } = await supabase.auth.getUser()
 
-  if (!currentUser) {
-    throw new Error('Authentication required to bulk import student records.')
-  }
+    if (!currentUser) {
+      return { success: false, imported: 0, credentials: [], error: 'Authentication required to bulk import student records.' }
+    }
 
-  // 2. Authorize admin role
-  const { data: callerProfile } = await supabase
-    .from('profiles')
-    .select('role, school_id')
-    .eq('id', currentUser.id)
-    .maybeSingle()
+    // 2. Authorize admin role
+    const { data: callerProfile } = await supabase
+      .from('profiles')
+      .select('role, school_id')
+      .eq('id', currentUser.id)
+      .maybeSingle()
 
-  const callerRole = normalizeRole(callerProfile?.role || '')
-  if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
-    throw new Error('Forbidden: Only school administrators can import students.')
-  }
+    const callerRole = normalizeRole(callerProfile?.role || '')
+    if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
+      return { success: false, imported: 0, credentials: [], error: 'Forbidden: Only school administrators can import students.' }
+    }
 
   // 3. Retrieve currently logged-in admin's school_id (from session or profile in Supabase)
   const { schoolId, schoolSlug } = await resolveAdminSchoolId(currentUser, callerProfile)
@@ -488,9 +495,18 @@ export async function bulkUploadStudentsAction(
     })
   }
 
-  return {
-    success: true,
-    imported: credentials.length,
-    credentials,
+    return {
+      success: true,
+      imported: credentials.length,
+      credentials,
+    }
+  } catch (err: any) {
+    console.error('bulkUploadStudentsAction error:', err)
+    return {
+      success: false,
+      imported: 0,
+      credentials: [],
+      error: err?.message || 'An error occurred during bulk student import.',
+    }
   }
 }

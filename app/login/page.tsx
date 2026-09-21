@@ -166,7 +166,26 @@ export default function LoginPage() {
     }
 
     try {
-      // 1. Call server auth endpoint
+      // 1. If Supabase is configured, authenticate browser client
+      let clientUser: any = null
+      let clientErrorMsg = ''
+      if (isSupabaseConfigured && supabaseClient) {
+        try {
+          const { data: cData, error: cErr } = await supabaseClient.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          })
+          if (!cErr && cData?.user) {
+            clientUser = cData.user
+          } else if (cErr) {
+            clientErrorMsg = cErr.message
+          }
+        } catch (cEx: any) {
+          clientErrorMsg = cEx?.message || ''
+        }
+      }
+
+      // 2. Call server auth endpoint (which sets HTTP cookies and handles teacher directory)
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -176,19 +195,21 @@ export default function LoginPage() {
       const result = await res.json()
 
       if (!res.ok || !result.success) {
-        setError(result.error || 'Invalid email or password. Please verify your credentials and try again.')
+        // If client authenticated directly with Supabase, proceed safely to destination
+        if (clientUser) {
+          const role = (clientUser.app_metadata?.role || clientUser.user_metadata?.role || 'school_admin') as string
+          const normalizedRole = normalizeRole(role)
+          const destination = getHomeRoute(normalizedRole, cleanEmail)
+          window.location.assign(destination)
+          return
+        }
+
+        const msg = clientErrorMsg.toLowerCase().includes('email not confirmed')
+          ? 'Your email address is not yet confirmed. Please verify your email confirmation or ask your administrator.'
+          : (result.error || 'Invalid email or password. Please verify your credentials and try again.')
+        setError(msg)
         setLoading(false)
         return
-      }
-
-      // 2. Also authenticate browser Supabase client if configured
-      if (isSupabaseConfigured && supabaseClient) {
-        try {
-          await supabaseClient.auth.signInWithPassword({
-            email: cleanEmail,
-            password,
-          })
-        } catch {}
       }
 
       // 3. Resolve destination route

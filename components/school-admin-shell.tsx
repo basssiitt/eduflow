@@ -73,13 +73,13 @@ const adminNavItems: NavItem[] = [
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
-    <Link href="/admin" className={cn('flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-        <AcademicCrest className="size-6" />
+    <Link href="/admin" className={cn('group flex items-center gap-3 no-underline', collapsed && 'justify-center')}>
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-500/30">
+        <AcademicCrest className="size-6 transition-transform duration-300 group-hover:rotate-3" />
       </div>
       {!collapsed && (
         <div className="min-w-0">
-          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100">EduFlow OS</p>
+          <p className="truncate font-bold tracking-tight text-slate-900 dark:text-slate-100 transition-colors">EduFlow OS</p>
           <p className="truncate text-xs font-semibold text-blue-600 dark:text-blue-400">Campus Administration</p>
         </div>
       )}
@@ -112,14 +112,14 @@ function AdminNavigation({
             aria-current={active ? 'page' : undefined}
             title={collapsed ? item.label : undefined}
             className={cn(
-              'relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
-              'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-              active && 'bg-blue-50 text-blue-600 font-bold border border-blue-100 dark:bg-blue-950/60 dark:text-blue-300 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-blue-600',
-              collapsed && 'justify-center px-2'
+              'group relative flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-200',
+              'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100',
+              active && 'bg-blue-50/90 text-blue-700 font-bold border border-blue-200/60 shadow-xs dark:bg-blue-950/70 dark:text-blue-300 dark:border-blue-800/50 before:absolute before:left-0 before:top-2.5 before:bottom-2.5 before:w-1 before:rounded-r-full before:bg-blue-600 hover:translate-x-0',
+              collapsed && 'justify-center px-2 hover:translate-x-0'
             )}
           >
-            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-colors", active ? "text-blue-600 dark:text-blue-400" : "text-slate-500")} />
-            {!collapsed && <span>{item.label}</span>}
+            <Icon aria-hidden="true" className={cn("size-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110", active ? "text-blue-600 dark:text-blue-400" : "text-slate-500")} />
+            {!collapsed && <span className="transition-colors">{item.label}</span>}
           </Link>
         )
       })}
@@ -135,20 +135,20 @@ function AdminSidebar({
   onToggle: () => void
 }) {
   return (
-    <aside className={cn('hidden shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 md:flex md:flex-col shadow-xs', collapsed ? 'w-20' : 'w-64')}>
+    <aside className={cn('hidden shrink-0 border-r border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/95 md:flex md:flex-col shadow-xs transition-all duration-300 ease-in-out', collapsed ? 'w-20' : 'w-64')}>
       <div className="flex h-20 items-center px-5">
         <Brand collapsed={collapsed} />
       </div>
-      <Separator className="bg-slate-200 dark:bg-slate-800" />
+      <Separator className="bg-slate-200/80 dark:bg-slate-800/80" />
       <div className="flex flex-1 flex-col gap-6 p-4">
         <AdminNavigation collapsed={collapsed} />
-        <div className={cn('mt-auto rounded-2xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/40 p-4', collapsed && 'border-0 bg-transparent p-0')}>
+        <div className={cn('mt-auto rounded-2xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 to-slate-100/60 dark:border-slate-800/80 dark:bg-slate-900/40 p-4 transition-all duration-300', collapsed && 'border-0 bg-transparent p-0')}>
           {!collapsed && (
             <>
               <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Campus Support</p>
               <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Need help with challans or enrollment?</p>
               <a href="mailto:support@eduflow.pk" className="inline-block mt-3 w-full">
-                <Button variant="outline" size="sm" className="w-full text-xs font-semibold border-slate-200 hover:border-blue-500 hover:text-blue-600 dark:border-slate-700">
+                <Button variant="outline" size="sm" className="w-full text-xs font-semibold border-slate-200/90 hover:border-blue-500 hover:text-blue-600 dark:border-slate-700 transition-colors shadow-xs">
                   support@eduflow.pk
                 </Button>
               </a>
@@ -156,10 +156,10 @@ function AdminSidebar({
           )}
         </div>
       </div>
-      <Separator className="bg-slate-200 dark:bg-slate-800" />
+      <Separator className="bg-slate-200/80 dark:bg-slate-800/80" />
       <div className="flex items-center justify-between p-4">
         {!collapsed && <span className="text-[11px] font-medium text-slate-400">Academic Node 2026–27</span>}
-        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900">
+        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="text-slate-500 hover:text-slate-900 transition-transform duration-200 active:scale-95">
           {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-4" /> : <PanelLeftClose aria-hidden="true" className="size-4" />}
         </Button>
       </div>
@@ -193,9 +193,10 @@ function SettingsModal({
   const [nextRenewal, setNextRenewal] = useState('')
 
   useEffect(() => {
+    const controller = new AbortController()
     async function loadSub() {
       try {
-        const res = await fetch('/api/admin/subscription')
+        const res = await fetch('/api/admin/subscription', { signal: controller.signal })
         if (res.ok) {
           const json = await res.json()
           if (json.success && json.subscription) {
@@ -211,9 +212,14 @@ function SettingsModal({
             }
           }
         }
-      } catch {}
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name !== 'AbortError') {
+          // ignore aborted fetch
+        }
+      }
     }
     loadSub()
+    return () => controller.abort()
   }, [])
 
   const handleSave = () => {
@@ -285,9 +291,11 @@ function SettingsModal({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-6 pt-2">
+        <div role="tablist" aria-label="Settings navigation" className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-6 pt-2">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'profile'}
             onClick={() => setActiveTab('profile')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition ${
               activeTab === 'profile'
@@ -299,6 +307,8 @@ function SettingsModal({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'subscription'}
             onClick={() => setActiveTab('subscription')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'subscription'
@@ -311,6 +321,8 @@ function SettingsModal({
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'security'}
             onClick={() => setActiveTab('security')}
             className={`pb-3 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
               activeTab === 'security'
@@ -563,10 +575,10 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200 bg-white/95 px-5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 md:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/80 bg-white/85 px-5 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/85 md:px-8 transition-colors">
           <div className="flex items-center gap-3">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
+              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden text-slate-600 transition-transform active:scale-95" aria-label="Open navigation"><Menu aria-hidden="true" /></Button>} />
               <SheetContent side="left" className="w-72 p-0 bg-white dark:bg-slate-950">
                 <SheetTitle className="sr-only">Campus navigation</SheetTitle>
                 <div className="flex h-20 items-center px-5"><Brand /></div>
@@ -584,24 +596,24 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
               <input
                 type="text"
-                placeholder="Search for Professional Courses..."
-                className="h-8 w-48 xl:w-60 rounded-xl border border-slate-200 bg-slate-50/80 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white focus:outline-hidden"
+                placeholder="Search campus records..."
+                className="h-9 w-48 xl:w-64 rounded-xl border border-slate-200/90 bg-slate-50/80 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:w-80 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/15 focus:outline-hidden"
               />
             </div>
             <OfflineStatusBar compact />
-            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50/90 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
               Cloud Synced
             </div>
-            <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
+            <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900 transition-transform duration-200 active:scale-95" aria-label="Notifications" onClick={() => setSettingsOpen(true)}>
               <Bell aria-hidden="true" className="size-4" />
               <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-blue-600" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger render={
-                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Open profile menu">
-                  <Avatar className="size-8">
-                    <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">{userInitials}</AvatarFallback>
+                <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-all duration-200 rounded-xl active:scale-98" aria-label="Open profile menu">
+                  <Avatar className="size-8 transition-transform duration-200 hover:scale-105">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-xs">{userInitials}</AvatarFallback>
                   </Avatar>
                   <ChevronDown aria-hidden="true" className="hidden size-4 text-slate-400 sm:block" />
                 </Button>

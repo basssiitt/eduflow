@@ -62,33 +62,51 @@ export async function POST(request: NextRequest) {
     // 1. Provision School in public.schools
     let schoolId: string = ''
     try {
+      const fullSchoolPayload = {
+        name: cleanSchool,
+        slug: `${slug}-${Math.floor(100 + Math.random() * 900)}`,
+        city: cleanCity,
+        admin_email: cleanEmail,
+        owner_name: cleanOwner,
+        phone: cleanPhone,
+        plan_tier: 'pro',
+        plan_status: 'trial',
+        created_at: nowIso,
+        trial_starts_at: nowIso,
+        trial_ends_at: trialEnd,
+        next_billing_date: trialEnd,
+        monthly_amount: 5000,
+        school_setup_complete: true,
+      }
+
       const { data: newSchool, error: schoolErr } = await client
         .from('schools')
-        .insert([
-          {
-            name: cleanSchool,
-            slug: `${slug}-${Math.floor(100 + Math.random() * 900)}`,
-            city: cleanCity,
-            admin_email: cleanEmail,
-            owner_name: cleanOwner,
-            phone: cleanPhone,
-            plan_tier: 'pro',
-            plan_status: 'trial',
-            created_at: nowIso,
-            trial_starts_at: nowIso,
-            trial_ends_at: trialEnd,
-            next_billing_date: trialEnd,
-            monthly_amount: 5000,
-            school_setup_complete: true,
-          },
-        ])
+        .insert([fullSchoolPayload])
         .select()
         .single()
 
       if (!schoolErr && newSchool) {
         schoolId = newSchool.id
       } else {
-        console.warn('Could not insert to public.schools, will attempt campus fallback:', schoolErr)
+        // Fallback to verified existing columns: name, slug, city, phone
+        console.warn('Full schools insert error, retrying with minimal schema:', schoolErr?.message)
+        const minimalPayload = {
+          name: cleanSchool,
+          slug: `${slug}-${Math.floor(100 + Math.random() * 900)}`,
+          city: cleanCity,
+          phone: cleanPhone,
+        }
+        const { data: minSchool, error: minErr } = await client
+          .from('schools')
+          .insert([minimalPayload])
+          .select()
+          .single()
+
+        if (!minErr && minSchool) {
+          schoolId = minSchool.id
+        } else {
+          console.warn('Minimal schools insert notice:', minErr?.message)
+        }
       }
     } catch (err) {
       console.warn('public.schools insertion exception:', err)
@@ -122,25 +140,48 @@ export async function POST(request: NextRequest) {
       }
     } catch {}
 
-    // 3. Upsert Profile in public.profiles
+    // 3. Upsert Profile in public.profiles with resilient fallback
     if (effectiveUserId) {
+      const assignedSchoolId = schoolId || campusId || null
       try {
-        await client.from('profiles').upsert([
-          {
+        const fullProfilePayload = {
+          id: effectiveUserId,
+          email: cleanEmail,
+          full_name: cleanOwner,
+          role: 'school_admin',
+          onboarding_completed: true,
+          school_setup_complete: true,
+          school_id: assignedSchoolId,
+          phone_number: cleanPhone,
+          updated_at: nowIso,
+        }
+        const { error: profErr } = await client.from('profiles').upsert([fullProfilePayload])
+        if (profErr) {
+          console.warn('Full profile upsert error, retrying with verified columns:', profErr.message)
+          const minimalProfilePayload = {
             id: effectiveUserId,
-            email: cleanEmail,
             full_name: cleanOwner,
             role: 'school_admin',
+            school_id: assignedSchoolId,
             onboarding_completed: true,
-            school_setup_complete: true,
-            school_id: schoolId || campusId || null,
-            phone_number: cleanPhone,
-            updated_at: nowIso,
-          },
-        ])
+          }
+          await client.from('profiles').upsert([minimalProfilePayload])
+        }
       } catch (err) {
         console.warn('Profile upsert exception:', err)
       }
+
+      // Also persist to Supabase Auth metadata for frictionless session checks
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            school_id: assignedSchoolId,
+            school_name: cleanSchool,
+            onboarding_completed: true,
+            role: 'school_admin',
+          },
+        })
+      } catch {}
     }
 
     // 4. Set secure session cookies for frictionless routing

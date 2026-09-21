@@ -76,28 +76,25 @@ export default function OnboardingPage() {
 
       if (user) {
         setUserEmail(user.email ?? '')
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role, school_id, onboarding_completed, school_setup_complete')
-          .eq('id', user.id)
-          .maybeSingle()
 
-        let isSetupComplete = Boolean(profile?.school_setup_complete || profile?.onboarding_completed)
-        if (!isSetupComplete && profile?.school_id) {
-          const { data: school } = await supabase
-            .from('schools')
-            .select('school_setup_complete')
-            .eq('id', profile.school_id)
-            .maybeSingle()
-          if (school?.school_setup_complete) {
-            isSetupComplete = true
-          }
-        }
-
-        if (isSetupComplete) {
+        // Check if user already has school_id in user_metadata
+        if (user.user_metadata?.school_id || user.user_metadata?.onboarding_completed) {
           router.replace('/admin/dashboard')
           return
         }
+
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, school_id, onboarding_completed')
+            .eq('id', user.id)
+            .maybeSingle()
+
+          if (profile?.school_id || profile?.onboarding_completed) {
+            router.replace('/admin/dashboard')
+            return
+          }
+        } catch {}
       }
     }
     check()
@@ -141,110 +138,47 @@ export default function OnboardingPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       const effectiveEmail = userEmail || user?.email || 'admin@school.edu.pk'
+      const ownerName = user?.user_metadata?.full_name || effectiveEmail.split('@')[0] || 'School Administrator'
 
-      let schoolId: string | number | null = null
+      // 1. Provision school tenant atomically via backend endpoint
+      const setupRes = await fetch('/api/auth/setup-school', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id,
+          email: effectiveEmail,
+          schoolName: form.schoolName.trim(),
+          city: form.city.trim(),
+          ownerName,
+          phone: form.phone.trim(),
+        }),
+      })
 
-      // 1. Try optional school record creation (if table exists)
-      try {
-        const { data: school } = await supabase
-          .from('schools')
-          .insert({
-            name: form.schoolName.trim(),
-            slug: form.slug || toSlug(form.schoolName),
-            admin_email: effectiveEmail,
-            created_at: new Date().toISOString(),
-          })
-          .select('id')
-          .maybeSingle()
-
-        if (school?.id) {
-          schoolId = school.id
-        }
-      } catch {
-        // Table may not exist in standard tenant schema; safe to proceed with campus
+      const setupResult = await setupRes.json()
+      if (!setupRes.ok || !setupResult.success) {
+        throw new Error(setupResult.error || 'Failed to setup school campus.')
       }
 
-      // 2. Create the campus tenant record
-      const campusPayload: Record<string, any> = {
-        name: form.campusName.trim() || `${form.schoolName.trim()} Main Campus`,
-        city: form.city.trim(),
-        address: form.address.trim() || null,
-        phone: form.phone.trim() || null,
-        admin_email: effectiveEmail,
-        plan: 'Pro',
-        students: 0,
-        status: 'Active',
-        owner: user?.user_metadata?.full_name || effectiveEmail.split('@')[0] || 'School Administrator',
-        slug: form.slug || toSlug(form.schoolName),
-        created_at: new Date().toISOString(),
-      }
-      if (schoolId) {
-        campusPayload.school_id = schoolId
-      }
+      const schoolId = setupResult.schoolId
 
-      let createdCampusId: string | number | null = null
-      try {
-        const { data: campus } = await supabase
-          .from('campuses')
-          .insert(campusPayload)
-          .select('id')
-          .maybeSingle()
-
-        if (campus?.id) {
-          createdCampusId = campus.id
-        }
-      } catch {
-        // Even if database has restricted permissions, ensure local state proceeds
-      }
-
-      // 3. Update profile if user exists
-      if (user) {
+      // 2. Resiliently update profile on client if user session is active
+      if (user && schoolId) {
         try {
-          const profileUpdate: Record<string, any> = {
-            onboarding_completed: true,
-            school_setup_complete: true,
-            updated_at: new Date().toISOString(),
-          }
-          if (schoolId) profileUpdate.school_id = schoolId
-          if (createdCampusId) profileUpdate.campus_id = createdCampusId
-
           await supabase
             .from('profiles')
-            .update(profileUpdate)
+            .update({
+              school_id: schoolId,
+              onboarding_completed: true,
+            })
             .eq('id', user.id)
-
-          if (schoolId) {
-            await supabase
-              .from('schools')
-              .update({ school_setup_complete: true, updated_at: new Date().toISOString() })
-              .eq('id', schoolId)
-          }
         } catch {}
       }
 
-      // 4. Provision school trial via real database backend
-      try {
-        await fetch('/api/auth/setup-school', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user?.id,
-            email: effectiveEmail,
-            schoolName: form.schoolName.trim(),
-            city: form.city.trim(),
-            ownerName: user?.user_metadata?.full_name || effectiveEmail.split('@')[0] || 'School Administrator',
-            phone: form.phone.trim(),
-          }),
-        })
-      } catch (e) {
-        console.warn('Backend school provisioning notice:', e)
-      }
-
-      // 5. Set authenticated session cookies
+      // 3. Set authenticated session cookies
       document.cookie = `eduflow-user-email=${encodeURIComponent(effectiveEmail)}; path=/; max-age=86400; SameSite=Lax`
       document.cookie = 'eduflow-user-role=school_admin; path=/; max-age=86400; SameSite=Lax'
 
-      // 6. Done — send directly to admin dashboard
+      // 4. Send directly to admin dashboard
       router.push('/admin/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')

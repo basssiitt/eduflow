@@ -179,79 +179,84 @@ export async function GET(request: NextRequest) {
       if (s) schoolRow = s
     }
 
-    // 2. If not found by ID, look up via user email
-    if (!schoolRow && userEmail) {
-      // First look in profiles for school_id
-      const { data: profile } = await client
-        .from('profiles')
-        .select('school_id')
-        .eq('email', userEmail)
-        .maybeSingle()
-
-      if (profile?.school_id) {
-        schoolId = profile.school_id
-        const { data: s } = await client
-          .from('schools')
-          .select('*')
-          .eq('id', schoolId)
+    // 2. If not found by ID, look up via authenticated user ID in profiles
+    if (!schoolRow && auth.user?.id) {
+      try {
+        const { data: profile } = await client
+          .from('profiles')
+          .select('school_id')
+          .eq('id', auth.user.id)
           .maybeSingle()
-        if (s) schoolRow = s
-      }
+
+        if (profile?.school_id) {
+          schoolId = profile.school_id
+          const { data: s } = await client
+            .from('schools')
+            .select('*')
+            .eq('id', schoolId)
+            .maybeSingle()
+          if (s) schoolRow = s
+        }
+      } catch {}
 
       // If still not found, check schools.admin_email
-      if (!schoolRow) {
-        const { data: s } = await client
-          .from('schools')
-          .select('*')
-          .eq('admin_email', userEmail)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle()
-        if (s) {
-          schoolRow = s
-          schoolId = s.id
-        }
+      if (!schoolRow && userEmail) {
+        try {
+          const { data: s } = await client
+            .from('schools')
+            .select('*')
+            .eq('admin_email', userEmail)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (s) {
+            schoolRow = s
+            schoolId = s.id
+          }
+        } catch {}
       }
     }
 
     // 3. If no school row in DB yet (e.g. before migration runs), check campuses or construct from auth user
     if (!schoolRow && userEmail) {
-      const { data: campus } = await client
-        .from('campuses')
-        .select('*')
-        .eq('admin_email', userEmail)
-        .limit(1)
-        .maybeSingle()
+      try {
+        const { data: campus } = await client
+          .from('campuses')
+          .select('*')
+          .eq('admin_email', userEmail)
+          .limit(1)
+          .maybeSingle()
 
-      if (campus) {
-        const regDate = campus.created_at || new Date().toISOString()
-        const trialEnd = new Date(new Date(regDate).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        schoolRow = {
-          id: campus.id,
-          name: campus.name || 'Campus',
-          slug: campus.slug || 'campus',
-          city: campus.city || 'Karachi',
-          admin_email: userEmail,
-          owner_name: campus.owner || 'Principal',
-          phone: campus.phone || '',
-          plan_tier: campus.plan || 'pro',
-          plan_status: 'trial',
-          created_at: regDate,
-          trial_starts_at: regDate,
-          trial_ends_at: trialEnd,
-          next_billing_date: trialEnd,
-          monthly_amount: 5000,
+        if (campus) {
+          const regDate = campus.created_at || auth.user.created_at || new Date().toISOString()
+          const trialEnd = new Date(new Date(regDate).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          schoolRow = {
+            id: campus.id,
+            name: campus.name || 'Campus',
+            slug: campus.slug || 'campus',
+            city: campus.city || 'Karachi',
+            admin_email: userEmail,
+            owner_name: campus.owner || 'Principal',
+            phone: campus.phone || '',
+            plan_tier: campus.plan || 'pro',
+            plan_status: 'trial',
+            created_at: regDate,
+            trial_starts_at: regDate,
+            trial_ends_at: trialEnd,
+            next_billing_date: trialEnd,
+            monthly_amount: 5000,
+          }
+          schoolId = campus.id
         }
-        schoolId = campus.id
-      }
+      } catch {}
     }
 
-    // 4. Default fallback if brand new
+    // 4. Deterministic fallback anchored permanently to user registration timestamp
     if (!schoolRow) {
-      const now = new Date().toISOString()
-      const end = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      const regDate = auth.user.created_at || new Date().toISOString()
+      const end = new Date(new Date(regDate).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
       schoolRow = {
-        id: 'new-school',
+        id: schoolId || 'new-school',
         name: 'School Workspace',
         slug: 'school-workspace',
         city: 'Karachi',
@@ -260,8 +265,8 @@ export async function GET(request: NextRequest) {
         phone: '',
         plan_tier: 'pro',
         plan_status: 'trial',
-        created_at: now,
-        trial_starts_at: now,
+        created_at: regDate,
+        trial_starts_at: regDate,
         trial_ends_at: end,
         next_billing_date: end,
         monthly_amount: 5000,

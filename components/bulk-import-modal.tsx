@@ -118,7 +118,7 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
         setCredentials(result.credentials)
         setComplete(true)
       } else {
-        setError('Failed to import student records. Please check your data and try again.')
+        setError(result.error || 'Failed to import student records. Please check your data and try again.')
       }
     } catch (err: any) {
       setError(err?.message || 'An error occurred during bulk import.')

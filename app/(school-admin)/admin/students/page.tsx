@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchStudents } from '@/lib/live-data'
@@ -195,7 +195,7 @@ export default function StudentsPage() {
   const [page, setPage] = useState(1)
   const pageSize = 10
 
-  const loadStudents = async () => {
+  const loadStudents = useCallback(async () => {
     setLoading(true)
     const { data } = await fetchStudents()
     if (data && data.length > 0) {
@@ -215,11 +215,11 @@ export default function StudentsPage() {
       setStudents([])
     }
     setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     loadStudents()
-  }, [])
+  }, [loadStudents])
 
   const handleDelete = async (id: string | number) => {
     // ubs:ignore - user explicit confirmation prompt
@@ -485,12 +485,14 @@ export default function StudentsPage() {
       )}
 
       {importOpen && (
-        <BulkImportModal
-          onClose={() => {
-            setImportOpen(false)
-            loadStudents()
-          }}
-        />
+        <Suspense fallback={null}>
+          <BulkImportModal
+            onClose={() => {
+              setImportOpen(false)
+              loadStudents()
+            }}
+          />
+        </Suspense>
       )}
     </div>
   )
