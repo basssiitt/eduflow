@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "motion/react"
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MoreHorizontal, Plus, Printer, ReceiptText, Search, TrendingUp, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
@@ -218,17 +219,23 @@ export function AdminPortal() {
           <Button
             variant="outline"
             onClick={() => setBankModalOpen(true)}
-            className="border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+            className="border-slate-200 bg-white hover:bg-slate-50 text-slate-700 active:scale-95 transition-all shadow-xs"
           >
             <Building2 className="mr-2 size-4 text-blue-600" /> Bank &amp; Gateway Setup
           </Button>
-          <Button variant="outline" data-testid="btn-bulk-import" onClick={() => setImportOpen(true)} className="border-slate-200 bg-white hover:bg-slate-50 text-slate-700">
+          <Button
+            variant="outline"
+            data-testid="btn-bulk-import"
+            onClick={() => setImportOpen(true)}
+            className="border-slate-200 bg-white hover:bg-slate-50 text-slate-700 active:scale-95 transition-all shadow-xs"
+          >
             <Upload className="mr-2 size-4 text-slate-500" /> Bulk Import CSV
           </Button>
           <Button
             onClick={generate}
             disabled={generating}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs"
+            variant="shimmer"
+            className="font-semibold shadow-md active:scale-95"
           >
             <Plus className="mr-2 size-4" /> Generate Invoices
           </Button>
@@ -313,18 +320,20 @@ export function AdminPortal() {
         <div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between bg-slate-50/50">
           <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 border border-slate-200">
             {["All", "Paid", "Pending", "Overdue"].map((f) => (
-              <button
+              <motion.button
                 key={f}
+                whileTap={{ scale: 0.94 }}
+                transition={{ duration: 0.1 }}
                 className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-bold transition-all',
+                  'rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer select-none',
                   filter === f
                     ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 )}
                 onClick={() => { setFilter(f); setPage(1); }}
               >
                 {f}
-              </button>
+              </motion.button>
             ))}
           </div>
           <div className="relative w-full sm:w-64">
@@ -462,26 +471,29 @@ export function AdminPortal() {
         )}
       </section>
 
-      {selected && (
-        <ThreeFaceChallanSlip
-          data={{
-            challanNo: selected.challan,
-            studentName: selected.name,
-            rollNo: selected.id ? `2026-${String(selected.id).padStart(3, '0')}` : '2026-001',
-            className: selected.cls,
-            tuitionFee: selected.tuition,
-            arrears: selected.arrears,
-            dueDate: selected.due,
-            issueDate: '01 Oct 2026',
-            bankName: bankSettings.bankName,
-            accountTitle: bankSettings.accountTitle,
-            iban: bankSettings.iban,
-            schoolName: 'EduFlow Academy & College',
-            schoolBranch: 'Main Campus',
-          }}
-          onClose={() => setSelected(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selected && (
+          <ThreeFaceChallanSlip
+            key="selected-challan-slip"
+            data={{
+              challanNo: selected.challan,
+              studentName: selected.name,
+              rollNo: selected.id ? `2026-${String(selected.id).padStart(3, '0')}` : '2026-001',
+              className: selected.cls,
+              tuitionFee: selected.tuition,
+              arrears: selected.arrears,
+              dueDate: selected.due,
+              issueDate: '01 Oct 2026',
+              bankName: bankSettings.bankName,
+              accountTitle: bankSettings.accountTitle,
+              iban: bankSettings.iban,
+              schoolName: 'EduFlow Academy & College',
+              schoolBranch: 'Main Campus',
+            }}
+            onClose={() => setSelected(null)}
+          />
+        )}
+      </AnimatePresence>
 
       <BankSettingsModal
         isOpen={bankModalOpen}
@@ -496,16 +508,19 @@ export function AdminPortal() {
         }}
       />
 
-      {importOpen && (
-        <Suspense fallback={null}>
-          <BulkImportModal
-            onClose={() => {
-              setImportOpen(false)
-              loadInvoices()
-            }}
-          />
-        </Suspense>
-      )}
+      <AnimatePresence>
+        {importOpen && (
+          <Suspense fallback={null}>
+            <BulkImportModal
+              key="admin-bulk-import-modal"
+              onClose={() => {
+                setImportOpen(false)
+                loadInvoices()
+              }}
+            />
+          </Suspense>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

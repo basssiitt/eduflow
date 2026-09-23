@@ -39,6 +39,8 @@
     "node_modules",
     "workers",
     ".agents",
-    ".gemini"
+    ".gemini",
+    "libs",
+    "graphify-out"
   ]
 }

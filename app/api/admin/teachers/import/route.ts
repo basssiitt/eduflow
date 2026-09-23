@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
+import { isSuperAdminEmail } from '@/lib/config'
+import { authorizeAdminCaller } from '@/lib/auth/authorizeAdmin'
+
+function getAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  if (!url || !key) return null
+  return createAdminClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
+}
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -10,10 +20,15 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: profile } = await supabase.from('profiles').select('role, school_id').eq('id', user.id).maybeSingle()
-  if (!profile || !['school_admin', 'admin', 'super_admin'].includes(profile.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const authResult = await authorizeAdminCaller(user)
+  if (!authResult.isAuthorized) {
+    return NextResponse.json({ error: 'Forbidden: Only school administrators can onboard teachers.' }, { status: 403 })
   }
+  const schoolId = authResult.schoolId
+  if (!schoolId) {
+    return NextResponse.json({ error: 'No school is attached to this account. Please complete school onboarding.' }, { status: 400 })
+  }
+  const isSuperAdmin = isSuperAdminEmail((user.email || '').toLowerCase().trim())
 
   const body = await request.json().catch(() => null)
   const rows = Array.isArray(body?.rows) ? body.rows : []
@@ -24,9 +39,9 @@ export async function POST(request: Request) {
     email: String(row.email ?? '').trim().toLowerCase(),
     phone: String(row.phone ?? '').trim() || null,
     subject: String(row.subject ?? '').trim() || null,
-    schoolId: profile.role === 'super_admin' && row.school_id
+    schoolId: isSuperAdmin && row.school_id
       ? String(row.school_id).trim()
-      : String(profile.school_id ?? '').trim(),
+      : schoolId,
   }))
   const invalid = normalized.findIndex((row) => !row.name || !emailPattern.test(row.email))
   if (invalid >= 0) return NextResponse.json({ error: `Row ${invalid + 1} needs a valid name and email.` }, { status: 400 })

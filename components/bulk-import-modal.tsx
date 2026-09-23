@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import Papa from 'papaparse'
 import { AlertCircle, Check, Copy, Download, FileSpreadsheet, Loader2, Upload, X } from 'lucide-react'
+import { motion } from 'motion/react'
 import { bulkUploadStudentsAction, type GeneratedParentCredential } from '@/app/actions/students'
 
 export const CSV_HEADER_KEYS = [
@@ -141,24 +142,51 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="import-title">
-      <div className="import-modal">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="admin-modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="import-title"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 20 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+        className="import-modal shadow-2xl"
+      >
         <header className="import-header">
           <div>
             <span className="eyebrow">STUDENT MANAGEMENT · ONBOARDING</span>
             <h2 id="import-title">Import students &amp; parents</h2>
             <p>Upload a CSV to preview student records and prepare parent access.</p>
           </div>
-          <button className="icon-btn" onClick={onClose} aria-label="Close bulk import">
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.15 }}
+            className="icon-btn hover:bg-slate-100 dark:hover:bg-slate-800"
+            onClick={onClose}
+            aria-label="Close bulk import"
+          >
             <X />
-          </button>
+          </motion.button>
         </header>
 
         {complete ? (
           <section className="import-success" aria-live="polite">
-            <div className="success-icon">
+            <motion.div
+              initial={{ scale: 0.7, rotate: -15, opacity: 0 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+              transition={{ type: 'spring', damping: 15, stiffness: 300 }}
+              className="success-icon"
+            >
               <Check />
-            </div>
+            </motion.div>
             <h3>Parent accounts are ready</h3>
             <p>{credentials.length} temporary credentials generated for your review.</p>
 
@@ -178,7 +206,12 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
                 </thead>
                 <tbody>
                   {credentials.map((c, index) => (
-                    <tr key={`cred-row-${index}`}>
+                    <motion.tr
+                      key={`cred-row-${index}`}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.03, duration: 0.2 }}
+                    >
                       <td>{c.roll_number || c.rollNumber || '—'}</td>
                       <td>{c.student_name || c.studentName || '—'}</td>
                       <td>{c.grade || '—'}</td>
@@ -188,18 +221,25 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
                       <td className="font-mono font-bold text-blue-700">
                         {c.temporary_password || c.temporaryPassword || '—'}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
             <div className="import-footer">
-              <button className="admin-btn admin-btn-ghost" onClick={copyCredentials}>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                className="admin-btn admin-btn-ghost"
+                onClick={copyCredentials}
+              >
                 <Copy /> {copied ? 'Copied' : 'Copy credentials'}
-              </button>
-              <button
-                className="admin-btn admin-btn-primary"
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                className="admin-btn admin-btn-primary admin-btn-shimmer"
                 onClick={() =>
                   downloadCsv('eduflow-parent-credentials.csv', [
                     [...CSV_HEADER_KEYS, 'temporary_password'],
@@ -216,12 +256,15 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
                 }
               >
                 <Download /> Export CSV
-              </button>
+              </motion.button>
             </div>
           </section>
         ) : (
           <>
-            <div
+            <motion.div
+              whileHover={{ scale: 1.01, borderColor: '#2563eb' }}
+              whileTap={{ scale: 0.995 }}
+              transition={{ duration: 0.15 }}
               className={`upload-zone ${dragging ? 'dragging' : ''}`}
               onDragOver={(event) => {
                 event.preventDefault()
@@ -252,13 +295,15 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
               <strong>{fileName || 'Drop your CSV file here'}</strong>
               <span>{fileName ? 'File ready for preview' : 'or click to browse from your computer'}</span>
               <b className="format-badge">.csv format</b>
-            </div>
+            </motion.div>
 
             <div className="template-row">
               <span>
                 <FileSpreadsheet /> Headers: roll_number, student_name, grade, parent_name, parent_phone, parent_email
               </span>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 className="download-template"
                 onClick={() =>
                   downloadCsv('eduflow-student-parent-template.csv', [
@@ -268,7 +313,7 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
                 }
               >
                 <Download /> Download template
-              </button>
+              </motion.button>
             </div>
 
             {rows.length > 0 && (
@@ -323,18 +368,33 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
             )}
 
             {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3 my-3 text-xs text-red-700 flex items-center gap-2" role="alert">
-                <AlertCircle className="size-4 shrink-0 text-red-600" />
-                <span>{error}</span>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-lg bg-red-50 border border-red-200 p-3.5 my-3 text-xs text-red-700 flex items-center gap-2 shadow-sm"
+                role="alert"
+              >
+                <AlertCircle className="size-4 shrink-0 text-red-600 animate-pulse" />
+                <span className="font-medium">{error}</span>
+              </motion.div>
             )}
 
             <footer className="import-footer">
-              <button className="admin-btn admin-btn-ghost" onClick={onClose} disabled={loading}>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                className="admin-btn admin-btn-ghost font-medium"
+                onClick={onClose}
+                disabled={loading}
+              >
                 Cancel
-              </button>
-              <button
-                className="admin-btn admin-btn-primary import-action"
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.12 }}
+                className="admin-btn admin-btn-primary admin-btn-shimmer import-action font-semibold shadow-md"
                 disabled={rows.length === 0 || loading}
                 onClick={handleImport}
               >
@@ -347,11 +407,11 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
                     <Check /> Prepare parent access ({rows.length})
                   </>
                 )}
-              </button>
+              </motion.button>
             </footer>
           </>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

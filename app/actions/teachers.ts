@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerSupabase } from '@/lib/supabase/server'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
-import { normalizeRole } from '@/lib/config'
+import { normalizeRole, isSuperAdminEmail } from '@/lib/config'
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
@@ -19,6 +19,8 @@ function getAdminClient() {
     },
   })
 }
+
+import { authorizeAdminCaller } from '@/lib/auth/authorizeAdmin'
 
 export interface AddTeacherInput {
   name: string
@@ -45,14 +47,8 @@ export async function addTeacher(input: AddTeacherInput) {
   }
 
   // 2. Authorize admin role
-  const { data: callerProfile } = await supabase
-    .from('profiles')
-    .select('role, school_id')
-    .eq('id', currentUser.id)
-    .maybeSingle()
-
-  const callerRole = normalizeRole(callerProfile?.role || '')
-  if (!['school_admin', 'super_admin'].includes(callerRole)) {
+  const { isAuthorized, callerProfile } = await authorizeAdminCaller(currentUser)
+  if (!isAuthorized) {
     throw new Error('Forbidden: Only school administrators can onboard teachers.')
   }
 
@@ -151,7 +147,7 @@ export async function addTeacher(input: AddTeacherInput) {
         department: input.department ? String(input.department).trim() : 'Academics',
         specialization: input.subject ? String(input.subject).trim() : 'General',
         monthlySalary: input.salary ? String(input.salary) : '65000.00',
-        schoolId: schoolId || undefined,
+        schoolId,
         status: 'active',
       })
       .returning()

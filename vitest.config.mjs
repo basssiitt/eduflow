@@ -11,6 +11,8 @@ export default defineConfig({
     pool: 'threads',
     fileParallelism: false,
     isolate: false,
+    include: ['__tests__/**/*.test.{ts,tsx}'],
+    exclude: ['**/node_modules/**', '**/libs/**', '**/dist/**'],
     alias: {
       '@': path.resolve(import.meta.dirname, './'),
     },

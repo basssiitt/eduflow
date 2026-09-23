@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback, Suspense } from 'react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'motion/react'
 import { BulkImportModal } from '@/components/bulk-import-modal'
 import { fetchStudents } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
@@ -86,8 +87,23 @@ function AddStudentModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true" aria-labelledby="add-student-title">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-xs"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-student-title"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 16 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+        className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
+      >
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -96,9 +112,16 @@ function AddStudentModal({
             </div>
             <p className="mt-1 text-xs text-slate-500">Enter student details to add them to the active academic register.</p>
           </div>
-          <button onClick={onClose} aria-label="Close modal" className="rounded-md p-1 text-slate-400 hover:bg-slate-100">
+          <motion.button
+            whileHover={{ scale: 1.12, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.15 }}
+            onClick={onClose}
+            aria-label="Close modal"
+            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
             <X className="size-4" />
-          </button>
+          </motion.button>
         </div>
 
         {error && <p className="mt-4 text-xs font-semibold text-rose-600">{error}</p>}
@@ -174,14 +197,26 @@ function AddStudentModal({
           </label>
 
           <div className="mt-2 flex items-center justify-end gap-2 sm:col-span-2">
-            <Button variant="outline" type="button" onClick={onClose} className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium">Cancel</Button>
-            <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium active:scale-95 transition-all"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="shimmer"
+              disabled={saving}
+              className="font-semibold rounded-xl shadow-md active:scale-95"
+            >
               {saving ? 'Admitting…' : 'Admit Student'}
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -477,23 +512,29 @@ export default function StudentsPage() {
         )}
       </div>
 
-      {addOpen && (
-        <AddStudentModal
-          onClose={() => setAddOpen(false)}
-          onAdded={() => loadStudents()}
-        />
-      )}
-
-      {importOpen && (
-        <Suspense fallback={null}>
-          <BulkImportModal
-            onClose={() => {
-              setImportOpen(false)
-              loadStudents()
-            }}
+      <AnimatePresence>
+        {addOpen && (
+          <AddStudentModal
+            key="add-student-modal"
+            onClose={() => setAddOpen(false)}
+            onAdded={() => loadStudents()}
           />
-        </Suspense>
-      )}
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {importOpen && (
+          <Suspense fallback={null}>
+            <BulkImportModal
+              key="bulk-import-modal"
+              onClose={() => {
+                setImportOpen(false)
+                loadStudents()
+              }}
+            />
+          </Suspense>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -1,9 +1,12 @@
 'use server'
 
+import { randomInt } from 'crypto'
+
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerSupabase } from '@/lib/supabase/server'
+
 import { db, schema } from '@/lib/db'
-import { normalizeRole } from '@/lib/config'
+import { normalizeRole, isSuperAdminEmail } from '@/lib/config'
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
@@ -22,6 +25,16 @@ function getAdminClient() {
     },
   })
 }
+
+/**
+ * Authoritatively verifies whether the calling authenticated user has administrative
+ * authority over the campus (school_admin, admin, or super_admin).
+ * Bypasses RLS read limits via the adminClient, cross-references school ownership,
+ * and auto-synchronizes the profiles table.
+ */
+import { authorizeAdminCaller } from '@/lib/auth/authorizeAdmin'
+// Authorization logic delegated to shared helper (imported above)
+// Delegated to shared helper (authorizeAdminCaller imported above)
 
 /**
  * Robustly resolves the school_id for the currently logged-in administrator
@@ -150,16 +163,8 @@ export async function admitStudent(input: AdmitStudentInput) {
     }
 
     // 2. Authorize administrator role
-    const { data: callerProfile } = await supabase
-      .from('profiles')
-      .select('role, school_id')
-      .eq('id', currentUser.id)
-      .maybeSingle()
-
-    const callerRole = normalizeRole(
-      callerProfile?.role || currentUser.app_metadata?.role || currentUser.user_metadata?.role || ''
-    )
-    if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
+    const { isAuthorized, callerProfile } = await authorizeAdminCaller(currentUser)
+    if (!isAuthorized) {
       return { success: false, error: 'Forbidden: Only school administrators can admit students.' }
     }
 
@@ -173,7 +178,7 @@ export async function admitStudent(input: AdmitStudentInput) {
     const exactPhone = String(input.guardianPhone || '').trim()
     const exactEmail = String(input.guardianEmail || '').trim().toLowerCase()
     const exactRollNumber = String(
-      input.rollNumber || `2026-${Math.floor(100 + Math.random() * 900)}`
+      input.rollNumber || `2026-${Math.floor(100 + randomInt(0, 900))}`
     ).trim()
     const exactMonthlyFee = String(input.monthlyFee || '15000')
 
@@ -312,21 +317,15 @@ export async function bulkUploadStudentsAction(
       return { success: false, imported: 0, credentials: [], error: 'Authentication required to bulk import student records.' }
     }
 
-    // 2. Authorize admin role
-    const { data: callerProfile } = await supabase
-      .from('profiles')
-      .select('role, school_id')
-      .eq('id', currentUser.id)
-      .maybeSingle()
-
-    const callerRole = normalizeRole(callerProfile?.role || '')
-    if (!['school_admin', 'super_admin', 'admin'].includes(callerRole)) {
+    // 2. Authorize admin caller and retrieve school context
+    const { isAuthorized, callerProfile } = await authorizeAdminCaller(currentUser)
+    if (!isAuthorized) {
       return { success: false, imported: 0, credentials: [], error: 'Forbidden: Only school administrators can import students.' }
     }
 
-  // 3. Retrieve currently logged-in admin's school_id (from session or profile in Supabase)
-  const { schoolId, schoolSlug } = await resolveAdminSchoolId(currentUser, callerProfile)
-  const adminClient = getAdminClient()
+    // 3. Retrieve currently logged-in admin's school_id (from session, profile, or school ownership)
+    const { schoolId, schoolSlug } = await resolveAdminSchoolId(currentUser, callerProfile)
+    const adminClient = getAdminClient()
 
   // 4. Process each student row mapping exact CSV header keys
   const credentials: GeneratedParentCredential[] = []
@@ -383,7 +382,8 @@ export async function bulkUploadStudentsAction(
 
     // Auto-generate temporary password
     const cleanRollAlphaNum = rollNumber.replace(/[^a-zA-Z0-9]/g, '') || String(i + 100)
-    const temporaryPassword = `EF#${cleanRollAlphaNum}!${Math.floor(100 + Math.random() * 900)}`
+    const temporaryPassword = `EF#${cleanRollAlphaNum}!${randomInt(100, 1000)}`
+
 
     // 5. Use Supabase Admin API to create parent account
     let parentUserId: string | null = null
@@ -407,7 +407,7 @@ export async function bulkUploadStudentsAction(
       } else if (authError?.message?.toLowerCase().includes('already') || authError?.status === 422) {
         // Parent already registered in auth, update metadata & password
         const { data: userList } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 100 })
-        const existingUser = userList?.users?.find((u) => u.email?.toLowerCase() === parentEmail)
+        const existingUser = userList?.users?.find((u: { email?: string; id: string }) => u.email?.toLowerCase() === parentEmail)
         if (existingUser) {
           parentUserId = existingUser.id
           await adminClient.auth.admin.updateUserById(existingUser.id, {

@@ -155,4 +155,7 @@ litellm*.yml
 .gemini/*
 !.gemini/rules
 brag-output/
+graphify-out/
+libs/graphify/
+libs/ponytail/
 
