@@ -6,7 +6,6 @@ function getAdminClient() {
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_SECRET_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     ''
   if (!url || !key) return null
   return createAdminClient(url, key, {
@@ -110,7 +109,7 @@ export async function authorizeAdminCaller(
     // Synchronize school_id to profile if missing for authorized school administrators
     if (adminClient && effectiveSchoolId && (!callerProfile?.school_id || !callerProfile?.role)) {
       try {
-        await adminClient
+        const { error: syncErr } = await adminClient
           .from('profiles')
           .update({
             school_id: effectiveSchoolId,
@@ -118,6 +117,9 @@ export async function authorizeAdminCaller(
             updated_at: new Date().toISOString(),
           })
           .eq('id', currentUser.id)
+        if (syncErr) {
+          console.warn('Profile school_id sync error:', syncErr.message)
+        }
       } catch (syncErr) {
         console.warn('Profile school_id sync notice:', syncErr)
       }

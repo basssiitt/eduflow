@@ -90,20 +90,21 @@
 ### 👑 Squad Lead: Maali (Team Leader & Orchestrator)
 ### 👥 Full Specialist Squad Contributions:
 - 🔒 **Bilal** (Security & Auth Guardian):
-  - Created shared authoritative authorization engine [`lib/auth/authorizeAdmin.ts`](file:///home/basit/eduflow/lib/auth/authorizeAdmin.ts) resolving admin permissions across `profiles`, auth `user_metadata`, `app_metadata`, session cookies, and `schools.admin_email` ownership.
+  - Created shared authoritative authorization engine [`lib/auth/authorizeAdmin.ts`](file:///home/basit/eduflow/lib/auth/authorizeAdmin.ts) resolving admin permissions strictly across server-trusted sources: database `profiles`, signed `app_metadata`, `schools.admin_email` ownership, and `isSuperAdminEmail()`. Client-controlled `user_metadata` is untrusted and excluded.
   - Resolved the "Forbidden: Only school administrators can bulk upload" error by preventing uninitialized or un-synced profile queries from blocking legitimate school administrators.
-  - Implemented automatic, self-healing profile role & `school_id` synchronization using elevated service role client.
+  - Implemented automatic, self-healing profile role & `school_id` synchronization using elevated service role client with logged error handling.
 - 🏗️ **Faris** (System & Code Architect):
-  - Replaced manual, duplicated authorization snippets across [`app/actions/students.ts`](file:///home/basit/eduflow/app/actions/students.ts), [`app/actions/teachers.ts`](file:///home/basit/eduflow/app/actions/teachers.ts), [`app/api/admin/students/import/route.ts`](file:///home/basit/eduflow/app/api/admin/students/import/route.ts), and [`app/api/admin/teachers/import/route.ts`](file:///home/basit/eduflow/app/api/admin/teachers/import/route.ts) with unified `authorizeAdminCaller()`.
+  - Replaced manual, duplicated authorization snippets across [`app/actions/students.ts`](file:///home/basit/eduflow/app/actions/students.ts), [`app/actions/teachers.ts`](file:///home/actions/teachers.ts), [`app/api/admin/students/import/route.ts`](file:///home/basit/eduflow/app/api/admin/students/import/route.ts), and [`app/api/admin/teachers/import/route.ts`](file:///home/basit/eduflow/app/api/admin/teachers/import/route.ts) with unified `authorizeAdminCaller()`.
   - Replaced naive `callerProfile?.school_id` fallback in student bulk import with resilient `resolveAdminSchoolId()`.
+  - Hardened teacher import route with Super Admin per-row `school_id` resolution and payload size guard (`5MB`).
 - 🎨 **Zara** (Frontend & UI/UX Specialist):
   - Upgraded [`components/ui/button.tsx`](file:///home/basit/eduflow/components/ui/button.tsx) with `'use client'` directive, canonical `motion/react` integration, tactile spring physics (`cubic-bezier(0.16, 1, 0.3, 1)`), shimmer overlays, hover elevation, and exported `MotionButton`.
   - Polished [`components/bulk-import-modal.tsx`](file:///home/basit/eduflow/components/bulk-import-modal.tsx), [`components/admin-portal.tsx`](file:///home/basit/eduflow/components/admin-portal.tsx), and [`app/globals.css`](file:///home/basit/eduflow/app/globals.css) with fluid micro-interactions inspired by Jitter UI templates.
 - 🔍 **Rayan** (QA & Ultimate Bug Scanner Hunter):
-  - Executed UBS static analysis across all modified files: Exit 0, 0 critical issues.
+  - Executed UBS static analysis across all modified files: Exit 0, 0 critical issues, 0 warnings.
   - Scoped `tsconfig.json` and `vitest.config.mjs` to exclude vendor `libs/` directories, preventing third-party test bloat.
 - 🧪 **Sobia** (Test & Verification Lead):
-  - Executed Vitest test suite (`npm test`): 4/4 test files passed, 12/12 tests green.
+  - Executed Vitest test suite (`npm test`): 4/4 test files passed, 16/16 tests green (including deterministic `authorizeAdminCaller` unit tests covering synthetic super admins, signed metadata, school ownership, and profile sync).
   - Executed TypeScript compilation check (`npx tsc --noEmit`): Exit code 0, 0 type errors.
 - 📝 **Zubair** (Docs & Roadmap Curator):
   - Synchronized `activity.md` and verified zero regressions across all verification gates.
@@ -112,13 +113,15 @@
 
 ### Quality Gate Results:
 - **TypeScript Compiler (`tsc --noEmit`)**: Exit 0 (0 type errors)
-- **UBS Static Analysis Gate**: Exit 0 (0 critical issues)
-- **Vitest Unit & Integration Suite**: 4/4 suites passed, 12/12 tests green
+- **UBS Static Analysis Gate**: Exit 0 (0 critical issues, 0 warnings)
+- **Vitest Unit & Integration Suite**: 4/4 suites passed, 16/16 tests green
+- **CodeRabbit AI Review (`cr review --agent`)**: All findings verified and cleanly resolved
 - **Specialist Squad Sign-offs**:
-  - 🔒 **Bilal** (Security): Approved 🟢 (Self-healing admin authorization engine)
-  - 🏗️ **Faris** (Architecture): Approved 🟢 (Unified contract, eliminated duplicate logic)
-  - 🔍 **Rayan** (QA & UBS): Approved 🟢 (0 critical UBS bugs, 0 compiler errors)
+  - 🔒 **Bilal** (Security): Approved 🟢 (Self-healing admin authorization engine, service role key enforcement)
+  - 🏗️ **Faris** (Architecture): Approved 🟢 (Unified contract, eliminated duplicate logic, per-row super admin resolution)
+  - 🔍 **Rayan** (QA & UBS): Approved 🟢 (0 critical UBS bugs, 0 compiler errors, 0 warnings)
   - 🎨 **Zara** (Frontend UI/UX): Approved 🟢 (Tactile reactive buttons & Jitter micro-interactions)
 
 <promise>COMPLETE</promise>
+
 
