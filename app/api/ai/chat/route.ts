@@ -1,11 +1,17 @@
 import { GoogleGenAI } from '@google/genai'
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { aj } from '@/lib/arcjet'
 
-export async function POST(request: Request) {
-  const cookieStore = await cookies()
-  const userEmail = cookieStore.get('eduflow-user-email')?.value
+export async function POST(request: NextRequest) {
+  const decision = await aj.protect(request as any)
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return NextResponse.json({ error: 'Too many requests. Please wait.' }, { status: 429 })
+    }
+    return NextResponse.json({ error: 'Access denied by security shield.' }, { status: 403 })
+  }
+
   let authenticatedUser = null
 
   try {
@@ -14,18 +20,8 @@ export async function POST(request: Request) {
     authenticatedUser = user
   } catch {}
 
-  const isSupabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && 
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
-  )
-
-  if (isSupabaseConfigured && !authenticatedUser) {
+  if (!authenticatedUser) {
     return NextResponse.json({ error: 'Authentication required. Please log in.' }, { status: 401 })
-  }
-
-  if (!authenticatedUser && !userEmail) {
-    return NextResponse.json({ error: 'Authentication required.' }, { status: 401 })
   }
 
   const contentLength = Number(request.headers.get('content-length') ?? 0)

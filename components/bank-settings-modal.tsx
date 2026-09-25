@@ -23,34 +23,75 @@ interface BankSettingsModalProps {
 
 export function BankSettingsModal({ isOpen, onClose, settings, onSave }: BankSettingsModalProps) {
   const [localSettings, setLocalSettings] = React.useState<BankSettings>(settings)
+  const [errorMsg, setErrorMsg] = React.useState('')
 
   React.useEffect(() => {
     setLocalSettings(settings)
+    setErrorMsg('')
   }, [settings])
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave(localSettings)
+    setErrorMsg('')
+    try {
+      if (!localSettings.bankName.trim() || !localSettings.accountTitle.trim() || !localSettings.iban.trim()) {
+        setErrorMsg('Bank name, account title, and IBAN are required fields.')
+        return
+      }
+      onSave(localSettings)
+    } catch (err: any) {
+      console.error('Failed to save bank settings:', err)
+      setErrorMsg('Failed to update bank settings. Please check your network and input.')
+    }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bank-settings-modal-title"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200"
+      >
         <div className="flex items-center justify-between pb-3 border-b border-slate-200">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Payment Gateway &amp; Banking</span>
-            <h3 className="text-lg font-black text-slate-900">School Bank Account Setup</h3>
+            <h3 id="bank-settings-modal-title" className="text-lg font-black text-slate-900">School Bank Account Setup</h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700" aria-label="Close bank settings">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 cursor-pointer" aria-label="Close bank settings">
             <X className="size-5" />
           </button>
         </div>
+        {errorMsg && (
+          <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-700 font-medium">
+            {errorMsg}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 text-xs">
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Bank Name</label>
+            <label htmlFor="bank-name-input" className="font-semibold text-slate-700 block mb-1">Bank Name</label>
             <Input
+              id="bank-name-input"
               value={localSettings.bankName}
               onChange={(e) => setLocalSettings({ ...localSettings, bankName: e.target.value })}
               placeholder="e.g. Meezan Bank Ltd."
@@ -59,8 +100,9 @@ export function BankSettingsModal({ isOpen, onClose, settings, onSave }: BankSet
             />
           </div>
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Account Title</label>
+            <label htmlFor="account-title-input" className="font-semibold text-slate-700 block mb-1">Account Title</label>
             <Input
+              id="account-title-input"
               value={localSettings.accountTitle}
               onChange={(e) => setLocalSettings({ ...localSettings, accountTitle: e.target.value })}
               placeholder="e.g. EduFlow School Accounts"
@@ -69,8 +111,9 @@ export function BankSettingsModal({ isOpen, onClose, settings, onSave }: BankSet
             />
           </div>
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">IBAN (24 Characters)</label>
+            <label htmlFor="iban-input" className="font-semibold text-slate-700 block mb-1">IBAN (24 Characters)</label>
             <Input
+              id="iban-input"
               value={localSettings.iban}
               onChange={(e) => setLocalSettings({ ...localSettings, iban: e.target.value })}
               placeholder="PK92 MEZN 0001 2345 6789 0101"
@@ -80,8 +123,9 @@ export function BankSettingsModal({ isOpen, onClose, settings, onSave }: BankSet
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">1Link PSID Prefix</label>
+              <label htmlFor="psid-prefix-input" className="font-semibold text-slate-700 block mb-1">1Link PSID Prefix</label>
               <Input
+                id="psid-prefix-input"
                 value={localSettings.psidPrefix}
                 onChange={(e) => setLocalSettings({ ...localSettings, psidPrefix: e.target.value })}
                 placeholder="1004"
@@ -89,8 +133,9 @@ export function BankSettingsModal({ isOpen, onClose, settings, onSave }: BankSet
               />
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">EasyPaisa / JazzCash</label>
+              <label htmlFor="easypaisa-input" className="font-semibold text-slate-700 block mb-1">EasyPaisa / JazzCash</label>
               <Input
+                id="easypaisa-input"
                 value={localSettings.easypaisa}
                 onChange={(e) => setLocalSettings({ ...localSettings, easypaisa: e.target.value })}
                 placeholder="03XXXXXXXXX"

@@ -2,12 +2,15 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, CalendarCheck, CreditCard, FileText, GraduationCap, ReceiptText, Settings, Users, WalletCards, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { fetchAdminStats, fetchTeachers, fetchStudents } from '@/lib/live-data'
 
 export default function AdminOverviewPage() {
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
   const [stats, setStats] = useState<{
     students: number
     attendance: any[]
@@ -71,6 +74,12 @@ export default function AdminOverviewPage() {
     }))
   }, [studentsList])
 
+  const filteredClassBreakdown = useMemo(() => {
+    if (!searchQuery.trim()) return classBreakdown
+    const q = searchQuery.toLowerCase().trim()
+    return classBreakdown.filter((item) => item.name.toLowerCase().includes(q))
+  }, [classBreakdown, searchQuery])
+
   const [activeGrowthTab, setActiveGrowthTab] = useState<'performance' | 'annual'>('performance')
 
   return (
@@ -86,7 +95,15 @@ export default function AdminOverviewPage() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
             <input
               type="text"
+              aria-label="Search campus records"
               placeholder="Search in Campus Records..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  router.push(`/admin/students?q=${encodeURIComponent(searchQuery.trim())}`)
+                }
+              }}
               className="h-9 w-64 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
@@ -352,15 +369,15 @@ export default function AdminOverviewPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {classBreakdown.length === 0 ? (
+              {filteredClassBreakdown.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="py-8 text-center text-slate-400">
-                    No enrolled students or active classes found for this campus.
+                    {searchQuery ? `No classes matching "${searchQuery}" found.` : 'No enrolled students or active classes found for this campus.'}
                   </td>
                 </tr>
               ) : (
-                classBreakdown.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/80 transition">
+                filteredClassBreakdown.map((row, idx) => (
+                  <tr key={row.name || idx} className="hover:bg-slate-50/80 transition">
                     <td className="py-3 font-bold text-slate-800">{row.name}</td>
                     <td className="py-3 text-center font-semibold text-slate-700">{row.count}</td>
                     <td className="py-3 text-right">

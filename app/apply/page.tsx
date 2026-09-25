@@ -79,7 +79,7 @@ export default function ApplyOnlinePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submittedApp, setSubmittedApp] = useState<AdmissionApplication | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -113,16 +113,24 @@ export default function ApplyOnlinePage() {
       appliedAt: new Date().toISOString(),
     }
 
+    try {
+      await fetch('/api/admissions/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newApp),
+      })
+    } catch (err) {
+      console.error('Failed to submit admission application to server:', err)
+    }
+
     // Save to local storage for persistence & admin desk review
     try {
       const existing = JSON.parse(localStorage.getItem('eduflow-admissions') || '[]')
       localStorage.setItem('eduflow-admissions', JSON.stringify([newApp, ...existing]))
     } catch {}
 
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setSubmittedApp(newApp)
-    }, 600)
+    setIsSubmitting(false)
+    setSubmittedApp(newApp)
   }
 
   const handlePrint = () => {

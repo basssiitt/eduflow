@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Award,
   BookOpen,
@@ -151,6 +151,7 @@ function ParentSidebar({
 }
 
 export function ParentShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -240,15 +241,15 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-slate-200" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent#attendance'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/parent#attendance')} className="cursor-pointer">
                     <CalendarCheck className="mr-2 size-4 text-blue-600" />
                     <span>Attendance Status</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent#fees'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/parent#fees')} className="cursor-pointer">
                     <ReceiptText className="mr-2 size-4 text-blue-600" />
                     <span>Fee Invoices &amp; Receipts</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent#ai'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/parent#ai')} className="cursor-pointer">
                     <Bot className="mr-2 size-4 text-blue-600" />
                     <span>AI Learning Companion</span>
                   </DropdownMenuItem>
@@ -262,11 +263,11 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
                   <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer">
                     <GraduationCap className="mr-2 size-4 text-blue-600" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/teacher')} className="cursor-pointer">
                     <User className="mr-2 size-4 text-blue-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
@@ -287,7 +288,7 @@ export function ParentShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
+        <main id="main-content" className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, ChevronLeft, ChevronRight, Download, Plus, Search, Trash2, Upload, UserPlus, Users, X } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
+import { ConfirmDeleteModal } from '@/components/confirm-delete-modal'
 import { cn } from '@/lib/utils'
 
 type StudentRecord = {
@@ -226,6 +227,8 @@ export default function StudentsPage() {
   const [classFilter, setClassFilter] = useState('All')
   const [importOpen, setImportOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
+  const [studentToDelete, setStudentToDelete] = useState<StudentRecord | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -256,15 +259,20 @@ export default function StudentsPage() {
     loadStudents()
   }, [loadStudents])
 
-  const handleDelete = async (id: string | number) => {
-    // ubs:ignore - user explicit confirmation prompt
-    if (!confirm('Are you sure you want to remove this student from the active register?')) return
+  const confirmDeleteStudent = async () => {
+    if (!studentToDelete) return
+    const id = studentToDelete.id
+    setDeleting(true)
     if (isSupabaseConfigured && supabaseClient) {
       try {
         await supabaseClient.from('students').delete().eq('id', id)
-      } catch {}
+      } catch (err) {
+        console.error('Failed to delete student:', err)
+      }
     }
     setStudents((curr) => curr.filter((s) => s.id !== id))
+    setDeleting(false)
+    setStudentToDelete(null)
   }
 
   const filtered = useMemo(() => {
@@ -464,7 +472,7 @@ export default function StudentsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDelete(s.id)}
+                            onClick={() => setStudentToDelete(s)}
                             className="size-8 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
                             title="Delete student"
                           >
@@ -535,6 +543,18 @@ export default function StudentsPage() {
           </Suspense>
         )}
       </AnimatePresence>
+
+      <ConfirmDeleteModal
+        isOpen={!!studentToDelete}
+        onClose={() => setStudentToDelete(null)}
+        onConfirm={confirmDeleteStudent}
+        loading={deleting}
+        title="Remove Enrolled Student"
+        message="Are you sure you want to remove this faculty member / student? This action will archive their attendance records and revoke portal access."
+        itemName={studentToDelete?.name}
+        itemDetails={studentToDelete ? `Roll No: ${studentToDelete.roll_no} · ${studentToDelete.class} (Section ${studentToDelete.section})` : undefined}
+        confirmText="Yes, Remove Student"
+      />
     </div>
   )
 }

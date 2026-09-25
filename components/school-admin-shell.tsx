@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Award,
   Bell,
@@ -174,6 +174,7 @@ function SettingsModal({
   onClose: () => void
   userEmail: string
 }) {
+  const router = useRouter()
   const { lang, toggleLanguage } = useEduFlow()
   const [activeTab, setActiveTab] = useState<'profile' | 'subscription' | 'security'>('profile')
   const [notifications, setNotifications] = useState(true)
@@ -416,7 +417,7 @@ function SettingsModal({
                   <Button
                     onClick={() => {
                       onClose()
-                      window.location.href = '/admin/billing'
+                      router.push('/admin/billing')
                     }}
                     className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs"
                   >
@@ -427,7 +428,7 @@ function SettingsModal({
                     variant="outline"
                     onClick={() => {
                       onClose()
-                      window.location.href = '/#pricing'
+                      router.push('/#pricing')
                     }}
                     className="text-xs border-slate-200 hover:border-blue-500"
                   >
@@ -537,10 +538,12 @@ function SettingsModal({
 }
 
 export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [userEmail, setUserEmail] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const cookieMatch = typeof document !== 'undefined'
@@ -596,7 +599,15 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
               <input
                 type="text"
+                aria-label="Search campus records"
                 placeholder="Search campus records..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    router.push(`/admin/students?q=${encodeURIComponent(searchQuery.trim())}`)
+                  }
+                }}
                 className="h-9 w-48 xl:w-64 rounded-xl border border-slate-200/90 bg-slate-50/80 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:w-80 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/15 focus:outline-hidden"
               />
             </div>
@@ -631,11 +642,11 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                     <Settings className="mr-2 size-4 text-slate-600" />
                     <span>Settings &amp; Change Password</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin/billing'} className="cursor-pointer hover:bg-slate-100">
+                  <DropdownMenuItem onClick={() => router.push('/admin/billing')} className="cursor-pointer hover:bg-slate-100">
                     <CreditCard className="mr-2 size-4 text-slate-600" />
                     <span>Manage Subscription (Admin)</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin/settings'} className="cursor-pointer hover:bg-slate-100">
+                  <DropdownMenuItem onClick={() => router.push('/admin/settings')} className="cursor-pointer hover:bg-slate-100">
                     <Globe className="mr-2 size-4 text-slate-600" />
                     <span>Campus Profile Settings</span>
                   </DropdownMenuItem>
@@ -645,11 +656,11 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
                   <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer hover:bg-slate-100">
+                  <DropdownMenuItem onClick={() => router.push('/teacher')} className="cursor-pointer hover:bg-slate-100">
                     <GraduationCap className="mr-2 size-4 text-blue-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer hover:bg-slate-100">
+                  <DropdownMenuItem onClick={() => router.push('/parent')} className="cursor-pointer hover:bg-slate-100">
                     <Users className="mr-2 size-4 text-blue-600" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
@@ -670,7 +681,7 @@ export function SchoolAdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
+        <main id="main-content" className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>

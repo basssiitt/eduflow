@@ -4,9 +4,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   ...(process.env.NODE_ENV === 'development' && process.env.ENABLE_ONLOOK === 'true'
     ? {
         experimental: {

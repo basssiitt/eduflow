@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Activity,
   BookOpen,
@@ -192,6 +192,7 @@ function SuperAdminSidebar({
 }
 
 export function SuperAdminShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -283,15 +284,15 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                     <p className="text-xs font-normal text-slate-500">Super Administrator</p>
                     <p className="truncate font-semibold text-slate-900">{userEmail || 'superadmin@eduflow.pk'}</p>
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/super-admin')} className="cursor-pointer">
                     <ShieldCheck className="mr-2 size-4 text-blue-600" />
                     <span>Control Plane Home</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin/subscriptions'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/super-admin/subscriptions')} className="cursor-pointer">
                     <CreditCard className="mr-2 size-4 text-blue-600" />
                     <span>Subscriptions & Revenue</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/super-admin/telemetry'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/super-admin/telemetry')} className="cursor-pointer">
                     <Gauge className="mr-2 size-4 text-blue-600" />
                     <span>Platform Telemetry</span>
                   </DropdownMenuItem>
@@ -305,15 +306,15 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                   <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                     Switch Workspace
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => window.location.href = '/admin'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer">
                     <GraduationCap className="mr-2 size-4 text-blue-600" />
                     <span>Campus Admin Portal</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/teacher'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/teacher')} className="cursor-pointer">
                     <BookOpen className="mr-2 size-4 text-blue-600" />
                     <span>Teacher Console</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/parent'} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push('/parent')} className="cursor-pointer">
                     <Users className="mr-2 size-4 text-blue-600" />
                     <span>Parent Portal</span>
                   </DropdownMenuItem>
@@ -334,7 +335,7 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
+        <main id="main-content" className="flex-1 p-5 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>

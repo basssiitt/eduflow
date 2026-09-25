@@ -56,8 +56,16 @@ export function SuperAdminPortal() {
   const [email, setEmail] = useState('')
   const [initialAccessPass, setInitialAccessPass] = useState('')
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query)
+    }, 200)
+    return () => clearTimeout(handler)
+  }, [query])
   const pageSize = 10
   const [maintenanceMode, setMaintenanceMode] = useState(false)
   const [licenseBypass, setLicenseBypass] = useState(false)
@@ -218,9 +226,9 @@ export function SuperAdminPortal() {
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        const { error: schoolErr } = await supabaseClient.from('schools').update({ status: nextStatus }).eq('id', id)
+        const { error: schoolErr } = await supabaseClient.from('schools').update({ plan_status: nextStatus.toLowerCase() }).eq('id', id)
         if (schoolErr) {
-          await supabaseClient.from('campuses').update({ status: nextStatus }).eq('id', id)
+          await supabaseClient.from('campuses').update({ plan_status: nextStatus.toLowerCase() }).eq('id', id)
         }
       } catch {}
     }
@@ -233,21 +241,25 @@ export function SuperAdminPortal() {
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        const { error: schoolErr } = await supabaseClient.from('schools').update({ plan: nextPlan, plan_tier: nextPlan.toLowerCase() }).eq('id', id)
+        const { error: schoolErr } = await supabaseClient.from('schools').update({ plan_tier: nextPlan.toLowerCase() }).eq('id', id)
         if (schoolErr) {
-          await supabaseClient.from('campuses').update({ plan: nextPlan }).eq('id', id)
+          await supabaseClient.from('campuses').update({ plan_tier: nextPlan.toLowerCase() }).eq('id', id)
         }
       } catch {}
     }
   }
 
   const filtered = useMemo(() => {
+    const q = debouncedQuery.toLowerCase().trim()
+    if (!q) return campuses
     return campuses.filter((c) =>
-      c.name.toLowerCase().includes(query.toLowerCase()) ||
-      c.owner.toLowerCase().includes(query.toLowerCase()) ||
-      c.city.toLowerCase().includes(query.toLowerCase())
+      c.name.toLowerCase().includes(q) ||
+      (c.city && c.city.toLowerCase().includes(q)) ||
+      (c.slug && c.slug.toLowerCase().includes(q)) ||
+      (c.owner && c.owner.toLowerCase().includes(q)) ||
+      (c.admin_email && c.admin_email.toLowerCase().includes(q))
     )
-  }, [campuses, query])
+  }, [campuses, debouncedQuery])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paginated = useMemo(() => {
@@ -268,7 +280,13 @@ export function SuperAdminPortal() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
             <input
               type="text"
+              aria-label="Search in organization roster"
               placeholder="Search in Organisation Roster..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value)
+                setPage(1)
+              }}
               className="h-9 w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
@@ -477,6 +495,7 @@ export function SuperAdminPortal() {
               <div className="relative w-48 sm:w-60">
                 <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
                 <Input
+                  aria-label="Search campus records"
                   placeholder="Search campus..."
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setPage(1); }}

@@ -4,17 +4,16 @@ const DEFAULT_SUPER_ADMIN_EMAILS = [
 
 export const SUPER_ADMIN_EMAILS: string[] = (() => {
   const envEmails = process.env.SUPER_ADMIN_EMAILS
-  if (!envEmails) return DEFAULT_SUPER_ADMIN_EMAILS
-  return envEmails
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean)
+  const parsed = envEmails
+    ? envEmails.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
+    : []
+  return Array.from(new Set([...DEFAULT_SUPER_ADMIN_EMAILS, ...parsed]))
 })()
 
 export function isSuperAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false
-  const cleanEmail = email.toLowerCase().trim()
-  return SUPER_ADMIN_EMAILS.includes(cleanEmail) || DEFAULT_SUPER_ADMIN_EMAILS.includes(cleanEmail)
+  const clean = email.toLowerCase().trim()
+  return SUPER_ADMIN_EMAILS.includes(clean)
 }
 
 export function normalizeRole(role: string | null | undefined): string {

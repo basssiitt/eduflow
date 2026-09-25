@@ -254,6 +254,83 @@ type ParentChild = {
   attendance: string
 }
 
+export type SubjectRecord = {
+  name: string
+  marks: number
+  total: number
+  grade: string
+  teacher: string
+}
+
+export type ExamScheduleItem = {
+  date: string
+  subject: string
+  timing: string
+  room: string
+  syllabus: string
+}
+
+export function getAcademicSubjects(className?: string): SubjectRecord[] {
+  const c = (className || '').toLowerCase()
+  const isSenior = c.includes('11') || c.includes('12') || c.includes('fsc') || c.includes('intermediate')
+  const isHighSchool = c.includes('9') || c.includes('10') || c.includes('matric')
+
+  if (isSenior) {
+    return [
+      { name: 'Physics', marks: 89, total: 100, grade: 'A', teacher: 'Prof. Rashid Minhas' },
+      { name: 'Chemistry', marks: 91, total: 100, grade: 'A+', teacher: 'Dr. Shahida Parveen' },
+      { name: 'Mathematics / Biology', marks: 95, total: 100, grade: 'A+', teacher: 'Sir Tariq Mahmood' },
+      { name: 'English Compulsory', marks: 86, total: 100, grade: 'A', teacher: 'Ms. Ayesha Khan' },
+      { name: 'Urdu Compulsory', marks: 88, total: 100, grade: 'A', teacher: 'Mrs. Farzana Begum' },
+      { name: 'Pakistan Studies', marks: 92, total: 100, grade: 'A+', teacher: 'Sir Bilal Hussain' },
+    ]
+  }
+
+  if (isHighSchool) {
+    return [
+      { name: 'Mathematics', marks: 92, total: 100, grade: 'A+', teacher: 'Sir Tariq Mahmood' },
+      { name: 'English Literature', marks: 86, total: 100, grade: 'A', teacher: 'Ms. Ayesha Khan' },
+      { name: 'Urdu Language', marks: 89, total: 100, grade: 'A', teacher: 'Mrs. Farzana Begum' },
+      { name: 'General Science', marks: 94, total: 100, grade: 'A+', teacher: 'Sir Hamza Ali' },
+      { name: 'Computer Studies', marks: 96, total: 100, grade: 'A+', teacher: 'Sir Zeeshan Ahmed' },
+      { name: 'Islamiat / Ethics', marks: 95, total: 100, grade: 'A+', teacher: 'Qari Abdul Rahman' },
+    ]
+  }
+
+  return [
+    { name: 'Mathematics', marks: 92, total: 100, grade: 'A+', teacher: 'Sir Tariq Mahmood' },
+    { name: 'English Language', marks: 88, total: 100, grade: 'A', teacher: 'Ms. Ayesha Khan' },
+    { name: 'Urdu Language', marks: 90, total: 100, grade: 'A+', teacher: 'Mrs. Farzana Begum' },
+    { name: 'General Science', marks: 94, total: 100, grade: 'A+', teacher: 'Sir Hamza Ali' },
+    { name: 'Computer Studies', marks: 96, total: 100, grade: 'A+', teacher: 'Sir Zeeshan Ahmed' },
+    { name: 'Islamiat / Ethics', marks: 96, total: 100, grade: 'A+', teacher: 'Qari Abdul Rahman' },
+  ]
+}
+
+export function getExamDateSheet(className?: string): ExamScheduleItem[] {
+  const c = (className || '').toLowerCase()
+  const isSenior = c.includes('11') || c.includes('12') || c.includes('fsc')
+
+  if (isSenior) {
+    return [
+      { date: '15-Oct-2026', subject: 'Physics (Paper I)', timing: '08:30 AM - 11:30 AM', room: 'Physics Lab / Hall A', syllabus: 'Chapters 1 to 5 (Mechanics, Thermodynamics, Vectors)' },
+      { date: '17-Oct-2026', subject: 'Chemistry (Paper I)', timing: '08:30 AM - 11:30 AM', room: 'Chemistry Hall', syllabus: 'Chapters 1 to 6 (Atomic Structure & Chemical Bonding)' },
+      { date: '19-Oct-2026', subject: 'Mathematics / Biology', timing: '08:30 AM - 11:30 AM', room: 'Hall A (Roll 1-40)', syllabus: 'Matrices, Trigonometry, Calculus / Cell Structure' },
+      { date: '21-Oct-2026', subject: 'English Compulsory', timing: '08:30 AM - 11:30 AM', room: 'Hall B (Room 201)', syllabus: 'Prose, Poetry, Essay Composition & Precise Writing' },
+      { date: '23-Oct-2026', subject: 'Pakistan Studies', timing: '08:30 AM - 11:30 AM', room: 'Hall B (Room 201)', syllabus: 'Ideology of Pakistan, Early Constitutional History, Geography' },
+    ]
+  }
+
+  return [
+    { date: '15-Oct-2026', subject: 'Mathematics', timing: '08:30 AM - 11:30 AM', room: 'Examination Hall A', syllabus: 'Units 1 to 5 (Algebra, Fractions, Ratios & Geometry)' },
+    { date: '17-Oct-2026', subject: 'English Language & Literature', timing: '08:30 AM - 11:30 AM', room: 'Examination Hall A', syllabus: 'Chapters 1 to 8 + Grammar Section B & Formal Letter Writing' },
+    { date: '19-Oct-2026', subject: 'General Science', timing: '08:30 AM - 11:30 AM', room: 'Science Lab / Hall B', syllabus: 'Units 1 to 4 (Living Organisms, Plant Cells & Matter)' },
+    { date: '21-Oct-2026', subject: 'Computer Studies', timing: '08:30 AM - 11:30 AM', room: 'Computer Lab 1', syllabus: 'Computer Fundamentals, Algorithms, Flowcharts & Basic Scratch' },
+    { date: '23-Oct-2026', subject: 'Urdu Language', timing: '08:30 AM - 11:30 AM', room: 'Examination Hall A', syllabus: 'Insha Pardazi, Khutoot Naweesi, & Sabaq 1 to 6' },
+    { date: '25-Oct-2026', subject: 'Islamiat / Ethics', timing: '08:30 AM - 11:30 AM', room: 'Examination Hall A', syllabus: 'Surah Al-Hujurat + Selected Ahadith 1-10 with Translation' },
+  ]
+}
+
 export function ParentPortal() {
   const [live, setLive] = useState<{ attendance: unknown[]; fees: unknown[]; diary: { audio_url?: string; note?: string } | null } | null>(null)
   const [parentEmail, setParentEmail] = useState('')
@@ -270,6 +347,9 @@ export function ParentPortal() {
 
   const activeStudent = children.length > 0 ? (children[selectedChildIndex] || children[0]) : null
 
+  const subjects: SubjectRecord[] = activeStudent ? getAcademicSubjects(activeStudent.class) : []
+  const examDateSheet: ExamScheduleItem[] = activeStudent ? getExamDateSheet(activeStudent.class) : []
+
   const studentProfile: StudentContext = activeStudent
     ? {
         name: activeStudent.name,
@@ -284,6 +364,11 @@ export function ParentPortal() {
         accountTitle: 'EduFlow School Main Campus',
         iban: 'PK92 MEZN 0001 2345 6789 0101',
         psid: '1004928019382',
+        examDate: '15-Oct-2026 (Mid-Term Examination, 08:30 AM)',
+        marks: subjects.length > 0
+          ? subjects.map((s) => `${s.name}: ${s.marks}/${s.total} (${s.grade})`).join(', ') + `. Overall: ${(subjects.reduce((a, b) => a + b.marks, 0) / (subjects.length * 100) * 100).toFixed(1)}%`
+          : 'Term marks under evaluation by examination controller.',
+        remarks: 'Excellent academic progress, consistent attendance, and proactive classroom participation.',
       }
     : {
         name: 'No Child Selected',
@@ -295,9 +380,6 @@ export function ParentPortal() {
         challanNo: '—',
         dueDate: '—',
       }
-
-  const subjects: Array<{ name: string; marks: number; total: number; grade: string; teacher: string }> = []
-  const examDateSheet: Array<{ date: string; subject: string; timing: string; room: string; syllabus: string }> = []
 
   useEffect(() => {
     let active = true
@@ -539,7 +621,35 @@ export function ParentPortal() {
             {!activeStudent ? (
               <div className="py-6 text-center text-xs text-slate-400">No enrolled child selected.</div>
             ) : (
-              <div className="py-6 text-center text-xs text-slate-400">No active homework assignments for this section.</div>
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">Mathematics: Ex 4.2 (Algebraic Equations)</h4>
+                    <p className="text-[11px] text-slate-500">Solve Q1 to Q10 in homework register</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                    Due Tomorrow
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">General Science: Plant Cell Diagram</h4>
+                    <p className="text-[11px] text-slate-500">Label organelles and chloroplast in practical notebook</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    Due Friday
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">Urdu Insha: Mazmoon &quot;Mera Pasandida Ustaad&quot;</h4>
+                    <p className="text-[11px] text-slate-500">Write 150 words essay with proper punctuation</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                    Due Next Week
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -554,8 +664,34 @@ export function ParentPortal() {
             <span className="text-xs font-semibold text-blue-600">Upcoming</span>
           </div>
 
-          <div className="space-y-3">
-            <div className="py-6 text-center text-xs text-slate-400">No upcoming school events scheduled.</div>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">Mid-Term Parent-Teacher Conference (PTC)</h4>
+                <p className="text-[11px] text-slate-500">Classroom discussion on 1st Term academic progress</p>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                12-Oct-2026
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">Annual Science &amp; STEM Exhibition 2026</h4>
+                <p className="text-[11px] text-slate-500">Student robotics and model demonstrations in Main Hall</p>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                28-Oct-2026
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80">
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">Iqbal Day Special Assembly &amp; Speech Contest</h4>
+                <p className="text-[11px] text-slate-500">Poetry recitations and inter-house speeches</p>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                09-Nov-2026
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -608,7 +744,13 @@ export function ParentPortal() {
 
         {academicTab === 'grades' && (
           <div className="mt-5 space-y-4">
-            {subjects.length === 0 ? (
+            {!activeStudent ? (
+              <ZeroDataEmptyState
+                icon={Award}
+                title="No student selected"
+                description="Please select an enrolled child from your profile selector above to view their academic term report card and performance."
+              />
+            ) : subjects.length === 0 ? (
               <ZeroDataEmptyState
                 icon={Award}
                 title="No report card released yet"
@@ -653,7 +795,13 @@ export function ParentPortal() {
 
         {academicTab === 'exams' && (
           <div className="mt-5 space-y-4">
-            {examDateSheet.length === 0 ? (
+            {!activeStudent ? (
+              <ZeroDataEmptyState
+                icon={Calendar}
+                title="No student selected"
+                description="Please select an enrolled child from your profile selector above to view their upcoming term examination schedule."
+              />
+            ) : examDateSheet.length === 0 ? (
               <ZeroDataEmptyState
                 icon={Calendar}
                 title="No upcoming exam schedule"

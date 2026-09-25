@@ -36,15 +36,16 @@ export interface AddTeacherInput {
 }
 
 export async function addTeacher(input: AddTeacherInput) {
-  // 1. Authenticate calling administrator
-  const supabase = await createServerSupabase()
-  const {
-    data: { user: currentUser },
-  } = await supabase.auth.getUser()
+  try {
+    // 1. Authenticate calling administrator
+    const supabase = await createServerSupabase()
+    const {
+      data: { user: currentUser },
+    } = await supabase.auth.getUser()
 
-  if (!currentUser) {
-    throw new Error('Authentication required to onboard faculty members.')
-  }
+    if (!currentUser) {
+      return { success: false, error: 'Authentication required to onboard faculty members.' }
+    }
 
   // 2. Authorize admin role
   const { isAuthorized, callerProfile } = await authorizeAdminCaller(currentUser)
@@ -197,19 +198,26 @@ export async function addTeacher(input: AddTeacherInput) {
     }
   }
 
-  return {
-    success: true,
-    teacher: {
-      id: insertedTeacher?.id,
-      name: exactName,
-      email: exactEmail,
-      phone: exactPhone,
-      employee_code: employeeCode,
-      department: input.department || 'Academics',
-      subject: input.subject || 'General',
-      status: 'Active',
-    },
-    employeeCode,
-    temporaryPassword: tempPassword,
+    return {
+      success: true,
+      teacher: {
+        id: insertedTeacher?.id,
+        name: exactName,
+        email: exactEmail,
+        phone: exactPhone,
+        employee_code: employeeCode,
+        department: input.department || 'Academics',
+        subject: input.subject || 'General',
+        status: 'Active',
+      },
+      employeeCode,
+      temporaryPassword: tempPassword,
+    }
+  } catch (err: any) {
+    console.error('addTeacher error:', err)
+    return {
+      success: false,
+      error: err?.message || 'Failed to onboard faculty member. Please try again.',
+    }
   }
 }

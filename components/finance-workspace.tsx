@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { createExpense, fetchAdminStats, fetchTeachers } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import {
@@ -63,6 +64,7 @@ type PayrollRecord = {
 const money = (amount: number) => `${amount < 0 ? "−" : ""}PKR ${Math.abs(amount).toLocaleString("en-PK")}`
 
 export function FinanceWorkspace() {
+  const router = useRouter()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [payroll, setPayroll] = useState<PayrollRecord[]>([])
   const [tab, setTab] = useState<"ledger" | "pnl" | "payroll" | "cash">("ledger")
@@ -111,7 +113,10 @@ export function FinanceWorkspace() {
           } catch {}
         }
       }
-    } catch {}
+    } catch (err) {
+      console.error('Failed to load expense records:', err)
+      notify('Database connection timeout. Please check your network.')
+    }
 
     setTransactions(fetchedRows)
 
@@ -135,7 +140,9 @@ export function FinanceWorkspace() {
       } else {
         setPayroll([])
       }
-    } catch {}
+    } catch (err) {
+      console.error('Failed to load faculty payroll data:', err)
+    }
 
     // Load petty cash opening
     if (typeof window !== 'undefined') {
@@ -193,7 +200,7 @@ export function FinanceWorkspace() {
 
     if (isSupabaseConfigured && supabaseClient) {
       try {
-        await supabaseClient.from('expenses').insert([
+        const { error: insertErr } = await supabaseClient.from('expenses').insert([
           {
             description: voucher.description,
             vendor: voucher.party,
@@ -202,7 +209,14 @@ export function FinanceWorkspace() {
             date: new Date().toISOString().split('T')[0],
           }
         ])
-      } catch {}
+        if (insertErr) {
+          console.error('Failed to save expense voucher to database:', insertErr)
+          notify("Failed to record voucher. Verify school bank settings.")
+        }
+      } catch (err) {
+        console.error('Database connection timeout:', err)
+        notify("Database connection timeout. Please check your network.")
+      }
     }
 
     const newTx: Transaction = {
@@ -575,7 +589,7 @@ export function FinanceWorkspace() {
                 title="No faculty members registered for payroll"
                 description="Your school does not have any registered faculty records yet. Add teachers in the Faculty Directory to generate salary registers."
                 actionLabel="Go to Faculty Directory"
-                onAction={() => window.location.href = '/admin/teachers'}
+                onAction={() => router.push('/admin/teachers')}
               />
             </div>
           ) : (

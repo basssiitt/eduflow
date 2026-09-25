@@ -68,6 +68,13 @@ export default function OnboardingPage() {
     const check = async () => {
       const hasSessionCookie = document.cookie.includes('eduflow-user-email=')
 
+      if (!supabase) {
+        if (!hasSessionCookie) {
+          router.replace('/login')
+        }
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user && !hasSessionCookie) {
         router.replace('/login')
@@ -99,7 +106,7 @@ export default function OnboardingPage() {
     }
     check()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [supabase])
 
   /* ── Derived field helpers ── */
   const set = (key: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +143,11 @@ export default function OnboardingPage() {
     setSubmitting(true)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      let user: any = null
+      if (supabase) {
+        const { data } = await supabase.auth.getUser()
+        user = data.user
+      }
       const effectiveEmail = userEmail || user?.email || 'admin@school.edu.pk'
       const ownerName = user?.user_metadata?.full_name || effectiveEmail.split('@')[0] || 'School Administrator'
 
@@ -162,7 +173,7 @@ export default function OnboardingPage() {
       const schoolId = setupResult.schoolId
 
       // 2. Resiliently update profile on client if user session is active
-      if (user && schoolId) {
+      if (user && schoolId && supabase) {
         try {
           await supabase
             .from('profiles')

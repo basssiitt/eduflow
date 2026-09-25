@@ -32,6 +32,8 @@ export function TeacherPortal() {
   const [finalized, setFinalized] = useState(false)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedClassFilter, setSelectedClassFilter] = useState('All Enrolled')
   const { isOnline, queueAction, pendingActions } = useEduFlow()
   const audioRef = useRef<Blob | null>(null)
 
@@ -103,6 +105,21 @@ export function TeacherPortal() {
     [students]
   )
 
+  const filteredStudents = useMemo(() => {
+    let list = students
+    if (selectedClassFilter !== 'All Enrolled') {
+      list = list.filter((s) => s.class === selectedClassFilter)
+    }
+    if (!searchQuery.trim()) return list
+    const q = searchQuery.toLowerCase().trim()
+    return list.filter((s) =>
+      s.name.toLowerCase().includes(q) ||
+      (s.father && s.father.toLowerCase().includes(q)) ||
+      (s.class && s.class.toLowerCase().includes(q)) ||
+      String(s.id).toLowerCase().includes(q)
+    )
+  }, [students, selectedClassFilter, searchQuery])
+
   const setStatus = (id: number | string, status: Status) => {
     setStudents((current) => current.map((student) => (student.id === id ? { ...student, status } : student)))
     if (!isOnline) queueAction(`Attendance updated for student #${id}`)
@@ -168,7 +185,10 @@ export function TeacherPortal() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
             <input
               type="text"
+              aria-label="Search for classes and students"
               placeholder="Search for Classes & Students..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="h-9 w-60 rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
             />
           </div>
@@ -297,9 +317,9 @@ export function TeacherPortal() {
             </div>
           ) : (
             <div className="space-y-2.5">
-              {assignedClasses.map((cls, idx) => (
+              {assignedClasses.map((cls) => (
                 <Link
-                  key={idx}
+                  key={cls.name}
                   href="/teacher/classes"
                   className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3 hover:bg-slate-50 hover:border-slate-200 transition cursor-pointer"
                 >
@@ -326,8 +346,8 @@ export function TeacherPortal() {
             { label: 'Absent Today', value: String(counts.Absent), pct: students.length > 0 ? `${Math.round((counts.Absent / students.length) * 100)}%` : '0%', tone: 'bg-rose-50 text-rose-700' },
             { label: 'Leave Today', value: String(counts.Leave), pct: students.length > 0 ? `${Math.round((counts.Leave / students.length) * 100)}%` : '0%', tone: 'bg-amber-50 text-amber-700' },
             { label: 'Total Enrolled', value: String(students.length), pct: students.length > 0 ? '100%' : '0%', tone: 'bg-blue-50 text-blue-700' },
-          ].map((item, idx) => (
-            <div key={idx} className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-2xs flex flex-col justify-between">
+          ].map((item) => (
+            <div key={item.label} className="rounded-xl border border-slate-200/90 bg-white p-3.5 shadow-2xs flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${item.tone}`}>
@@ -364,8 +384,8 @@ export function TeacherPortal() {
             </div>
           ) : (
             <div className="space-y-3">
-              {assignedClasses.slice(0, 3).map((cls, idx) => (
-                <div key={idx} className="flex items-start gap-3 text-xs border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
+              {assignedClasses.slice(0, 3).map((cls) => (
+                <div key={cls.name} className="flex items-start gap-3 text-xs border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
                   <div className="size-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="font-bold text-slate-900">{cls.name}</div>
@@ -406,10 +426,10 @@ export function TeacherPortal() {
                     </td>
                   </tr>
                 ) : (
-                  assignedClasses.map((row, idx) => {
+                  assignedClasses.map((row) => {
                     const share = students.length > 0 ? Math.round((row.count / students.length) * 100) : 0
                     return (
-                      <tr key={idx} className="hover:bg-slate-50/80 transition">
+                      <tr key={row.name} className="hover:bg-slate-50/80 transition">
                         <td className="py-2.5 font-bold text-slate-800">{row.name}</td>
                         <td className="py-2.5 text-center font-semibold text-slate-700">{row.count}</td>
                         <td className="py-2.5 text-right font-bold text-blue-600">{share}%</td>
@@ -427,19 +447,34 @@ export function TeacherPortal() {
       <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">Class
-            <select className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium text-slate-900 dark:text-slate-100">
-              <option>All Enrolled</option>
-              <option>Class 5</option>
-              <option>Class 6</option>
-              <option>Class 7</option>
-              <option>Class 8</option>
-              <option>Class 9</option>
-              <option>Class 10</option>
+            <select
+              aria-label="Filter class roster"
+              value={selectedClassFilter}
+              onChange={(e) => setSelectedClassFilter(e.target.value)}
+              className="h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-background px-3 text-sm font-medium text-slate-900 dark:text-slate-100"
+            >
+              <option value="All Enrolled">All Enrolled</option>
+              {assignedClasses.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </label>
+          <div className="relative w-full sm:w-64">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input
+              type="text"
+              aria-label="Filter students by name or roll number"
+              placeholder="Filter by name or roll..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-8 pr-3 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:outline-hidden"
+            />
+          </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span>Active students: <b>{students.length}</b></span>
+          <span>Active students: <b>{filteredStudents.length}</b></span>
           <span>·</span>
           <span className="text-emerald-700 font-bold">{counts.Present} Present</span>
           <span>·</span>
@@ -461,12 +496,12 @@ export function TeacherPortal() {
                 ))}
               </div>
             </div>
-          ) : students.length === 0 ? (
+          ) : filteredStudents.length === 0 ? (
             <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 shadow-sm">
               <ZeroDataEmptyState
                 icon={UserRound}
-                title="No students in this class roster"
-                description="No enrolled students found. Contact your school administrator to register students."
+                title={searchQuery || selectedClassFilter !== 'All Enrolled' ? "No matching students found" : "No students in this class roster"}
+                description={searchQuery || selectedClassFilter !== 'All Enrolled' ? `No student matches "${searchQuery}". Clear your search or change the class filter.` : "No enrolled students found. Contact your school administrator to register students."}
               />
             </div>
           ) : (
@@ -483,7 +518,7 @@ export function TeacherPortal() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {students.map((student, idx) => (
+                    {filteredStudents.map((student, idx) => (
                       <tr key={student.id} data-testid="student-row" className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                         <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-500 dark:text-slate-400">2026-{String(idx + 1).padStart(3, '0')}</td>
                         <td className="px-5 py-4 font-semibold text-slate-900 dark:text-slate-100">{student.name}</td>

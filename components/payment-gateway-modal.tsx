@@ -44,11 +44,24 @@ export function PaymentGatewayModal({
     method: string
   } | null>(null)
   const [copied, setCopied] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
 
   const bankName = details.bankName || 'Meezan Bank Ltd.'
   const accountTitle = details.accountTitle || 'EduFlow School Main Campus'
   const iban = details.iban || 'PK92 MEZN 0001 2345 6789 0101'
   const psid = details.psid || `1004${details.challanNo.replace(/\D/g, '').padEnd(10, '0')}`
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
+    }
+  }, [onClose])
 
   const copyPsid = () => {
     navigator.clipboard.writeText(psid)
@@ -58,23 +71,29 @@ export function PaymentGatewayModal({
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrorMsg('')
     setProcessing(true)
 
     const txnId = `TXN-${Date.now().toString().slice(-6)}`
 
-    // Attempt to log income to Supabase if configured
-    if (isSupabaseConfigured && supabaseClient) {
+    // Update the authentic challan record in table fee_vouchers
+    if (isSupabaseConfigured && supabaseClient && details.challanNo) {
       try {
-        await supabaseClient.from('expenses').insert([
-          {
-            description: `Fee Payment - ${details.studentName} (${details.challanNo})`,
-            vendor: details.studentName,
-            category: 'Fee collection',
-            amount: Math.abs(details.amount),
-            date: new Date().toISOString().split('T')[0],
-          },
-        ])
-      } catch {}
+        const { error: updateErr } = await supabaseClient
+          .from('fee_vouchers')
+          .update({
+            status: 'paid',
+            paid_at: new Date().toISOString(),
+          })
+          .eq('challan_number', details.challanNo)
+        if (updateErr) {
+          console.error('Failed to update fee voucher status:', updateErr)
+          setErrorMsg('Failed to record voucher. Verify school bank settings.')
+        }
+      } catch (err) {
+        console.error('Failed to update fee voucher status:', err)
+        setErrorMsg('Database connection timeout. Please check your network.')
+      }
     }
 
     // Simulate gateway roundtrip
@@ -94,15 +113,24 @@ export function PaymentGatewayModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-gateway-modal-title"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200"
+      >
         {receipt ? (
           <div className="text-center py-3">
             <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 mb-3">
               <CheckCircle2 className="size-8" />
             </div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Payment Cleared</span>
-            <h3 className="text-xl font-black text-slate-900 mt-1">Official Fee Clearance Receipt</h3>
+            <h3 id="payment-gateway-modal-title" className="text-xl font-black text-slate-900 mt-1">Official Fee Clearance Receipt</h3>
             <p className="text-xs text-slate-500 mt-0.5">Payment successfully received in school bank account.</p>
 
             <div className="my-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left text-xs space-y-2">
@@ -142,13 +170,19 @@ export function PaymentGatewayModal({
             <div className="flex items-start justify-between border-b border-slate-200 pb-3">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">EduFlow Secure Pay</span>
-                <h3 className="text-lg font-black text-slate-900">Pay School Fee Online</h3>
+                <h3 id="payment-gateway-modal-title" className="text-lg font-black text-slate-900">Pay School Fee Online</h3>
                 <p className="text-xs text-slate-500">Direct deposit into school authorized account</p>
               </div>
-              <button onClick={onClose} className="text-slate-400 hover:text-slate-900">
+              <button onClick={onClose} className="text-slate-400 hover:text-slate-900 cursor-pointer" aria-label="Close payment modal">
                 <X className="size-5" />
               </button>
             </div>
+
+            {errorMsg && (
+              <div className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-700 font-medium">
+                {errorMsg}
+              </div>
+            )}
 
             {/* Fee Snapshot */}
             <div className="my-4 flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200">
@@ -248,10 +282,11 @@ export function PaymentGatewayModal({
                   ))}
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-900 block mb-1">
+                  <label htmlFor="wallet-phone-input" className="text-[11px] font-semibold text-slate-900 block mb-1">
                     Registered Mobile Account Number
                   </label>
                   <Input
+                    id="wallet-phone-input"
                     placeholder="03XXXXXXXXX"
                     value={walletPhone}
                     onChange={(e) => setWalletPhone(e.target.value)}
@@ -268,8 +303,9 @@ export function PaymentGatewayModal({
             {method === 'card' && (
               <div className="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-900 block mb-1">Card Number</label>
+                  <label htmlFor="card-number-input" className="text-[11px] font-semibold text-slate-900 block mb-1">Card Number</label>
                   <Input
+                    id="card-number-input"
                     placeholder="4214 •••• •••• ••••"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
@@ -278,8 +314,9 @@ export function PaymentGatewayModal({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-900 block mb-1">Expiry (MM/YY)</label>
+                    <label htmlFor="card-expiry-input" className="text-[11px] font-semibold text-slate-900 block mb-1">Expiry (MM/YY)</label>
                     <Input
+                      id="card-expiry-input"
                       placeholder="12/28"
                       value={cardExpiry}
                       onChange={(e) => setCardExpiry(e.target.value)}
@@ -287,8 +324,9 @@ export function PaymentGatewayModal({
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-900 block mb-1">CVV / CVC</label>
+                    <label htmlFor="card-cvv-input" className="text-[11px] font-semibold text-slate-900 block mb-1">CVV / CVC</label>
                     <Input
+                      id="card-cvv-input"
                       placeholder="123"
                       type="password"
                       maxLength={4}

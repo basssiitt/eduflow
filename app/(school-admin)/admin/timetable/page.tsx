@@ -547,7 +547,7 @@ export default function AdminTimetablePage() {
 
                         return (
                           <div
-                            key={pNum}
+                            key={`${day}-${time}-${pNum}`}
                             className="group relative rounded-lg border border-slate-200 bg-white p-2.5 shadow-2xs hover:border-blue-400 transition"
                           >
                             <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-1">
@@ -647,8 +647,8 @@ export default function AdminTimetablePage() {
                   className="rounded-xl border-slate-200 text-xs"
                 />
                 <datalist id="teacher-suggestions">
-                  {registeredTeachers.map((t, idx) => (
-                    <option key={idx} value={t} />
+                  {registeredTeachers.map((t) => (
+                    <option key={t} value={t} />
                   ))}
                 </datalist>
               </div>

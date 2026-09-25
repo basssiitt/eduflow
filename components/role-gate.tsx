@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
@@ -14,8 +14,6 @@ export function RoleGate({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [allowed, setAllowed] = useState(false)
-  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     let mounted = true
@@ -82,10 +80,6 @@ export function RoleGate({
             return
           }
 
-          if (mounted) {
-            setAllowed(true)
-            setChecking(false)
-          }
           return
         } catch {
           if (mounted) {
@@ -127,10 +121,6 @@ export function RoleGate({
           }
 
           if (authorized) {
-            if (mounted) {
-              setAllowed(true)
-              setChecking(false)
-            }
             return
           }
         }
@@ -147,17 +137,6 @@ export function RoleGate({
       mounted = false
     }
   }, [role, router, pathname])
-
-  if (checking || !allowed) {
-    return (
-      <main className="min-h-screen grid place-items-center bg-slate-50 dark:bg-slate-950">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-7 animate-spin rounded-full border-3 border-emerald-600 border-t-transparent" />
-          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Verifying workspace permissions…</p>
-        </div>
-      </main>
-    )
-  }
 
   return <>{children}</>
 }

@@ -89,6 +89,7 @@ export const students = pgTable('students', {
 }, (table) => [
   index('students_school_id_idx').on(table.schoolId),
   index('students_parent_id_idx').on(table.parentId),
+  index('students_campus_id_idx').on(table.campusId),
   uniqueIndex('students_school_roll_uq').on(table.schoolId, table.rollNumber),
 ])
 
@@ -107,6 +108,7 @@ export const teachers = pgTable('teachers', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   index('teachers_school_id_idx').on(table.schoolId),
+  index('teachers_campus_id_idx').on(table.campusId),
   uniqueIndex('teachers_school_emp_uq').on(table.schoolId, table.employeeCode),
 ])
 
@@ -119,6 +121,8 @@ export const attendance = pgTable('attendance', {
   remarks: text('remarks'),
   markedAt: timestamp('marked_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
+  index('attendance_school_id_idx').on(table.schoolId),
+  index('attendance_student_id_idx').on(table.studentId),
   index('attendance_school_date_idx').on(table.schoolId, table.date),
   uniqueIndex('attendance_student_date_uq').on(table.studentId, table.date),
 ])
@@ -135,6 +139,35 @@ export const feeVouchers = pgTable('fee_vouchers', {
   paidAt: timestamp('paid_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
+  index('fee_vouchers_school_id_idx').on(table.schoolId),
+  index('fee_vouchers_student_id_idx').on(table.studentId),
   index('fee_vouchers_school_status_idx').on(table.schoolId, table.status),
   uniqueIndex('fee_vouchers_school_challan_uq').on(table.schoolId, table.challanNumber),
 ])
+
+export const expenses = pgTable('expenses', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  schoolId: uuid('school_id').references(() => schools.id, { onDelete: 'cascade' }),
+  description: text('description').notNull(),
+  vendor: text('vendor'),
+  category: varchar('category', { length: 100 }).notNull().default('General'),
+  amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+  date: varchar('date', { length: 10 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index('expenses_school_id_idx').on(table.schoolId),
+  index('expenses_date_idx').on(table.date),
+])
+
+export const diaries = pgTable('diaries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  schoolId: uuid('school_id').references(() => schools.id, { onDelete: 'cascade' }),
+  studentId: uuid('student_id').references(() => students.id, { onDelete: 'cascade' }),
+  note: text('note').notNull(),
+  audioUrl: text('audio_url'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index('diaries_school_id_idx').on(table.schoolId),
+  index('diaries_student_id_idx').on(table.studentId),
+])
+

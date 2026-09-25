@@ -120,7 +120,7 @@ export async function fetchFeeInvoices() {
 
   return supabaseClient
     .from('fee_vouchers')
-    .select('id, student_id, amount, status, due_date, month, students(name, class, section, roll_no)')
+    .select('id, student_id, amount, status, due_date, month_year, students(full_name, grade, section, roll_number)')
     .order('due_date', { ascending: false })
 }
 

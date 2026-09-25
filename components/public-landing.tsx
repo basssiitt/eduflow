@@ -19,6 +19,7 @@ import {
   Headphones,
   LayoutDashboard,
   Mail,
+  Menu,
   Mic,
   Receipt,
   Search,
@@ -93,6 +94,7 @@ const faqs = [
 export function PublicLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSignUpClick = async (e?: React.MouseEvent, targetUrl: string = '/signup') => {
     if (e) e.preventDefault()
@@ -114,7 +116,7 @@ export function PublicLanding() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
+    <main id="main-content" className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-slate-200/90 bg-white/95 px-6 backdrop-blur-md lg:px-12">
         <Link href="/" className="flex items-center gap-3 no-underline">
@@ -129,25 +131,137 @@ export function PublicLanding() {
           <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
           <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimonials</a>
           <Link href="/pricing" className="hover:text-blue-600 transition-colors">Pricing &amp; ROI</Link>
+          <Link href="/apply" className="hover:text-blue-600 transition-colors">Admissions</Link>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons & Mobile Hamburger */}
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/login?force=1"
-            className="text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition-colors"
+            className="hidden sm:inline-block text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition-colors"
           >
             Log In
           </Link>
           <button
             type="button"
             onClick={handleSignUpClick}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
+            className="hidden sm:inline-flex items-center justify-center rounded-full bg-blue-600 px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
           >
             Sign Up
           </button>
+
+          {/* Mobile Hamburger Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition focus:outline-hidden focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Responsive Slide-Over Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Drawer Panel */}
+          <div
+            className="relative z-10 w-full max-w-xs bg-white h-full shadow-2xl flex flex-col justify-between p-6 overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation Menu"
+          >
+            <div>
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between pb-5 border-b border-slate-100">
+                <Link
+                  href="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2.5 no-underline"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-blue-600 shadow-xs">
+                    <Image src="/eduflow-logo.svg" alt="EduFlow" width={36} height={36} className="size-9" />
+                  </div>
+                  <span className="text-lg font-black tracking-tight text-slate-900">EduFlow</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
+                  aria-label="Close navigation menu"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <nav className="mt-6 flex flex-col gap-2">
+                <a
+                  href="#features"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  Features
+                </a>
+                <a
+                  href="#testimonials"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  Testimonials
+                </a>
+                <Link
+                  href="/pricing"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  Pricing &amp; ROI
+                </Link>
+                <Link
+                  href="/apply"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  Admissions
+                </Link>
+                <Link
+                  href="/login?force=1"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  Log In
+                </Link>
+              </nav>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  setIsMobileMenuOpen(false)
+                  handleSignUpClick(e)
+                }}
+                className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-xs hover:bg-blue-700 transition cursor-pointer"
+              >
+                Start 30-Day Free Trial
+              </button>
+              <p className="text-center text-[11px] text-slate-400">
+                No credit card required · Instant access
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section with Left Text & Right iPhone Mockup */}
       <section className="relative overflow-hidden bg-white py-12 lg:py-20 border-b border-slate-200/80">

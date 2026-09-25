@@ -2,8 +2,9 @@
 import { useState, useEffect, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "motion/react"
-import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MoreHorizontal, Plus, Printer, ReceiptText, Search, TrendingUp, Upload, X } from "lucide-react"
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Download, FileText, MoreHorizontal, Plus, Printer, ReceiptText, Search, Trash2, TrendingUp, Upload, X } from "lucide-react"
 import { BulkImportModal } from '@/components/bulk-import-modal'
+import { ConfirmDeleteModal } from '@/components/confirm-delete-modal'
 import { fetchFeeInvoices, fetchStudents, createInvoice } from '@/lib/live-data'
 import { isSupabaseConfigured, supabaseClient } from '@/lib/supabaseClient'
 import { Button } from '@/components/ui/button'
@@ -53,6 +54,8 @@ export function AdminPortal() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const pageSize = 10
+  const [recordToDelete, setRecordToDelete] = useState<FeeRecord | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [bankModalOpen, setBankModalOpen] = useState(false)
   const [bankSettings, setBankSettings] = useState<BankSettings>({
     bankName: 'Meezan Bank Ltd.',
@@ -164,6 +167,23 @@ export function AdminPortal() {
         }
       } catch {}
     }
+  }
+
+  const confirmDeleteRecord = async () => {
+    if (!recordToDelete) return
+    const id = recordToDelete.id
+    setDeleting(true)
+    if (isSupabaseConfigured && supabaseClient && id) {
+      try {
+        await supabaseClient.from('fee_vouchers').delete().eq('id', id)
+        await supabaseClient.from('fee_invoices').delete().eq('id', id)
+      } catch (err) {
+        console.error('Failed to delete fee voucher:', err)
+      }
+    }
+    setData((curr) => curr.filter((x) => (id ? x.id !== id : x.challan !== recordToDelete.challan)))
+    setDeleting(false)
+    setRecordToDelete(null)
   }
 
   const exportCsv = () => {
@@ -435,6 +455,13 @@ export function AdminPortal() {
                           >
                             <Check className="size-3.5" />
                           </button>
+                          <button
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 hover:border-rose-400 hover:text-rose-600 hover:bg-rose-50/50 transition-all duration-200 active:scale-95 shadow-2xs"
+                            onClick={() => setRecordToDelete(r)}
+                            title="Delete voucher record"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -521,6 +548,18 @@ export function AdminPortal() {
           </Suspense>
         )}
       </AnimatePresence>
+
+      <ConfirmDeleteModal
+        isOpen={!!recordToDelete}
+        onClose={() => setRecordToDelete(null)}
+        onConfirm={confirmDeleteRecord}
+        loading={deleting}
+        title="Remove Fee Voucher Record"
+        message="Are you sure you want to remove this faculty member / student? This action will archive their attendance records and revoke portal access."
+        itemName={recordToDelete?.name}
+        itemDetails={recordToDelete ? `Challan: ${recordToDelete.challan} · ${recordToDelete.cls} (Total: ${money(total(recordToDelete))})` : undefined}
+        confirmText="Yes, Remove Record"
+      />
     </div>
   )
 }

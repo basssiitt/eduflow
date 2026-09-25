@@ -31,6 +31,7 @@ import {
 } from 'lucide-react'
 import { ZeroDataEmptyState } from '@/components/zero-data-empty-state'
 import { MetricCardSkeleton, TableRowSkeleton } from '@/components/skeleton-cards'
+import { ConfirmDeleteModal } from '@/components/confirm-delete-modal'
 import { cn } from '@/lib/utils'
 
 function AddTeacherModal({
@@ -45,8 +46,8 @@ function AddTeacherModal({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [tempPassword, setTempPassword] = useState('Teach#2026!')
-  const [showTempPassword, setShowTempPassword] = useState(false)
+  const [initialKey, setInitialKey] = useState('Teach#2026!')
+  const [showInitialKey, setShowInitialKey] = useState(false)
   const autoEmployeeCode = `TCH-2026-${String(existingCount + 1).padStart(3, '0')}`
   const [qualification, setQualification] = useState('M.Sc / M.A Master Degree')
   const [department, setDepartment] = useState('Science & Math')
@@ -82,8 +83,8 @@ function AddTeacherModal({
       setError('Please provide a contact phone number.')
       return
     }
-    if (!tempPassword.trim() || tempPassword.trim().length < 6) {
-      setError('Please provide a temporary login password of at least 6 characters.')
+    if (!initialKey.trim() || initialKey.trim().length < 6) {
+      setError('Please provide an initial access key of at least 6 characters.')
       return
     }
 
@@ -95,27 +96,12 @@ function AddTeacherModal({
       .map((c) => c.trim())
       .filter(Boolean)
 
-    const payload = {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
-      tempPassword: tempPassword.trim(),
-      employee_code: autoEmployeeCode,
-      qualification: qualification.trim(),
-      department,
-      subject: subject.trim(),
-      classes: classesArray.length > 0 ? classesArray : ['Class 5'],
-      salary: Number(salary) || 65000,
-      joining_date: joiningDate,
-      status,
-    }
-
     try {
-      await addTeacher({
+      const res = await addTeacher({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
-        tempPassword: tempPassword.trim(),
+        tempPassword: initialKey.trim(),
         qualification: qualification.trim(),
         department,
         subject: subject.trim(),
@@ -123,6 +109,11 @@ function AddTeacherModal({
         salary: Number(salary) || 65000,
         joining_date: joiningDate,
       })
+      if (res && !res.success) {
+        setError(res.error || 'Failed to onboard teacher')
+        setSaving(false)
+        return
+      }
     } catch (err: any) {
       setError(err?.message || 'Failed to onboard teacher')
       setSaving(false)
@@ -224,38 +215,50 @@ function AddTeacherModal({
             </p>
           </div>
 
-          <label className="text-xs font-semibold text-slate-700 sm:col-span-2">
-            Temporary Login Password *
+          <div className="sm:col-span-2">
+            <label htmlFor="initial-key-input" className="block text-xs font-semibold text-slate-700">
+              Temporary Login Access Key *
+            </label>
             <div className="relative mt-1">
               <Input
-                type={showTempPassword ? 'text' : 'password'}
-                value={tempPassword}
-                onChange={(e) => setTempPassword(e.target.value)}
-                placeholder="Initial password for teacher login"
+                id="initial-key-input"
+                type={showInitialKey ? 'text' : 'password'}
+                value={initialKey}
+                onChange={(e) => setInitialKey(e.target.value)}
+                placeholder="Initial login key"
                 required
                 className="border-slate-200 pr-24 font-mono text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => setShowTempPassword(!showTempPassword)}
+                  onClick={() => setShowInitialKey(!showInitialKey)}
                   className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                 >
-                  {showTempPassword ? 'Hide' : 'Show'}
+                  {showInitialKey ? 'Hide' : 'Show'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTempPassword(`Tch#${Math.floor(1000 + Math.random() * 9000)}!`)}
+                  onClick={() => {
+                    const randArr = new Uint16Array(1)
+                    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+                      crypto.getRandomValues(randArr)
+                    } else {
+                      randArr[0] = Date.now() & 0xffff
+                    }
+                    const num = (randArr[0] % 9000) + 1000
+                    setInitialKey(`Tch#${num}!`)
+                  }}
                   className="rounded bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-600 hover:bg-blue-100"
                 >
                   Generate
                 </button>
               </div>
             </div>
-            <span className="text-[11px] text-slate-500 font-normal">
-              The teacher will use their email ({email || 'email address'}) and this password to sign in directly to the Teacher Portal.
-            </span>
-          </label>
+            <p className="mt-1 text-[11px] text-slate-500 font-normal">
+              The teacher will use their email ({email || 'email address'}) and this key to sign in directly to the Teacher Portal.
+            </p>
+          </div>
 
           <label className="text-xs font-semibold text-slate-700">
             Academic Qualification
@@ -367,79 +370,6 @@ function AddTeacherModal({
   )
 }
 
-function DeleteTeacherModal({
-  teacher,
-  onClose,
-  onConfirm,
-}: {
-  teacher: TeacherRecord | null
-  onClose: () => void
-  onConfirm: () => void
-}) {
-  if (!teacher) return null
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-teacher-title"
-    >
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
-            <Trash2 className="size-5" />
-          </div>
-          <div>
-            <h3
-              id="delete-teacher-title"
-              className="text-lg font-bold text-slate-900 dark:text-slate-100"
-            >
-              Offboard Faculty Member
-            </h3>
-            <p className="text-xs text-slate-500">Confirm permanent removal from roster</p>
-          </div>
-        </div>
-
-        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
-          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {teacher.name}
-          </p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {teacher.employee_code} · {teacher.subject} ({teacher.department})
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {teacher.classes.map((cls) => (
-              <span
-                key={cls}
-                className="rounded bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300"
-              >
-                {cls}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <p className="mt-4 text-xs text-slate-500 leading-relaxed">
-          Are you sure you want to offboard this teacher? This will unassign them from their active
-          classes and remove their employee profile from the campus register.
-        </p>
-
-        <div className="mt-6 flex items-center justify-end gap-2">
-          <Button variant="outline" onClick={onClose} className="rounded-xl border-slate-200">
-            Cancel
-          </Button>
-          <Button
-            onClick={onConfirm}
-            className="bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl shadow-xs"
-          >
-            Yes, Offboard Teacher
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState<TeacherRecord[]>([])
@@ -920,13 +850,16 @@ export default function TeachersPage() {
         />
       )}
 
-      {teacherToDelete && (
-        <DeleteTeacherModal
-          teacher={teacherToDelete}
-          onClose={() => setTeacherToDelete(null)}
-          onConfirm={handleDelete}
-        />
-      )}
+      <ConfirmDeleteModal
+        isOpen={!!teacherToDelete}
+        onClose={() => setTeacherToDelete(null)}
+        onConfirm={handleDelete}
+        title="Remove Faculty Member"
+        message="Are you sure you want to remove this faculty member / student? This action will archive their attendance records and revoke portal access."
+        itemName={teacherToDelete?.name}
+        itemDetails={teacherToDelete ? `${teacherToDelete.employee_code} · ${teacherToDelete.subject} (${teacherToDelete.department})` : undefined}
+        confirmText="Yes, Offboard Faculty"
+      />
     </div>
   )
 }

@@ -2,33 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerSupabase } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import fs from 'fs'
-import path from 'path'
 import { isSuperAdminEmail, normalizeRole, getHomeRoute } from '@/lib/config'
-
-import { createHash, timingSafeEqual } from 'crypto'
-
-function safeCompare(a: string, b: string): boolean {
-  const hashA = createHash('sha256').update(a).digest()
-  const hashB = createHash('sha256').update(b).digest()
-  return timingSafeEqual(hashA, hashB)
-}
-
-const DATA_FILE = path.join(process.cwd(), 'data', 'teachers.json')
-
-function getStoredTeachers() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const content = fs.readFileSync(DATA_FILE, 'utf-8')
-      const parsed = JSON.parse(content)
-      if (Array.isArray(parsed)) return parsed
-    }
-  } catch {}
-  return []
-}
+import { aj } from '@/lib/arcjet'
 
 export async function POST(request: NextRequest) {
   try {
+    const decision = await aj.protect(request as any)
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return NextResponse.json({ error: 'Too many login attempts. Please wait.' }, { status: 429 })
+      }
+      return NextResponse.json({ error: 'Access denied by security shield.' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { email, password } = body
 
@@ -128,29 +114,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 3. Check Teacher Directory for Onboarded Teacher with Temp Password
-    const teachers = getStoredTeachers()
-    const matchingTeacher = teachers.find(
-      (t: any) => t.email && t.email.toLowerCase() === cleanEmail
-    )
-
-    if (matchingTeacher && matchingTeacher.tempPassword && safeCompare(matchingTeacher.tempPassword, password)) {
-      cookieStore.set('eduflow-user-email', cleanEmail, { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-user-role', 'teacher', { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-teacher-code', matchingTeacher.employee_code, { path: '/', maxAge: 86400, sameSite: 'lax' })
-      cookieStore.set('eduflow-teacher-name', matchingTeacher.name, { path: '/', maxAge: 86400, sameSite: 'lax' })
-
-      return NextResponse.json({
-        success: true,
-        destination: '/teacher',
-        role: 'teacher',
-        email: cleanEmail,
-        employee_code: matchingTeacher.employee_code,
-        name: matchingTeacher.name,
-      })
-    }
-
-    // 3. Teacher Directory check completed above. If neither Supabase nor Teacher auth succeeded, reject.
+    // If authentication did not succeed, reject.
 
     // Return friendly, exact error message
     const errorResponse = authErrorMsg.toLowerCase().includes('email not confirmed')

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Check,
   CreditCard,
@@ -33,6 +34,7 @@ export function UserSettingsDialog({
   role,
   roleName,
 }: UserSettingsDialogProps) {
+  const router = useRouter()
   const { lang, toggleLanguage } = useEduFlow()
   const isAdmin = role === 'school_admin' || role === 'super_admin'
   const [activeTab, setActiveTab] = useState<'profile' | 'subscription' | 'security'>('profile')
@@ -297,7 +299,7 @@ export function UserSettingsDialog({
                     <Button
                       onClick={() => {
                         onClose()
-                        window.location.href = '/super-admin/subscriptions'
+                        router.push('/super-admin/subscriptions')
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
                     >
@@ -308,7 +310,7 @@ export function UserSettingsDialog({
                     <Button
                       onClick={() => {
                         onClose()
-                        window.location.href = '/admin/billing'
+                        router.push('/admin/billing')
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
                     >
@@ -320,7 +322,7 @@ export function UserSettingsDialog({
                     variant="outline"
                     onClick={() => {
                       onClose()
-                      window.location.href = '/#pricing'
+                      router.push('/#pricing')
                     }}
                     className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs"
                   >

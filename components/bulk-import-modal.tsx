@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Papa from 'papaparse'
 import { AlertCircle, Check, Copy, Download, FileSpreadsheet, Loader2, Upload, X } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -38,6 +38,18 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
+    }
+  }, [onClose])
 
   const parseFile = (file: File) => {
     if (!file.name.toLowerCase().endsWith('.csv')) return
@@ -151,6 +163,7 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="import-title"
+      onClick={onClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -158,6 +171,7 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
         exit={{ opacity: 0, scale: 0.94, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 350 }}
         className="import-modal shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
       >
         <header className="import-header">
           <div>
@@ -281,9 +295,11 @@ export function BulkImportModal({ onClose }: { onClose: () => void }) {
             >
               <input
                 ref={inputRef}
+                id="csv-file-input"
                 type="file"
                 hidden
                 accept=".csv"
+                aria-label="Upload CSV file"
                 onChange={(event) => {
                   const file = event.target.files?.[0]
                   if (file) parseFile(file)
